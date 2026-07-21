@@ -18,6 +18,8 @@ In ComfyUI, load one of these files:
 - `workflows\ui\z-image-turbo.json` — fast photorealistic Z-Image.
 - `workflows\ui\flux2-klein.json` — fastest four-step photorealistic model in this set.
 
+The downloader also creates zero-copy aliases for ComfyUI's built-in Z-Image and distilled FLUX.2 template filenames. These aliases consume no second copy of the model weights and prevent missing template filenames from silently falling back to an incompatible model.
+
 Change width and height in the grouped node labelled **Canvas - edit width and height here**. The tested core orientations are square `1024 × 1024`, landscape `1216 × 832`, and portrait `832 × 1216`.
 
 ## Canvas presets

@@ -97,3 +97,5 @@ foreach ($artifact in $artifacts) {
     $result = Install-Artifact -Artifact $artifact -ModelsRoot $modelsRoot
     Write-Output "$($result.ToUpperInvariant()) $($artifact.id)"
 }
+
+& (Join-Path $PSScriptRoot 'sync-model-aliases.ps1')
