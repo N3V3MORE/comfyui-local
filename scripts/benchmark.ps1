@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string[]]$ModelId,
+    [string[]]$ModelId = @(),
     [string[]]$PresetId = @('1024x1024', '1216x832', '832x1216'),
     [long]$Seed = 20260721,
     [string]$Server = 'http://127.0.0.1:8188',

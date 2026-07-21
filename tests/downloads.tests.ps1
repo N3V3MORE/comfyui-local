@@ -2,6 +2,14 @@ $projectRoot = Split-Path -Parent $PSScriptRoot
 $downloadScript = Join-Path $projectRoot 'scripts\download-models.ps1'
 . $downloadScript -LibraryOnly
 
+Test-Case 'optional artifact and benchmark filters default to empty arrays' {
+    $downloadSource = Get-Content -LiteralPath $downloadScript -Raw
+    $benchmarkSource = Get-Content -LiteralPath (Join-Path $projectRoot 'scripts\benchmark.ps1') -Raw
+
+    Assert-True ($downloadSource -match '\[string\[\]\]\$Id\s*=\s*@\(\)') 'artifact filter has a strict-mode-safe default'
+    Assert-True ($benchmarkSource -match '\[string\[\]\]\$ModelId\s*=\s*@\(\)') 'model filter has a strict-mode-safe default'
+}
+
 Test-Case 'artifact verification checks size and SHA-256' {
     $testRoot = Join-Path ([IO.Path]::GetTempPath()) ("comfyui-local-download-test-" + [guid]::NewGuid())
     New-Item -ItemType Directory -Path $testRoot | Out-Null
@@ -71,4 +79,3 @@ Test-Case 'artifact installation rejects a bad digest without a final file' {
         Remove-Item -LiteralPath $testRoot -Recurse -Force
     }
 }
-

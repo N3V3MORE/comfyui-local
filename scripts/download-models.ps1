@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string[]]$Id,
+    [string[]]$Id = @(),
     [switch]$VerifyOnly,
     [switch]$LibraryOnly
 )
