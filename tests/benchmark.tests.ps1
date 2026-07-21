@@ -44,3 +44,12 @@ Test-Case 'proof matrix is six models by three orientations' {
     Assert-Equal 6 @($matrix | Where-Object orientation -eq 'landscape').Count 'landscape job count'
     Assert-Equal 6 @($matrix | Where-Object orientation -eq 'portrait').Count 'portrait job count'
 }
+
+Test-Case 'queued prompts tolerate an empty history response' {
+    . $benchmarkScript -LibraryOnly
+    $emptyHistory = '{}' | ConvertFrom-Json
+    $completedHistory = '{"prompt-1":{"status":{"completed":true}}}' | ConvertFrom-Json
+
+    Assert-True ($null -eq (Get-ComfyHistoryEntry -History $emptyHistory -PromptId 'prompt-1')) 'queued prompt has no history entry yet'
+    Assert-True ((Get-ComfyHistoryEntry -History $completedHistory -PromptId 'prompt-1').status.completed) 'completed prompt entry is returned'
+}

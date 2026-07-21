@@ -107,6 +107,17 @@ function Submit-ComfyPrompt {
     return $response.prompt_id
 }
 
+function Get-ComfyHistoryEntry {
+    param(
+        [Parameter(Mandatory)]$History,
+        [Parameter(Mandatory)][string]$PromptId
+    )
+
+    $property = $History.PSObject.Properties[$PromptId]
+    if ($null -eq $property) { return $null }
+    return $property.Value
+}
+
 function Wait-ComfyPrompt {
     param(
         [Parameter(Mandatory)][string]$PromptId,
@@ -119,7 +130,7 @@ function Wait-ComfyPrompt {
     while ((Get-Date) -lt $deadline) {
         $peakVramMiB = [math]::Max($peakVramMiB, (Get-GpuMemoryUsedMiB))
         $history = Invoke-RestMethod -Uri "$Server/history/$PromptId" -TimeoutSec 30
-        $entry = $history.PSObject.Properties[$PromptId].Value
+        $entry = Get-ComfyHistoryEntry -History $history -PromptId $PromptId
         if ($null -ne $entry) {
             if ($entry.status.status_str -eq 'error') {
                 throw "ComfyUI prompt failed: $PromptId"
