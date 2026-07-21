@@ -53,22 +53,22 @@ Test-Case 'pins official workflow sources' {
 
 Test-Case 'pins all three CUDA packages in requirements input' {
     $path = Join-Path $projectRoot 'requirements.in'
-    $requirements = Get-Content -LiteralPath $path -Raw
+    $requirements = @(Get-Content -LiteralPath $path)
 
-    Assert-True ($requirements -match '(?m)^torch==2\.11\.0\+cu130$') 'Torch must be exact'
-    Assert-True ($requirements -match '(?m)^torchvision==0\.26\.0\+cu130$') 'Torchvision must be exact'
-    Assert-True ($requirements -match '(?m)^torchaudio==2\.11\.0\+cu130$') 'Torchaudio must be exact'
+    Assert-True ($requirements -contains 'torch==2.11.0+cu130') 'Torch must be exact'
+    Assert-True ($requirements -contains 'torchvision==0.26.0+cu130') 'Torchvision must be exact'
+    Assert-True ($requirements -contains 'torchaudio==2.11.0+cu130') 'Torchaudio must be exact'
 }
 
 Test-Case 'pins extension dependency conflicts in the shared lock input' {
     $path = Join-Path $projectRoot 'requirements.in'
-    $requirements = Get-Content -LiteralPath $path -Raw
+    $requirements = @(Get-Content -LiteralPath $path)
 
-    Assert-True ($requirements -match '(?m)^ultralytics==8\.4\.103$') 'Ultralytics must be exact'
-    Assert-True ($requirements -match '(?m)^mediapipe==0\.10\.35$') 'MediaPipe must be exact'
-    Assert-True ($requirements -match '(?m)^onnxruntime-gpu==1\.27\.0$') 'ONNX Runtime GPU must be exact'
-    Assert-True ($requirements -match '(?m)^opencv-python==5\.0\.0\.93$') 'OpenCV must be exact'
-    Assert-True ($requirements -match '(?m)^opencv-python-headless==5\.0\.0\.93$') 'headless OpenCV must be exact'
-    Assert-True ($requirements -match '(?m)^opencv-contrib-python==5\.0\.0\.93$') 'contrib OpenCV must be exact'
-    Assert-True ($requirements -match 'facebookresearch/sam2@2b90b9f5ceec907a1c18123530e92e794ad901a4') 'SAM2 Git dependency must be immutable'
+    Assert-True ($requirements -contains 'ultralytics==8.4.103') 'Ultralytics must be exact'
+    Assert-True ($requirements -contains 'mediapipe==0.10.35') 'MediaPipe must be exact'
+    Assert-True ($requirements -contains 'onnxruntime-gpu==1.27.0') 'ONNX Runtime GPU must be exact'
+    Assert-True ($requirements -contains 'opencv-python==5.0.0.93') 'OpenCV must be exact'
+    Assert-True ($requirements -contains 'opencv-python-headless==5.0.0.93') 'headless OpenCV must be exact'
+    Assert-True ($requirements -contains 'opencv-contrib-python==5.0.0.93') 'contrib OpenCV must be exact'
+    Assert-True ($requirements -contains 'sam-2 @ git+https://github.com/facebookresearch/sam2@2b90b9f5ceec907a1c18123530e92e794ad901a4') 'SAM2 Git dependency must be immutable'
 }
