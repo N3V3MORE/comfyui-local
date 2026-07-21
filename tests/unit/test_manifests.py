@@ -1,4 +1,7 @@
 import sys
+import json
+import shutil
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -67,6 +70,18 @@ class FocusedManifestTests(unittest.TestCase):
 
     def test_complete_configuration_validates(self) -> None:
         validate_configuration(PROJECT_ROOT)
+
+    def test_schema_violation_fails_before_cross_file_validation(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            shutil.copytree(PROJECT_ROOT / "config", root / "config")
+            path = root / "config" / "models.json"
+            value = json.loads(path.read_text(encoding="utf-8"))
+            value["models"][0]["unexpected"] = True
+            path.write_text(json.dumps(value), encoding="utf-8")
+
+            with self.assertRaisesRegex(Exception, "schema validation"):
+                validate_configuration(root)
 
 
 if __name__ == "__main__":

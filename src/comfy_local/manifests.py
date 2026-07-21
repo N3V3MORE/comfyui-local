@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any
 
+from jsonschema import Draft202012Validator
+
 
 class ConfigurationError(ValueError):
     pass
@@ -149,6 +151,7 @@ def load_resolutions(root: Path) -> dict[str, tuple[int, int]]:
 
 
 def validate_configuration(root: Path) -> None:
+    _validate_schemas(root)
     models = load_models(root)
     artifacts = load_artifacts(root)
     specs = load_workflow_specs(root)
@@ -202,6 +205,25 @@ def validate_configuration(root: Path) -> None:
         raise ConfigurationError("Support license records do not match support artifacts")
 
 
+def _validate_schemas(root: Path) -> None:
+    names = (
+        "models.json",
+        "artifacts.json",
+        "workflow-specs.json",
+        "resolutions.json",
+        "benchmark-scenarios.json",
+        "licenses.json",
+        "model-aliases.json",
+    )
+    for name in names:
+        instance = _read(root / "config" / name)
+        schema = _read_schema(root / "config" / "schemas" / name)
+        errors = sorted(Draft202012Validator(schema).iter_errors(instance), key=lambda item: list(item.path))
+        if errors:
+            location = ".".join(str(item) for item in errors[0].path) or "root"
+            raise ConfigurationError(f"{name} schema validation failed at {location}: {errors[0].message}")
+
+
 def _read(path: Path) -> dict[str, Any]:
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
@@ -209,6 +231,15 @@ def _read(path: Path) -> dict[str, Any]:
         raise ConfigurationError(f"Could not read configuration {path}: {error}") from error
     if not isinstance(value, dict) or value.get("version") != 1:
         raise ConfigurationError(f"Unsupported configuration version in {path}")
+    return value
+
+
+def _read_schema(path: Path) -> dict[str, Any]:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ConfigurationError(f"Could not read schema {path}: {error}") from error
+    Draft202012Validator.check_schema(value)
     return value
 
 

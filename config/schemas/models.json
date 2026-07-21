@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "models"],
+  "properties": {
+    "version": { "const": 1 },
+    "models": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "category", "family", "parameters", "precision", "artifactIds", "components", "sampling"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$" },
+          "name": { "type": "string", "minLength": 1 },
+          "category": { "enum": ["realistic", "anime", "photorealistic"] },
+          "family": { "enum": ["sdxl", "z-image", "flux2"] },
+          "parameters": { "type": "string", "minLength": 1 },
+          "precision": { "type": "string", "minLength": 1 },
+          "artifactIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+          "components": { "type": "object", "minProperties": 1, "additionalProperties": { "type": "string", "minLength": 1 } },
+          "sampling": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["steps", "cfg", "sampler", "scheduler"],
+            "properties": {
+              "steps": { "type": "integer", "minimum": 1 },
+              "cfg": { "type": "number", "exclusiveMinimum": 0 },
+              "sampler": { "type": "string", "minLength": 1 },
+              "scheduler": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "aliases"],
+  "properties": {
+    "version": { "const": 1 },
+    "aliases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source", "target"],
+        "properties": {
+          "source": { "type": "string", "pattern": "^(?![A-Za-z]:|/|\\\\).+" },
+          "target": { "type": "string", "pattern": "^(?![A-Za-z]:|/|\\\\).+" }
+        }
+      }
+    }
+  }
+}

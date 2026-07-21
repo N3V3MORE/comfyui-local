@@ -126,6 +126,7 @@ ComfyUI's dynamic VRAM behaviour is left at its tested default. Do not add `--hi
 - `config\resolutions.json` — seven 8 GB-safe canvas presets
 - `config\benchmark-scenarios.json` — orientation, performance, and optional quality scenarios
 - `config\licenses.json` — model and support-asset licensing notes
+- `config\schemas` — JSON Schemas enforced before cross-file compiler validation
 - `extensions-manifest.json` — five extension repositories and exact commits
 - `vendor\workflows` and `vendor\api` — pinned canonical templates with semantic node keys
 - `src\comfy_local` — graph builder, validation, compiler, and benchmark prompt materializer

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["license", "sourceUrl"],
+      "properties": {
+        "license": { "type": "string", "minLength": 1 },
+        "sourceUrl": { "type": "string", "format": "uri", "pattern": "^https://" }
+      }
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "models", "supportArtifacts"],
+  "properties": {
+    "version": { "const": 1 },
+    "models": { "type": "object", "minProperties": 1, "additionalProperties": { "$ref": "#/$defs/entry" } },
+    "supportArtifacts": { "type": "object", "minProperties": 1, "additionalProperties": { "$ref": "#/$defs/entry" } }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "apps"],
+  "properties": {
+    "version": { "const": 1 },
+    "apps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "group", "family", "kind", "template", "modelProfile", "output", "purpose", "supportArtifacts", "exposedInputs", "outputKey", "defaults"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$" },
+          "name": { "type": "string", "minLength": 1 },
+          "group": { "enum": ["Create", "Control", "Reference", "Detail", "Upscale"] },
+          "family": { "enum": ["sdxl", "z-image", "flux2", "upscale"] },
+          "kind": { "enum": ["sdxl-create", "z-create", "flux-create", "sdxl-control", "z-control", "ipadapter", "face-detail", "upscale"] },
+          "template": { "type": "string", "pattern": "^vendor/workflows/.+\\.json$" },
+          "modelProfile": { "type": ["string", "null"] },
+          "output": { "type": "string", "pattern": "^[^/]+/.+\\.app\\.json$" },
+          "purpose": { "type": "string", "minLength": 1 },
+          "supportArtifacts": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+          "exposedInputs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["node", "widget"],
+              "properties": {
+                "node": { "type": "string", "minLength": 1 },
+                "widget": { "type": "string", "minLength": 1 }
+              }
+            }
+          },
+          "outputKey": { "type": "string", "minLength": 1 },
+          "defaults": { "type": "object" },
+          "variant": { "type": "object" }
+        }
+      }
+    }
+  }
+}

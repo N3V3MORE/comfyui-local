@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "families", "prompt", "dimensions", "seeds"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$" },
+        "families": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["sdxl", "z-image", "flux2"] } },
+        "categories": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["realistic", "anime", "photorealistic"] } },
+        "prompt": { "type": "string", "minLength": 1 },
+        "negativePrompt": { "type": "string" },
+        "dimensions": { "type": "array", "prefixItems": [{ "type": "integer", "multipleOf": 64 }, { "type": "integer", "multipleOf": 64 }], "minItems": 2, "maxItems": 2 },
+        "seeds": { "type": "array", "minItems": 3, "uniqueItems": true, "items": { "type": "integer", "minimum": 0 } }
+      }
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "orientationProof", "performance", "quality"],
+  "properties": {
+    "version": { "const": 1 },
+    "orientationProof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["presetIds"],
+      "properties": { "presetIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } } }
+    },
+    "performance": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/scenario" } },
+    "quality": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/scenario" } }
+  }
+}
