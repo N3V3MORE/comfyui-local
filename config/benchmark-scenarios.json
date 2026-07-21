@@ -15,6 +15,10 @@
         "z-image",
         "flux2"
       ],
+      "categories": [
+        "realistic",
+        "photorealistic"
+      ],
       "prompt": "A candid photograph of three friends walking through a lively London street after rain, realistic skin, natural overcast light, 50mm lens",
       "negativePrompt": "bad anatomy, deformed hands, text, watermark",
       "dimensions": [

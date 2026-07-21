@@ -2,6 +2,8 @@
 param(
     [string[]]$ModelId = @(),
     [string[]]$PresetId = @(),
+    [ValidateSet('orientation', 'performance', 'quality')]
+    [string]$Suite = 'orientation',
     [long]$Seed = 20260721,
     [string]$Server = 'http://127.0.0.1:8188',
     [int]$TimeoutMinutes = 20,
@@ -40,6 +42,16 @@ function Get-PeakVramMiB {
     $values = @($Samples | Where-Object { "$_" -match '^\d+$' } | ForEach-Object { [int]$_ })
     if ($values.Count -eq 0) { return 0 }
     return [int]($values | Measure-Object -Maximum).Maximum
+}
+
+function Get-Median {
+    param([Parameter(Mandatory)][double[]]$Values)
+
+    Assert-Condition ($Values.Count -gt 0) 'Median requires at least one value'
+    $sorted = @($Values | Sort-Object)
+    $middle = [math]::Floor($sorted.Count / 2)
+    if ($sorted.Count % 2) { return [double]$sorted[$middle] }
+    return ([double]$sorted[$middle - 1] + [double]$sorted[$middle]) / 2
 }
 
 function Start-GpuMemoryMonitor {
@@ -105,9 +117,7 @@ function Wait-ComfyPrompt {
         $history = Invoke-RestMethod -Uri "$Server/history/$PromptId" -TimeoutSec 30
         $entry = Get-ComfyHistoryEntry -History $history -PromptId $PromptId
         if ($null -ne $entry) {
-            if ($entry.status.status_str -eq 'error') {
-                throw "ComfyUI prompt failed: $PromptId"
-            }
+            if ($entry.status.status_str -eq 'error') { throw "ComfyUI prompt failed: $PromptId" }
             if ([bool]$entry.status.completed) {
                 $images = @(Get-ComfyImages -Outputs $entry.outputs)
                 Assert-Condition ($images.Count -gt 0) "Prompt completed without an image: $PromptId"
@@ -147,61 +157,135 @@ if ($ModelId.Count -gt 0) {
     $models = @($models | Where-Object { $ModelId -contains $_.id })
     Assert-Condition ($models.Count -eq $ModelId.Count) 'One or more requested model ids are unknown'
 }
-$selectedPresetIds = if ($PresetId.Count -gt 0) { $PresetId } else { @($scenarios.orientationProof.presetIds) }
-$selectedPresets = @($presets | Where-Object { $selectedPresetIds -contains $_.id })
-Assert-Condition ($selectedPresets.Count -eq $selectedPresetIds.Count) 'One or more requested preset ids are unknown'
+Assert-Condition ($Suite -eq 'orientation' -or $PresetId.Count -eq 0) '-PresetId is only valid for the orientation suite'
 
 Invoke-RestMethod -Uri "$Server/system_stats" -TimeoutSec 10 | Out-Null
-$proofRoot = Join-Path $root 'results\proof'
-$promptRoot = Join-Path $root 'results\prompts'
+$resultsRoot = Join-Path $root 'results'
+$proofRoot = Join-Path $resultsRoot "proof\$Suite"
+$promptRoot = Join-Path $resultsRoot 'prompts'
 $python = Join-Path $root '.venv\Scripts\python.exe'
 Assert-Condition (Test-Path -LiteralPath $python) 'Python environment is missing'
 $env:PYTHONPATH = Join-Path $root 'src'
 $rows = [Collections.Generic.List[object]]::new()
 
-foreach ($model in $models) {
-    foreach ($canvas in $selectedPresets) {
-        $prefix = "proof/$($model.id)/$($model.id)-$($canvas.id)"
-        $promptPath = Join-Path $promptRoot "$($model.id)-$($canvas.id).json"
-        & $python -m comfy_local prompt --root $root --model-id $model.id --width $canvas.width --height $canvas.height --seed $Seed --filename-prefix $prefix --output $promptPath
-        Assert-Condition ($LASTEXITCODE -eq 0) "Prompt materialization failed: $($model.id) at $($canvas.id)"
-        $workflow = Read-Json $promptPath
-
-        Write-Output "Generating $($model.id) at $($canvas.id)..."
-        $watch = [Diagnostics.Stopwatch]::StartNew()
-        $vramMonitor = Start-GpuMemoryMonitor
-        try {
-            $promptId = Submit-ComfyPrompt -Workflow $workflow -Server $Server
-            $completed = Wait-ComfyPrompt -PromptId $promptId -Server $Server -TimeoutMinutes $TimeoutMinutes
+$jobs = if ($Suite -eq 'orientation') {
+    $selectedIds = if ($PresetId.Count -gt 0) { $PresetId } else { @($scenarios.orientationProof.presetIds) }
+    $selectedPresets = @($presets | Where-Object { $selectedIds -contains $_.id })
+    Assert-Condition ($selectedPresets.Count -eq $selectedIds.Count) 'One or more requested preset ids are unknown'
+    @(
+        foreach ($model in $models) {
+            foreach ($canvas in $selectedPresets) {
+                [pscustomobject]@{
+                    suite = 'orientation'
+                    scenario_id = 'orientation-proof'
+                    model_id = $model.id
+                    width = $canvas.width
+                    height = $canvas.height
+                    seed = $Seed
+                    run_kind = 'orientation'
+                    filename_prefix = "proof/$($model.id)/$($model.id)-$($canvas.id)"
+                    preset_id = $canvas.id
+                    orientation = $canvas.orientation
+                }
+            }
         }
-        finally {
-            $watch.Stop()
-            $peakVramMiB = Stop-GpuMemoryMonitor -Job $vramMonitor
-        }
-        $copied = @(foreach ($image in $completed.images) {
-            Copy-ComfyImage -Image $image -ComfyOutputRoot (Join-Path $root 'ComfyUI\output') -DestinationRoot $proofRoot -ModelId $model.id
-        })
-
-        $rows.Add([pscustomobject][ordered]@{
-            modelId = $model.id
-            name = $model.name
-            category = $model.category
-            family = $model.family
-            precision = $model.precision
-            preset = $canvas.id
-            orientation = $canvas.orientation
-            width = $canvas.width
-            height = $canvas.height
-            steps = $model.sampling.steps
-            seconds = [math]::Round($watch.Elapsed.TotalSeconds, 2)
-            peakVramMiB = $peakVramMiB
-            output = ($copied -join ';')
-        })
-    }
+    )
+}
+else {
+    $planPath = Join-Path $resultsRoot "benchmark-plan-$Suite.json"
+    & $python -m comfy_local benchmark-plan --root $root --suite $Suite --output $planPath
+    Assert-Condition ($LASTEXITCODE -eq 0) "$Suite benchmark planning failed"
+    @(@(Read-Json $planPath) | Where-Object { $_.model_id -in $models.id })
 }
 
-$resultsRoot = Join-Path $root 'results'
+foreach ($job in $jobs) {
+    $model = $models | Where-Object id -eq $job.model_id | Select-Object -First 1
+    Assert-Condition ($null -ne $model) "Unknown planned model: $($job.model_id)"
+    $promptName = "$($job.suite)-$($job.scenario_id)-$($job.model_id)-$($job.seed).json"
+    $promptPath = Join-Path $promptRoot $promptName
+    if ($Suite -eq 'orientation') {
+        & $python -m comfy_local prompt --root $root --model-id $job.model_id --width $job.width --height $job.height --seed $job.seed --filename-prefix $job.filename_prefix --output $promptPath
+    }
+    else {
+        & $python -m comfy_local scenario-prompt --root $root --suite $Suite --scenario-id $job.scenario_id --model-id $job.model_id --seed $job.seed --output $promptPath
+    }
+    Assert-Condition ($LASTEXITCODE -eq 0) "Prompt materialization failed: $($job.model_id)/$($job.scenario_id)"
+    $workflow = Read-Json $promptPath
+
+    if ($job.run_kind -eq 'cold') {
+        $body = @{ unload_models = $true; free_memory = $true } | ConvertTo-Json -Compress
+        Invoke-RestMethod -Method Post -Uri "$Server/free" -ContentType 'application/json' -Body $body -TimeoutSec 60 | Out-Null
+    }
+
+    Write-Output "Generating $($job.model_id) for $($job.scenario_id) ($($job.run_kind))..."
+    $watch = [Diagnostics.Stopwatch]::StartNew()
+    $vramMonitor = Start-GpuMemoryMonitor
+    try {
+        $promptId = Submit-ComfyPrompt -Workflow $workflow -Server $Server
+        $completed = Wait-ComfyPrompt -PromptId $promptId -Server $Server -TimeoutMinutes $TimeoutMinutes
+    }
+    finally {
+        $watch.Stop()
+        $peakVramMiB = Stop-GpuMemoryMonitor -Job $vramMonitor
+    }
+    $copied = @(foreach ($image in $completed.images) {
+        Copy-ComfyImage -Image $image -ComfyOutputRoot (Join-Path $root 'results\images') -DestinationRoot $proofRoot -ModelId $model.id
+    })
+
+    $blindSampleId = $blindImage = $null
+    if ($Suite -eq 'quality' -and $copied.Count -gt 0) {
+        $blindSampleId = 'sample-{0:D4}' -f ($rows.Count + 1)
+        $blindRoot = Join-Path $resultsRoot 'quality-blind'
+        New-Item -ItemType Directory -Force -Path $blindRoot | Out-Null
+        $blindImage = Join-Path $blindRoot ($blindSampleId + [IO.Path]::GetExtension($copied[0]))
+        Copy-Item -LiteralPath $copied[0] -Destination $blindImage -Force
+    }
+
+    $rows.Add([pscustomobject][ordered]@{
+        suite = $Suite
+        scenarioId = $job.scenario_id
+        runKind = $job.run_kind
+        seed = $job.seed
+        modelId = $model.id
+        name = $model.name
+        category = $model.category
+        family = $model.family
+        precision = $model.precision
+        preset = if ($Suite -eq 'orientation') { $job.preset_id } else { $null }
+        orientation = if ($Suite -eq 'orientation') { $job.orientation } else { $null }
+        width = $job.width
+        height = $job.height
+        steps = $model.sampling.steps
+        seconds = [math]::Round($watch.Elapsed.TotalSeconds, 2)
+        peakVramMiB = $peakVramMiB
+        output = ($copied -join ';')
+        blindSampleId = $blindSampleId
+        blindImage = $blindImage
+    })
+}
+
 New-Item -ItemType Directory -Force -Path $resultsRoot | Out-Null
 $rows | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $resultsRoot 'benchmark.json') -Encoding utf8
 $rows | Export-Csv -LiteralPath (Join-Path $resultsRoot 'benchmark.csv') -NoTypeInformation -Encoding utf8
+$summary = @(
+    $rows | Group-Object suite, scenarioId, modelId, runKind | ForEach-Object {
+        [pscustomobject][ordered]@{
+            suite = $_.Group[0].suite
+            scenarioId = $_.Group[0].scenarioId
+            modelId = $_.Group[0].modelId
+            runKind = $_.Group[0].runKind
+            runs = $_.Count
+            medianSeconds = [math]::Round((Get-Median -Values @($_.Group.seconds)), 2)
+            peakVramMiB = [int]($_.Group.peakVramMiB | Measure-Object -Maximum).Maximum
+        }
+    }
+)
+$summary | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath (Join-Path $resultsRoot 'benchmark-summary.generated.json') -Encoding utf8
+if ($Suite -eq 'quality') {
+    $rows | Select-Object blindSampleId, scenarioId, blindImage,
+        @{Name='composition';Expression={''}}, @{Name='handsFaces';Expression={''}},
+        @{Name='embeddedText';Expression={''}}, @{Name='promptAdherence';Expression={''}},
+        @{Name='overall';Expression={''}}, @{Name='notes';Expression={''}} |
+        Export-Csv -LiteralPath (Join-Path $resultsRoot 'quality-ratings.csv') -NoTypeInformation -Encoding utf8
+}
 Write-Output "Completed $($rows.Count) benchmark images. Results: $resultsRoot"

@@ -95,6 +95,12 @@ Do not swap loaders, text encoders, LoRAs, or conditioning links between these r
 # Recreate the 18 core model/orientation proofs and metrics
 .\scripts\benchmark.ps1
 
+# Fair shared prompts: one cold run, two warm runs, medians, and peak VRAM
+.\scripts\benchmark.ps1 -Suite performance
+
+# Optional quality stress suite plus a blind quality-ratings.csv sheet
+.\scripts\benchmark.ps1 -Suite quality
+
 # Optional troubleshooting mode; use only if the normal launch runs out of memory
 .\scripts\start.ps1 -LowVram
 ```

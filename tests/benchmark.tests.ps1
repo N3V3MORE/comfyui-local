@@ -35,6 +35,15 @@ Test-Case 'proof matrix derives models and orientations from focused configurati
     }
 }
 
+Test-Case 'benchmark exposes separate performance and quality execution modes' {
+    $source = Get-Content -LiteralPath $benchmarkScript -Raw
+
+    Assert-True ($source -match "ValidateSet\('orientation',\s*'performance',\s*'quality'\)") 'benchmark exposes three explicit suites'
+    Assert-True ($source -match '/free') 'performance benchmark unloads models before cold runs'
+    Assert-True ($source -match 'Get-Median') 'benchmark reports median timings'
+    Assert-True ($source -match 'quality-ratings\.csv') 'quality suite creates a blind rating sheet'
+}
+
 Test-Case 'queued prompts tolerate an empty history response' {
     . $benchmarkScript -LibraryOnly
     $emptyHistory = '{}' | ConvertFrom-Json
