@@ -114,25 +114,43 @@ ComfyUI's dynamic VRAM behaviour is left at its tested default. Do not add `--hi
 
 ## Project map
 
-- `model-manifest.json` — six core models, prompts, settings, sources, licenses, and hashes
-- `support-model-manifest.json` — ControlNet, preprocessors, IPAdapter, face detector, and upscalers
+- `config\models.json` — model families, components, precision, and sampling behaviour
+- `config\artifacts.json` — all core and support downloads, roles, sizes, and SHA-256 hashes
+- `config\workflow-specs.json` — the 15 apps, defaults, semantic inputs, and output paths
+- `config\resolutions.json` — seven 8 GB-safe canvas presets
+- `config\benchmark-scenarios.json` — orientation, performance, and optional quality scenarios
+- `config\licenses.json` — model and support-asset licensing notes
 - `extensions-manifest.json` — five extension repositories and exact commits
-- `workflow-catalog.json` — the 15 installed apps
-- `config\aspect-ratios.json` — seven canvas presets
-- `workflows\apps` — generated, family-isolated App Mode workflows
-- `workflows\ui` — editable core graphs
-- `scripts\setup.ps1` — idempotent runtime and app provisioning
+- `vendor\workflows` and `vendor\api` — pinned canonical templates with semantic node keys
+- `src\comfy_local` — graph builder, validation, compiler, and benchmark prompt materializer
+- `workflows\apps`, `workflows\ui`, and `workflows\api` — generated artifacts; do not edit by hand
+- `scripts\setup.ps1` — idempotent runtime provisioning
 - `scripts\download-models.ps1` — resumable, hash-verified downloads
-- `scripts\sync-studio-apps.ps1` — deterministic App Mode generation and installation
-- `scripts\benchmark.ps1` — generation, timing, GPU-memory sampling, and proof collection
+- `scripts\compile.ps1` — deterministic workflow compiler entrypoint
+- `scripts\install-workflows.ps1` — installs already-validated App Mode workflows
+- `scripts\benchmark.ps1` — submission, timing, GPU-memory sampling, and proof collection
+
+## Workflow compiler
+
+Every editable template node used by automation has a stable `properties.studio_key`. The Python compiler selects these keys exactly once, applies the selected model profile, builds App Mode inputs, validates links and widgets, and only then serializes ComfyUI's numeric node and link IDs. This keeps family selection and graph mutation out of PowerShell.
+
+After changing a model profile, workflow specification, template, or resolution, rebuild and test with:
+
+```powershell
+.\scripts\compile.ps1
+.\tests\run-tests.ps1
+```
+
+Compilation produces 15 App Mode workflows, four editable UI workflows, and three API prompts. It writes files atomically and is deterministic: running it again without a configuration change produces the same content. To add an app, add one declarative entry to `config\workflow-specs.json`, reference an existing semantic template, and extend the compiler only when introducing genuinely new graph behaviour.
 
 ## Rebuild
 
 ```powershell
 .\scripts\setup.ps1
 .\scripts\download-models.ps1
-.\scripts\sync-workflows.ps1
-.\scripts\sync-studio-apps.ps1
+.\scripts\compile.ps1
+.\scripts\copy-bundled-inputs.ps1
+.\scripts\install-workflows.ps1
 .\scripts\verify.ps1 -StaticOnly -RequireModels -RequireExtensions -RequireSupportAssets
 .\scripts\start.ps1
 ```

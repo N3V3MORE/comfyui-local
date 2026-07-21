@@ -23,6 +23,19 @@ Test-Case 'README explains the isolated Opera App Mode workflow' {
     Assert-True ($readme -match 'select or upload') 'README explains image input in App Mode'
 }
 
+Test-Case 'README documents the semantic compiler and focused configuration' {
+    $readme = Get-Content -LiteralPath (Join-Path $projectRoot 'README.md') -Raw
+
+    Assert-True ($readme -match 'scripts\\compile\.ps1') 'README documents the compiler entrypoint'
+    Assert-True ($readme -match 'studio_key') 'README explains semantic node identity'
+    foreach ($name in @('models.json', 'artifacts.json', 'workflow-specs.json', 'resolutions.json', 'benchmark-scenarios.json')) {
+        Assert-True ($readme -match [regex]::Escape($name)) "README documents $name"
+    }
+    foreach ($legacy in @('model-manifest.json', 'support-model-manifest.json', 'workflow-catalog.json', 'aspect-ratios.json')) {
+        Assert-True ($readme -notmatch [regex]::Escape($legacy)) "README does not document removed $legacy"
+    }
+}
+
 Test-Case 'comparison documents all six models and measured 8 GB results' {
     $comparisonPath = Join-Path $projectRoot 'MODEL_COMPARISON.md'
     Assert-True (Test-Path -LiteralPath $comparisonPath) 'comparison exists'
