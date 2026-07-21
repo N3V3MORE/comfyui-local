@@ -243,6 +243,8 @@ foreach ($relativePath in @('data\user', 'data\input', 'data\temp', 'results\ima
 
 $extraPathsFile = Join-Path $comfyPath 'extra_model_paths.yaml'
 Set-Content -LiteralPath $extraPathsFile -Value (Get-ExtraModelPathsYaml) -Encoding utf8
-& (Join-Path $PSScriptRoot 'sync-studio-apps.ps1')
+& (Join-Path $PSScriptRoot 'compile.ps1')
+& (Join-Path $PSScriptRoot 'copy-bundled-inputs.ps1')
+& (Join-Path $PSScriptRoot 'install-workflows.ps1')
 Write-Output "ComfyUI runtime ready at $comfyPath"
 Write-Output "Python environment ready at $venvPath"

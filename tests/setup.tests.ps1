@@ -68,8 +68,11 @@ Test-Case 'setup blocks extension hooks from downloading unmanifested models' {
     Assert-True ($output -contains "SKIP_DOWNLOAD_MARKER=$projectRoot\ComfyUI\custom_nodes\skip_download_model") 'hook policy creates the supported download opt-out marker'
 }
 
-Test-Case 'setup installs the Studio app catalog' {
+Test-Case 'setup compiles, copies inputs, and installs the Studio app catalog explicitly' {
     $source = Get-Content -LiteralPath $setupScript -Raw
 
-    Assert-True ($source -match "sync-studio-apps\.ps1") 'setup invokes the deterministic Studio app sync'
+    foreach ($script in @('compile.ps1', 'copy-bundled-inputs.ps1', 'install-workflows.ps1')) {
+        Assert-True ($source -match [regex]::Escape($script)) "setup invokes $script"
+    }
+    Assert-True ($source -notmatch 'sync-studio-apps\.ps1') 'setup does not hide responsibilities behind the compatibility wrapper'
 }
