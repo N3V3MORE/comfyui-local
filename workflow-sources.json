@@ -1,0 +1,6 @@
+{
+  "sdxl": "https://raw.githubusercontent.com/Comfy-Org/ComfyUI_frontend/24d928409605c3a01c0fb9857d024c7bb1572597/browser_tests/assets/default.json",
+  "zImage": "https://raw.githubusercontent.com/Comfy-Org/workflow_templates/93f3058d5ad87d83c5eab7c0eabd734738376816/templates/image_z_image_turbo.json",
+  "flux2": "https://raw.githubusercontent.com/Comfy-Org/workflow_templates/93f3058d5ad87d83c5eab7c0eabd734738376816/templates/image_flux2_klein_text_to_image.json"
+}
+

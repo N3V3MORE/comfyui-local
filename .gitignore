@@ -1,0 +1,8 @@
+.venv/
+ComfyUI/
+models/
+results/
+work/
+*.partial
+__pycache__/
+

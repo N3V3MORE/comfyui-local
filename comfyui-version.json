@@ -1,0 +1,10 @@
+{
+  "repository": "https://github.com/Comfy-Org/ComfyUI.git",
+  "commit": "d0fec2ef7e7086533fde261de3fdb88289bdca9e",
+  "python": "3.13",
+  "torchIndex": "https://download.pytorch.org/whl/cu130",
+  "torch": "2.11.0+cu130",
+  "torchvision": "0.26.0+cu130",
+  "torchaudio": "2.11.0+cu130"
+}
+

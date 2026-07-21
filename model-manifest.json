@@ -1,0 +1,197 @@
+{
+  "version": 1,
+  "requiredFreeBytes": 75161927680,
+  "models": [
+    {
+      "id": "realvis-xl-v5",
+      "name": "RealVisXL V5.0",
+      "category": "realistic",
+      "family": "SDXL",
+      "parameters": "2.6B",
+      "precision": "FP16",
+      "license": "OpenRAIL++",
+      "sourceUrl": "https://huggingface.co/SG161222/RealVisXL_V5.0",
+      "artifacts": ["realvis-xl-v5"],
+      "workflowProfile": "sdxl",
+      "checkpoint": "realistic\\RealVisXL_V5.0_fp16.safetensors",
+      "steps": 30,
+      "cfg": 5.0,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras",
+      "positivePrompt": "A natural documentary photograph of a person walking through a lively London street after rain, realistic skin texture, soft overcast daylight, candid composition, 50mm lens",
+      "negativePrompt": "bad hands, bad anatomy, deformed eyes, plastic skin, text, watermark, oversaturated"
+    },
+    {
+      "id": "juggernaut-xl-v9",
+      "name": "Juggernaut XL v9",
+      "category": "realistic",
+      "family": "SDXL",
+      "parameters": "2.6B",
+      "precision": "FP16",
+      "license": "CreativeML Open RAIL-M; paid API deployment restricted",
+      "sourceUrl": "https://huggingface.co/RunDiffusion/Juggernaut-XL-v9",
+      "artifacts": ["juggernaut-xl-v9"],
+      "workflowProfile": "sdxl",
+      "checkpoint": "realistic\\Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+      "steps": 35,
+      "cfg": 5.0,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras",
+      "positivePrompt": "Cinematic mid-shot photograph of an astronaut in a neon-lit Tokyo alley at night, natural skin detail, wet pavement reflections, shallow depth of field, 50mm lens",
+      "negativePrompt": "bad hands, bad anatomy, deformed face, plastic skin, text, watermark, oversaturated"
+    },
+    {
+      "id": "animagine-xl-4-opt",
+      "name": "Animagine XL 4.0 Opt",
+      "category": "anime",
+      "family": "SDXL",
+      "parameters": "2.6B",
+      "precision": "FP16",
+      "license": "OpenRAIL++",
+      "sourceUrl": "https://huggingface.co/cagliostrolab/animagine-xl-4.0",
+      "artifacts": ["animagine-xl-4-opt"],
+      "workflowProfile": "sdxl",
+      "checkpoint": "anime\\animagine-xl-4.0-opt.safetensors",
+      "steps": 28,
+      "cfg": 5.0,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "positivePrompt": "1girl, solo, green hair, sweater, looking at viewer, outdoors, night, soft city lights, safe, masterpiece, high score, great score, absurdres",
+      "negativePrompt": "lowres, bad anatomy, bad hands, text, error, extra digits, cropped, worst quality, watermark, signature, blurry"
+    },
+    {
+      "id": "illustrious-xl-v2",
+      "name": "Illustrious XL v2.0",
+      "category": "anime",
+      "family": "SDXL",
+      "parameters": "2.6B",
+      "precision": "FP16",
+      "license": "CreativeML Open RAIL-M",
+      "sourceUrl": "https://huggingface.co/OnomaAIResearch/Illustrious-XL-v2.0",
+      "artifacts": ["illustrious-xl-v2"],
+      "workflowProfile": "sdxl",
+      "checkpoint": "anime\\Illustrious-XL-v2.0.safetensors",
+      "steps": 30,
+      "cfg": 7.0,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "positivePrompt": "1girl, solo, detailed eyes, windswept hair, seaside promenade, pastel houses, clean line art, dramatic clouds, masterpiece, best quality",
+      "negativePrompt": "lowres, bad anatomy, bad hands, text, extra digits, worst quality, watermark, signature, blurry"
+    },
+    {
+      "id": "z-image-turbo",
+      "name": "Z-Image Turbo",
+      "category": "photorealistic",
+      "family": "Z-Image",
+      "parameters": "6B",
+      "precision": "NVFP4 diffusion + FP4-mixed text encoder",
+      "license": "Apache-2.0",
+      "sourceUrl": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo",
+      "artifacts": ["z-image-nvfp4", "z-image-qwen-fp4", "z-image-vae"],
+      "workflowProfile": "z_image",
+      "diffusionModel": "z_image_turbo_nvfp4.safetensors",
+      "textEncoder": "qwen_3_4b_fp4_mixed.safetensors",
+      "vae": "ae.safetensors",
+      "steps": 8,
+      "cfg": 1.0,
+      "sampler": "res_multistep",
+      "scheduler": "simple",
+      "positivePrompt": "A candid close-up photograph of a woman with thick wavy hair beside a working harbour, pastel houses and small boats behind her, breezy seaside light, realistic skin, warm tones, 50mm lens",
+      "negativePrompt": ""
+    },
+    {
+      "id": "flux2-klein-4b",
+      "name": "FLUX.2 Klein 4B",
+      "category": "photorealistic",
+      "family": "FLUX.2 Klein",
+      "parameters": "4B",
+      "precision": "FP8 diffusion + FP4 text encoder",
+      "license": "Apache-2.0",
+      "sourceUrl": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8",
+      "artifacts": ["flux2-klein-fp8", "flux2-qwen-fp4", "flux2-vae"],
+      "workflowProfile": "flux2",
+      "diffusionModel": "flux-2-klein-4b-fp8.safetensors",
+      "textEncoder": "qwen_3_4b_fp4_flux2.safetensors",
+      "vae": "flux2-vae.safetensors",
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler": "euler",
+      "scheduler": "flux2",
+      "positivePrompt": "A hedgehog wearing a tiny party hat surrounded by confetti, early digital camera style, slight sensor noise, direct flash photography, candid 2000s birthday moment",
+      "negativePrompt": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "realvis-xl-v5",
+      "url": "https://huggingface.co/SG161222/RealVisXL_V5.0/resolve/ac93e0dda1f6d448cae19bbfab8c5e720a5e48bc/RealVisXL_V5.0_fp16.safetensors?download=true",
+      "target": "checkpoints/realistic/RealVisXL_V5.0_fp16.safetensors",
+      "bytes": 6938065488,
+      "sha256": "6a35a7855770ae9820a3c931d4964c3817b6d9e3c6f9c4dabb5b3a94e5643b80"
+    },
+    {
+      "id": "juggernaut-xl-v9",
+      "url": "https://huggingface.co/RunDiffusion/Juggernaut-XL-v9/resolve/cf419233522daa0b9ea36c3aff98fa2cab1fb0fb/Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors?download=true",
+      "target": "checkpoints/realistic/Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+      "bytes": 7105348188,
+      "sha256": "c9e3e68f89b8e38689e1097d4be4573cf308de4e3fd044c64ca697bdb4aa8bca"
+    },
+    {
+      "id": "animagine-xl-4-opt",
+      "url": "https://huggingface.co/cagliostrolab/animagine-xl-4.0/resolve/2b7c1b397761bf5bd3cc42e5b39ec99314a75a96/animagine-xl-4.0-opt.safetensors?download=true",
+      "target": "checkpoints/anime/animagine-xl-4.0-opt.safetensors",
+      "bytes": 6938350040,
+      "sha256": "6327eca98bfb6538dd7a4edce22484a1bbc57a8cff6b11d075d40da1afb847ac"
+    },
+    {
+      "id": "illustrious-xl-v2",
+      "url": "https://huggingface.co/OnomaAIResearch/Illustrious-XL-v2.0/resolve/69459c1fe6f46db41ab31e6114f05acc0e06bcaa/Illustrious-XL-v2.0.safetensors?download=true",
+      "target": "checkpoints/anime/Illustrious-XL-v2.0.safetensors",
+      "bytes": 6938040674,
+      "sha256": "c2a1a3eaa13d4c107dc7e00c3fe830cab427aa026362740ea094745b3422a331"
+    },
+    {
+      "id": "z-image-nvfp4",
+      "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/d24c4cf2a0cd98a42f23467e27e3d76ee9438b8e/split_files/diffusion_models/z_image_turbo_nvfp4.safetensors?download=true",
+      "target": "diffusion_models/z_image_turbo_nvfp4.safetensors",
+      "bytes": 4509509600,
+      "sha256": "a553c889dbcb910de4c98293237573219a37007c1074a3f04576646a088bd5c8"
+    },
+    {
+      "id": "z-image-qwen-fp4",
+      "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/d24c4cf2a0cd98a42f23467e27e3d76ee9438b8e/split_files/text_encoders/qwen_3_4b_fp4_mixed.safetensors?download=true",
+      "target": "text_encoders/qwen_3_4b_fp4_mixed.safetensors",
+      "bytes": 3479416193,
+      "sha256": "7ca32dcf07dfe7692945d80fff86e3a74cb83c6206b9b223ac6836b939bb85d6"
+    },
+    {
+      "id": "z-image-vae",
+      "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/d24c4cf2a0cd98a42f23467e27e3d76ee9438b8e/split_files/vae/ae.safetensors?download=true",
+      "target": "vae/ae.safetensors",
+      "bytes": 335304388,
+      "sha256": "afc8e28272cd15db3919bacdb6918ce9c1ed22e96cb12c4d5ed0fba823529e38"
+    },
+    {
+      "id": "flux2-klein-fp8",
+      "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/resolve/5b4408e59397a4a37ccb46afe426d8ed86379441/flux-2-klein-4b-fp8.safetensors?download=true",
+      "target": "diffusion_models/flux-2-klein-4b-fp8.safetensors",
+      "bytes": 4070624520,
+      "sha256": "97ed34fe0567e436200f2faee3939b88f2b5d99f8af2a4dc16532c4245c0ccb6"
+    },
+    {
+      "id": "flux2-qwen-fp4",
+      "url": "https://huggingface.co/Comfy-Org/flux2-klein-4B/resolve/a9e4ca87c16db4c4e1a16406a9ddb300ab0ae246/split_files/text_encoders/qwen_3_4b_fp4_flux2.safetensors?download=true",
+      "target": "text_encoders/qwen_3_4b_fp4_flux2.safetensors",
+      "bytes": 3848213998,
+      "sha256": "3eab03a77adb0ee5304a4e677d5c10ac22f9049c1d7c894adca4f8bb39206ca8"
+    },
+    {
+      "id": "flux2-vae",
+      "url": "https://huggingface.co/Comfy-Org/flux2-klein-4B/resolve/a9e4ca87c16db4c4e1a16406a9ddb300ab0ae246/split_files/vae/flux2-vae.safetensors?download=true",
+      "target": "vae/flux2-vae.safetensors",
+      "bytes": 336211292,
+      "sha256": "868fe7b343cc8f3a19dbcfcafbc3d5f888802be3f89bd81b65b3621a066ce8f3"
+    }
+  ]
+}
+
