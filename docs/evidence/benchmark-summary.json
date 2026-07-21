@@ -1,0 +1,74 @@
+{
+  "measuredAt": "2026-07-21",
+  "hardware": {
+    "gpu": "NVIDIA GeForce RTX 5060 Laptop GPU",
+    "reportedVramMiB": 8151,
+    "cpu": "AMD Ryzen AI 7 350",
+    "ramGiB": 31.3,
+    "os": "Windows 11 Pro"
+  },
+  "runtime": {
+    "comfyCommit": "d0fec2ef7e7086533fde261de3fdb88289bdca9e",
+    "python": "3.13.14",
+    "torch": "2.11.0+cu130",
+    "seed": 20260721
+  },
+  "presets": [
+    { "id": "1024x1024", "orientation": "square", "width": 1024, "height": 1024 },
+    { "id": "1216x832", "orientation": "landscape", "width": 1216, "height": 832 },
+    { "id": "832x1216", "orientation": "portrait", "width": 832, "height": 1216 }
+  ],
+  "proofImages": 18,
+  "allDimensionsValid": true,
+  "totalRunSeconds": 292.1,
+  "models": [
+    {
+      "id": "realvis-xl-v5",
+      "name": "RealVisXL V5.0",
+      "averageSeconds": 18.91,
+      "minimumSeconds": 17.38,
+      "maximumSeconds": 21.64,
+      "peakVramMiB": 7726
+    },
+    {
+      "id": "juggernaut-xl-v9",
+      "name": "Juggernaut XL v9",
+      "averageSeconds": 21.71,
+      "minimumSeconds": 20.48,
+      "maximumSeconds": 23.97,
+      "peakVramMiB": 7409
+    },
+    {
+      "id": "animagine-xl-4-opt",
+      "name": "Animagine XL 4.0 Opt",
+      "averageSeconds": 18.18,
+      "minimumSeconds": 17.01,
+      "maximumSeconds": 20.48,
+      "peakVramMiB": 7475
+    },
+    {
+      "id": "illustrious-xl-v2",
+      "name": "Illustrious XL v2.0",
+      "averageSeconds": 19.64,
+      "minimumSeconds": 18.43,
+      "maximumSeconds": 21.57,
+      "peakVramMiB": 7440
+    },
+    {
+      "id": "z-image-turbo",
+      "name": "Z-Image Turbo",
+      "averageSeconds": 9.27,
+      "minimumSeconds": 7.70,
+      "maximumSeconds": 12.39,
+      "peakVramMiB": 7605
+    },
+    {
+      "id": "flux2-klein-4b",
+      "name": "FLUX.2 Klein 4B",
+      "averageSeconds": 5.23,
+      "minimumSeconds": 4.15,
+      "maximumSeconds": 6.87,
+      "peakVramMiB": 7640
+    }
+  ]
+}
