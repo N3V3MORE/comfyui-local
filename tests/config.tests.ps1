@@ -27,15 +27,16 @@ Test-Case 'pins the ComfyUI and CUDA environment' {
 }
 
 Test-Case 'defines six models and ten immutable artifacts' {
-    $path = Join-Path $projectRoot 'model-manifest.json'
-    $manifest = Get-Content -LiteralPath $path -Raw | ConvertFrom-Json
+    $models = Get-Content -LiteralPath (Join-Path $projectRoot 'config\models.json') -Raw | ConvertFrom-Json
+    $manifest = Get-Content -LiteralPath (Join-Path $projectRoot 'config\artifacts.json') -Raw | ConvertFrom-Json
+    $coreArtifacts = @($manifest.artifacts | Where-Object role -eq 'core')
 
-    Assert-Equal 6 $manifest.models.Count 'model count'
-    Assert-Equal 10 $manifest.artifacts.Count 'artifact count'
-    $payloadBytes = ($manifest.artifacts | Measure-Object -Property bytes -Sum).Sum
+    Assert-Equal 6 $models.models.Count 'model count'
+    Assert-Equal 10 $coreArtifacts.Count 'artifact count'
+    $payloadBytes = ($coreArtifacts | Measure-Object -Property bytes -Sum).Sum
     Assert-Equal 44499084381 $payloadBytes 'artifact payload bytes'
 
-    foreach ($artifact in $manifest.artifacts) {
+    foreach ($artifact in $coreArtifacts) {
         Assert-True ($artifact.url -match '/resolve/[0-9a-f]{40}/') "$($artifact.id) URL must be revision-pinned"
         Assert-True ($artifact.sha256 -match '^[0-9a-f]{64}$') "$($artifact.id) must have a SHA-256"
         Assert-True ([long]$artifact.bytes -gt 0) "$($artifact.id) must have a positive byte size"
@@ -43,13 +44,19 @@ Test-Case 'defines six models and ten immutable artifacts' {
     }
 }
 
-Test-Case 'pins official workflow sources' {
-    $path = Join-Path $projectRoot 'workflow-sources.json'
-    $sources = Get-Content -LiteralPath $path -Raw | ConvertFrom-Json
+Test-Case 'vendors canonical workflows instead of downloading mutable sources' {
+    Assert-True (-not (Test-Path -LiteralPath (Join-Path $projectRoot 'workflow-sources.json'))) 'legacy workflow source manifest is removed'
+    foreach ($name in @('sdxl-base.json', 'z-image-turbo.json', 'flux2-klein.json')) {
+        $path = Join-Path $projectRoot "vendor\workflows\$name"
+        Assert-True (Test-Path -LiteralPath $path) "$name is vendored"
+        Assert-True ((Get-Content -LiteralPath $path -Raw) -notmatch '/resolve/main') "$name has no moving model source"
+    }
+}
 
-    Assert-True ($sources.sdxl -match '/24d928409605c3a01c0fb9857d024c7bb1572597/') 'SDXL source is pinned'
-    Assert-True ($sources.zImage -match '/93f3058d5ad87d83c5eab7c0eabd734738376816/') 'Z-Image source is pinned'
-    Assert-True ($sources.flux2 -match '/93f3058d5ad87d83c5eab7c0eabd734738376816/') 'FLUX.2 source is pinned'
+Test-Case 'legacy duplicate manifests are removed' {
+    foreach ($name in @('model-manifest.json', 'support-model-manifest.json', 'workflow-catalog.json')) {
+        Assert-True (-not (Test-Path -LiteralPath (Join-Path $projectRoot $name))) "$name is removed"
+    }
 }
 
 Test-Case 'pins all three CUDA packages in requirements input' {

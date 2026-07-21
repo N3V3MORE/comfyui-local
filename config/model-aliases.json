@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "aliases": [
+    {
+      "source": "diffusion_models/z_image_turbo_nvfp4.safetensors",
+      "target": "diffusion_models/z_image_turbo_bf16.safetensors"
+    },
+    {
+      "source": "diffusion_models/flux-2-klein-4b-fp8.safetensors",
+      "target": "diffusion_models/flux-2-klein-4b.safetensors"
+    },
+    {
+      "source": "text_encoders/qwen_3_4b_fp4_mixed.safetensors",
+      "target": "text_encoders/qwen_3_4b.safetensors"
+    }
+  ]
+}

@@ -51,9 +51,8 @@ if ($LibraryOnly) { return }
 
 $root = Get-ProjectRoot
 $modelsRoot = Join-Path $root 'models'
-$manifest = Read-Json (Join-Path $root 'model-manifest.json')
-$supportManifest = Read-Json (Join-Path $root 'support-model-manifest.json')
-$artifacts = @($manifest.artifacts) + @($supportManifest.artifacts)
+$manifest = Read-Json (Join-Path $root 'config\artifacts.json')
+$artifacts = @($manifest.artifacts)
 
 if ($Id.Count -gt 0) {
     $unknown = @($Id | Where-Object { $_ -notin $artifacts.id })
@@ -90,8 +89,7 @@ foreach ($artifact in $artifacts) {
 if ($requiresDownload) {
     $driveName = [IO.Path]::GetPathRoot($root).TrimEnd('\').TrimEnd(':')
     $drive = Get-PSDrive -Name $driveName
-    $requiredFreeBytes = [math]::Max([long]$manifest.requiredFreeBytes, [long]$supportManifest.requiredFreeBytes)
-    Assert-Condition ($drive.Free -ge $requiredFreeBytes) 'Insufficient free disk space for the requested artifacts'
+    Assert-Condition ($drive.Free -ge [long]$manifest.requiredFreeBytes) 'Insufficient free disk space for the requested artifacts'
 }
 
 foreach ($artifact in $artifacts) {

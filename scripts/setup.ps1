@@ -15,7 +15,7 @@ Set-StrictMode -Version Latest
 
 $root = Get-ProjectRoot
 $version = Read-Json (Join-Path $root 'comfyui-version.json')
-$manifest = Read-Json (Join-Path $root 'model-manifest.json')
+$manifest = Read-Json (Join-Path $root 'config\artifacts.json')
 $extensionsManifest = Read-Json (Join-Path $root 'extensions-manifest.json')
 $comfyPath = Join-Path $root 'ComfyUI'
 $venvPath = Join-Path $root '.venv'

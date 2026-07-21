@@ -28,23 +28,25 @@ Test-Case 'pins the five curated ComfyUI extensions' {
 }
 
 Test-Case 'defines eleven immutable support assets' {
-    $path = Join-Path $projectRoot 'support-model-manifest.json'
+    $path = Join-Path $projectRoot 'config\artifacts.json'
     Assert-True (Test-Path -LiteralPath $path) 'support model manifest must exist'
     $manifest = Get-Content -LiteralPath $path -Raw | ConvertFrom-Json
+    $licenses = (Get-Content -LiteralPath (Join-Path $projectRoot 'config\licenses.json') -Raw | ConvertFrom-Json).supportArtifacts
+    $supportArtifacts = @($manifest.artifacts | Where-Object role -eq 'support')
 
     Assert-Equal 1 $manifest.version 'support manifest version'
-    Assert-Equal 11 $manifest.artifacts.Count 'support artifact count'
-    Assert-Equal 8516107587 (($manifest.artifacts | Measure-Object -Property bytes -Sum).Sum) 'support payload bytes'
-    Assert-Equal 11 @($manifest.artifacts.id | Select-Object -Unique).Count 'support artifact ids must be unique'
+    Assert-Equal 11 $supportArtifacts.Count 'support artifact count'
+    Assert-Equal 8516107587 (($supportArtifacts | Measure-Object -Property bytes -Sum).Sum) 'support payload bytes'
+    Assert-Equal 11 @($supportArtifacts.id | Select-Object -Unique).Count 'support artifact ids must be unique'
 
-    foreach ($artifact in $manifest.artifacts) {
+    foreach ($artifact in $supportArtifacts) {
         $immutable = $artifact.url -match '/resolve/[0-9a-f]{40}/' -or
             $artifact.url -match '/releases/download/v[0-9]'
         Assert-True $immutable "$($artifact.id) URL must be immutable"
         Assert-True ($artifact.sha256 -match '^[0-9a-f]{64}$') "$($artifact.id) must have a SHA-256"
         Assert-True ([long]$artifact.bytes -gt 0) "$($artifact.id) must have a positive byte size"
         Assert-True (-not [IO.Path]::IsPathRooted($artifact.target)) "$($artifact.id) target must be relative"
-        Assert-True (-not [string]::IsNullOrWhiteSpace($artifact.license)) "$($artifact.id) license is required"
+        Assert-True (-not [string]::IsNullOrWhiteSpace($licenses.PSObject.Properties[$artifact.id].Value.license)) "$($artifact.id) license is required"
         Assert-True (-not [string]::IsNullOrWhiteSpace($artifact.family)) "$($artifact.id) family is required"
     }
 }
@@ -67,12 +69,14 @@ Test-Case 'core-only launch disables third-party nodes once' {
     Assert-Equal 1 $matches.Count 'core-only flag count'
 }
 
-Test-Case 'download and verification scripts include support assets' {
+Test-Case 'download and verification scripts use the unified artifact manifest' {
     $downloadSource = Get-Content -LiteralPath (Join-Path $projectRoot 'scripts\download-models.ps1') -Raw
     $verifySource = Get-Content -LiteralPath (Join-Path $projectRoot 'scripts\verify.ps1') -Raw
 
-    Assert-True ($downloadSource -match 'support-model-manifest\.json') 'downloader reads support assets'
-    Assert-True ($verifySource -match 'support-model-manifest\.json') 'verification reads support assets'
+    Assert-True ($downloadSource -match 'config\\artifacts\.json') 'downloader reads unified artifacts'
+    Assert-True ($verifySource -match 'config\\artifacts\.json') 'verification reads unified artifacts'
+    Assert-True ($downloadSource -notmatch 'support-model-manifest') 'downloader has no legacy support manifest'
+    Assert-True ($verifySource -notmatch 'support-model-manifest') 'verification has no legacy support manifest'
     Assert-True ($verifySource -match 'extensions-manifest\.json') 'verification reads extension pins'
 }
 

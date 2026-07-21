@@ -14,15 +14,16 @@ Set-StrictMode -Version Latest
 
 $root = Get-ProjectRoot
 $version = Read-Json (Join-Path $root 'comfyui-version.json')
-$manifest = Read-Json (Join-Path $root 'model-manifest.json')
-$supportManifest = Read-Json (Join-Path $root 'support-model-manifest.json')
+$manifest = Read-Json (Join-Path $root 'config\artifacts.json')
+$coreArtifacts = @($manifest.artifacts | Where-Object role -eq 'core')
+$supportArtifacts = @($manifest.artifacts | Where-Object role -eq 'support')
 $extensionsManifest = Read-Json (Join-Path $root 'extensions-manifest.json')
 $python = Join-Path $root '.venv\Scripts\python.exe'
 $comfyPath = Join-Path $root 'ComfyUI'
 $modelsRoot = Join-Path $root 'models'
 $workflowRoot = Join-Path $root 'workflows\ui'
 $appsRoot = Join-Path $root 'workflows\apps'
-$catalog = Read-Json (Join-Path $root 'workflow-catalog.json')
+$catalog = Read-Json (Join-Path $root 'config\workflow-specs.json')
 
 Assert-Condition (-not $SkipArtifactHashes -or $StaticOnly) '-SkipArtifactHashes requires -StaticOnly'
 Assert-Condition (-not $RequireSupportAssets -or -not $SkipArtifactHashes) '-RequireSupportAssets requires artifact hashes'
@@ -54,7 +55,7 @@ Assert-Condition ([long]$probe.vramBytes -gt 7.5GB) 'Less than 7.5 GiB VRAM is v
 
 $validArtifacts = $missingArtifacts = $invalidArtifacts = 0
 if (-not $SkipArtifactHashes) {
-    foreach ($artifact in $manifest.artifacts) {
+    foreach ($artifact in $coreArtifacts) {
         $path = Join-Path $modelsRoot $artifact.target.Replace('/', [IO.Path]::DirectorySeparatorChar)
         if (-not (Test-Path -LiteralPath $path)) {
             $missingArtifacts++
@@ -70,7 +71,7 @@ if (-not $SkipArtifactHashes) {
 
 $validSupportArtifacts = $missingSupportArtifacts = $invalidSupportArtifacts = 0
 if (-not $SkipArtifactHashes) {
-    foreach ($artifact in $supportManifest.artifacts) {
+    foreach ($artifact in $supportArtifacts) {
         $path = Join-Path $modelsRoot $artifact.target.Replace('/', [IO.Path]::DirectorySeparatorChar)
         if (-not (Test-Path -LiteralPath $path)) {
             $missingSupportArtifacts++
@@ -99,7 +100,7 @@ Assert-Condition ($validWorkflows -eq 4) "Expected four valid UI workflows; foun
 
 $validApps = 0
 foreach ($app in $catalog.apps) {
-    $path = Join-Path $appsRoot $app.file.Replace('/', [IO.Path]::DirectorySeparatorChar)
+    $path = Join-Path $appsRoot $app.output.Replace('/', [IO.Path]::DirectorySeparatorChar)
     Assert-Condition (Test-Path -LiteralPath $path) "Missing Studio app: $($app.id)"
     try {
         $workflow = Get-Content -LiteralPath $path -Raw | ConvertFrom-Json
@@ -111,7 +112,7 @@ foreach ($app in $catalog.apps) {
         throw "Invalid Studio app JSON: $($app.id)"
     }
 }
-Assert-Condition ($validApps -eq 15) "Expected fifteen valid Studio apps; found $validApps"
+Assert-Condition ($validApps -eq $catalog.apps.Count) "Expected $($catalog.apps.Count) valid Studio apps; found $validApps"
 
 $verifiedExtensions = 0
 if ($RequireExtensions) {
@@ -141,7 +142,7 @@ if (-not $StaticOnly) {
     $httpHealthy = $null -ne $systemStats
     Assert-Condition $httpHealthy 'ComfyUI health endpoint did not respond'
 
-    $expectedServed = @($catalog.apps | ForEach-Object { "ComfyUI Local Studio/$($_.file)" })
+    $expectedServed = @($catalog.apps | ForEach-Object { "ComfyUI Local Studio/$($_.output)" })
     $workflowListAttempts = 3
     $served = @()
     for ($attempt = 1; $attempt -le $workflowListAttempts; $attempt++) {
@@ -155,7 +156,7 @@ if (-not $StaticOnly) {
         if ($attempt -lt $workflowListAttempts) { Start-Sleep -Seconds 1 }
     }
     foreach ($app in $catalog.apps) {
-        $servedPath = "ComfyUI Local Studio/$($app.file)"
+        $servedPath = "ComfyUI Local Studio/$($app.output)"
         Assert-Condition ($servedPath -in $served) "Studio app is not served: $($app.id)"
     }
 
@@ -186,14 +187,14 @@ $result = [ordered]@{
     gpu = $probe.gpu
     vramBytes = [long]$probe.vramBytes
     artifacts = [ordered]@{
-        records = $manifest.artifacts.Count
+        records = $coreArtifacts.Count
         hashesSkipped = [bool]$SkipArtifactHashes
         valid = $validArtifacts
         missing = $missingArtifacts
         invalid = $invalidArtifacts
     }
     supportArtifacts = [ordered]@{
-        records = $supportManifest.artifacts.Count
+        records = $supportArtifacts.Count
         hashesSkipped = [bool]$SkipArtifactHashes
         valid = $validSupportArtifacts
         missing = $missingSupportArtifacts
@@ -219,13 +220,13 @@ Write-Output "Torch: $($probe.torch)"
 Write-Output "CUDA available: $($probe.cuda)"
 Write-Output "GPU: $($probe.gpu)"
 if ($SkipArtifactHashes) {
-    Write-Output "Artifact records: $($manifest.artifacts.Count); hash checks skipped"
+    Write-Output "Artifact records: $($coreArtifacts.Count); hash checks skipped"
 }
 else {
     Write-Output "Artifacts: $validArtifacts valid, $missingArtifacts missing, $invalidArtifacts invalid"
 }
 if ($SkipArtifactHashes) {
-    Write-Output "Support artifact records: $($supportManifest.artifacts.Count); hash checks skipped"
+    Write-Output "Support artifact records: $($supportArtifacts.Count); hash checks skipped"
 }
 else {
     Write-Output "Support artifacts: $validSupportArtifacts valid, $missingSupportArtifacts missing, $invalidSupportArtifacts invalid"

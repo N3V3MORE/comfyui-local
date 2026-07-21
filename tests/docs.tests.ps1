@@ -27,7 +27,7 @@ Test-Case 'comparison documents all six models and measured 8 GB results' {
     $comparisonPath = Join-Path $projectRoot 'MODEL_COMPARISON.md'
     Assert-True (Test-Path -LiteralPath $comparisonPath) 'comparison exists'
     $comparison = Get-Content -LiteralPath $comparisonPath -Raw
-    $manifest = Get-Content -LiteralPath (Join-Path $projectRoot 'model-manifest.json') -Raw | ConvertFrom-Json
+    $manifest = Get-Content -LiteralPath (Join-Path $projectRoot 'config\models.json') -Raw | ConvertFrom-Json
 
     foreach ($model in $manifest.models) {
         Assert-True ($comparison.Contains($model.name)) "comparison includes $($model.name)"
@@ -41,8 +41,10 @@ Test-Case 'benchmark evidence records the complete proof matrix' {
     Assert-True (Test-Path -LiteralPath $evidencePath) 'benchmark evidence exists'
     $evidence = Get-Content -LiteralPath $evidencePath -Raw | ConvertFrom-Json
 
-    Assert-Equal 18 $evidence.proofImages 'proof image count'
-    Assert-Equal 6 $evidence.models.Count 'benchmarked model count'
-    Assert-Equal 3 $evidence.presets.Count 'benchmarked preset count'
+    $modelCount = (Get-Content -LiteralPath (Join-Path $projectRoot 'config\models.json') -Raw | ConvertFrom-Json).models.Count
+    $presetCount = (Get-Content -LiteralPath (Join-Path $projectRoot 'config\benchmark-scenarios.json') -Raw | ConvertFrom-Json).orientationProof.presetIds.Count
+    Assert-Equal ($modelCount * $presetCount) $evidence.proofImages 'proof image count'
+    Assert-Equal $modelCount $evidence.models.Count 'benchmarked model count'
+    Assert-Equal $presetCount $evidence.presets.Count 'benchmarked preset count'
     Assert-True ($evidence.models.peakVramMiB -notcontains 0) 'every model has observed VRAM data'
 }

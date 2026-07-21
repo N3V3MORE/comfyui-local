@@ -2,7 +2,7 @@ $projectRoot = Split-Path -Parent $PSScriptRoot
 $aliasScript = Join-Path $projectRoot 'scripts\sync-model-aliases.ps1'
 
 Test-Case 'manifest maps installed weights to official template filenames' {
-    $manifest = Get-Content -LiteralPath (Join-Path $projectRoot 'model-manifest.json') -Raw | ConvertFrom-Json
+    $manifest = Get-Content -LiteralPath (Join-Path $projectRoot 'config\model-aliases.json') -Raw | ConvertFrom-Json
     $aliases = @($manifest.aliases)
 
     Assert-Equal 3 $aliases.Count 'official model alias count'

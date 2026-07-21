@@ -37,7 +37,7 @@ function New-ModelAlias {
 if ($LibraryOnly) { return }
 
 $root = Get-ProjectRoot
-$manifest = Read-Json (Join-Path $root 'model-manifest.json')
+$manifest = Read-Json (Join-Path $root 'config\model-aliases.json')
 $modelsRoot = Join-Path $root 'models'
 foreach ($alias in $manifest.aliases) {
     $result = New-ModelAlias -Alias $alias -ModelsRoot $modelsRoot

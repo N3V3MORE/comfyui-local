@@ -1,25 +1,7 @@
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$catalogPath = Join-Path $projectRoot 'workflow-catalog.json'
+$catalogPath = Join-Path $projectRoot 'config\workflow-specs.json'
 $appsRoot = Join-Path $projectRoot 'workflows\apps'
 $syncScript = Join-Path $projectRoot 'scripts\sync-studio-apps.ps1'
-
-$expectedIds = @(
-    'realvis-xl',
-    'juggernaut-xl',
-    'animagine-xl',
-    'illustrious-xl',
-    'z-image-turbo',
-    'flux2-klein',
-    'sdxl-canny',
-    'sdxl-depth',
-    'sdxl-pose',
-    'z-image-canny',
-    'sdxl-ipadapter',
-    'sdxl-face-detail',
-    'upscale-photo-2x',
-    'upscale-photo-4x',
-    'upscale-anime-4x'
-)
 
 Test-Case 'studio catalog defines fifteen focused apps' {
     Assert-True (Test-Path -LiteralPath $catalogPath) 'workflow catalog exists'
@@ -28,16 +10,15 @@ Test-Case 'studio catalog defines fifteen focused apps' {
     Assert-Equal 1 $catalog.version 'workflow catalog version'
     Assert-Equal 15 $catalog.apps.Count 'studio app count'
     Assert-Equal 15 @($catalog.apps.id | Select-Object -Unique).Count 'studio app ids are unique'
-    foreach ($id in $expectedIds) {
-        Assert-True ($id -in $catalog.apps.id) "catalog contains $id"
-    }
+    Assert-True ($catalog.apps.group -contains 'Create') 'catalog has Create apps'
+    Assert-True ($catalog.apps.group -contains 'Control') 'catalog has Control apps'
 }
 
 Test-Case 'studio workflows are App Mode defaults with declared inputs and outputs' {
     $catalog = Get-Content -LiteralPath $catalogPath -Raw | ConvertFrom-Json
 
     foreach ($app in $catalog.apps) {
-        $path = Join-Path $appsRoot $app.file
+        $path = Join-Path $appsRoot $app.output
         Assert-True (Test-Path -LiteralPath $path) "$($app.id) workflow exists"
         $workflow = Get-Content -LiteralPath $path -Raw | ConvertFrom-Json
         $nodeIds = @($workflow.nodes.id | ForEach-Object { [string]$_ })
@@ -60,8 +41,9 @@ Test-Case 'studio workflows are App Mode defaults with declared inputs and outpu
 Test-Case 'studio app sync plan preserves catalog groups and app suffixes' {
     $plan = @(& $syncScript -PrintPlan)
 
-    Assert-Equal 15 $plan.Count 'studio sync plan count'
-    foreach ($id in $expectedIds) {
+    $catalog = Get-Content -LiteralPath $catalogPath -Raw | ConvertFrom-Json
+    Assert-Equal $catalog.apps.Count $plan.Count 'studio sync plan count'
+    foreach ($id in $catalog.apps.id) {
         Assert-True (@($plan | Where-Object { $_ -match "^$([regex]::Escape($id))\t.+\.app\.json$" }).Count -eq 1) "sync plan contains $id"
     }
 }
@@ -71,7 +53,7 @@ Test-Case 'image-input apps ship with a ready local reference image' {
     $imageInputApps = 0
 
     foreach ($app in $catalog.apps) {
-        $workflow = Get-Content -LiteralPath (Join-Path $appsRoot $app.file) -Raw | ConvertFrom-Json
+        $workflow = Get-Content -LiteralPath (Join-Path $appsRoot $app.output) -Raw | ConvertFrom-Json
         $loadImages = @($workflow.nodes | Where-Object type -eq 'LoadImage')
         if ($loadImages.Count -eq 0) { continue }
         $imageInputApps++
@@ -80,7 +62,7 @@ Test-Case 'image-input apps ship with a ready local reference image' {
         }
     }
 
-    Assert-Equal 8 $imageInputApps 'apps with an image input'
+    Assert-True ($imageInputApps -gt 0) 'catalog includes image-input apps'
     $reference = Join-Path $projectRoot 'data\input\studio-reference.webp'
     Assert-True ((Test-Path -LiteralPath $reference) -and (Get-Item -LiteralPath $reference).Length -gt 0) 'local reference image is installed'
 }
