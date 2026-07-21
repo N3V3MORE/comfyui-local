@@ -1,8 +1,8 @@
 {
   "id": "9ae6082b-c7f4-433c-9971-7a8f65a3ea65",
   "revision": 0,
-  "last_node_id": 61,
-  "last_link_id": 75,
+  "last_node_id": 57,
+  "last_link_id": 62,
   "nodes": [
     {
       "id": 57,
@@ -77,7 +77,11 @@
         "hasSecondTab": false,
         "secondTabText": "Send Back",
         "secondTabOffset": 80,
-        "secondTabWidth": 65
+        "secondTabWidth": 65,
+        "studio_key": "positive_prompt",
+        "studio_widgets": [
+          "text"
+        ]
       },
       "widgets_values": []
     },
@@ -105,7 +109,11 @@
         "hasSecondTab": false,
         "secondTabText": "Send Back",
         "secondTabOffset": 80,
-        "secondTabWidth": 65
+        "secondTabWidth": 65,
+        "studio_key": "save_image",
+        "studio_widgets": [
+          "filename_prefix"
+        ]
       },
       "widgets_values": [
         "z-image-turbo"
@@ -113,17 +121,14 @@
     }
   ],
   "links": [
-    {
-      "value": [
-        62,
-        57,
-        0,
-        9,
-        0,
-        "IMAGE"
-      ],
-      "Count": 6
-    }
+    [
+      62,
+      57,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ]
   ],
   "definitions": {
     "subgraphs": [
@@ -361,7 +366,13 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "latent",
+              "studio_widgets": [
+                "width",
+                "height",
+                "batch_size"
+              ]
             },
             "widgets_values": [
               1024,
@@ -413,7 +424,11 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "prompt_encoder",
+              "studio_widgets": [
+                "text"
+              ]
             },
             "widgets_values": [
               "A candid close-up photograph of a woman with thick wavy hair beside a working harbour, pastel houses and small boats behind her, breezy seaside light, realistic skin, warm tones, 50mm lens"
@@ -456,7 +471,11 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "diffusion_loader",
+              "studio_widgets": [
+                "unet_name"
+              ]
             },
             "widgets_values": [
               "z_image_turbo_nvfp4.safetensors",
@@ -500,7 +519,11 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "vae_loader",
+              "studio_widgets": [
+                "vae_name"
+              ]
             },
             "widgets_values": [
               "ae.safetensors"
@@ -577,13 +600,23 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "sampler",
+              "studio_widgets": [
+                "seed",
+                "control_after_generate",
+                "steps",
+                "cfg",
+                "sampler_name",
+                "scheduler",
+                "denoise"
+              ]
             },
             "widgets_values": [
               246813579,
               "fixed",
               8,
-              1,
+              1.0,
               "res_multistep",
               "simple",
               1
@@ -626,7 +659,11 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "text_encoder_loader",
+              "studio_widgets": [
+                "clip_name"
+              ]
             },
             "widgets_values": [
               "qwen_3_4b_fp4_mixed.safetensors",
@@ -866,7 +903,9 @@
         ],
         "extra": {
           "workflowRendererVersion": "LG"
-        }
+        },
+        "last_node_id": 33,
+        "last_link_id": 75
       }
     ]
   },

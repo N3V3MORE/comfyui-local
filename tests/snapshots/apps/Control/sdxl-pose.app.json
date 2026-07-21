@@ -35,7 +35,12 @@
           "type": "VAE"
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "checkpoint",
+        "studio_widgets": [
+          "ckpt_name"
+        ]
+      },
       "widgets_values": [
         "realistic\\RealVisXL_V5.0_fp16.safetensors"
       ]
@@ -119,12 +124,23 @@
           "type": "LATENT"
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "sampler",
+        "studio_widgets": [
+          "seed",
+          "control_after_generate",
+          "steps",
+          "cfg",
+          "sampler_name",
+          "scheduler",
+          "denoise"
+        ]
+      },
       "widgets_values": [
         246813579,
         "fixed",
         30,
-        5,
+        5.0,
         "dpmpp_2m",
         "karras",
         1
@@ -174,7 +190,12 @@
         }
       ],
       "outputs": [],
-      "properties": {},
+      "properties": {
+        "studio_key": "save_image",
+        "studio_widgets": [
+          "filename_prefix"
+        ]
+      },
       "widgets_values": [
         "sdxl-pose"
       ]
@@ -201,7 +222,12 @@
           "type": "MASK"
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "input_image",
+        "studio_widgets": [
+          "image"
+        ]
+      },
       "widgets_values": [
         "studio-reference.webp",
         "image"
@@ -230,7 +256,18 @@
           "type": "IMAGE"
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "preprocessor",
+        "studio_widgets": [
+          "detect_hand",
+          "detect_body",
+          "detect_face",
+          "resolution",
+          "bbox_detector",
+          "pose_estimator",
+          "scale_stick_for_xinsr_cn"
+        ]
+      },
       "widgets_values": [
         "enable",
         "enable",
@@ -257,7 +294,12 @@
           "type": "CONTROL_NET"
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "controlnet_loader",
+        "studio_widgets": [
+          "control_net_name"
+        ]
+      },
       "widgets_values": [
         "sdxl-controlnet-union-promax.safetensors"
       ]
@@ -285,7 +327,12 @@
           "type": "CONTROL_NET"
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "union_type",
+        "studio_widgets": [
+          "type"
+        ]
+      },
       "widgets_values": [
         "openpose"
       ]
@@ -313,7 +360,12 @@
           "type": "CONDITIONING"
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "positive_prompt",
+        "studio_widgets": [
+          "text"
+        ]
+      },
       "widgets_values": [
         "A natural cinematic photograph, realistic texture, detailed subject, balanced composition"
       ]
@@ -341,7 +393,12 @@
           "type": "CONDITIONING"
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "negative_prompt",
+        "studio_widgets": [
+          "text"
+        ]
+      },
       "widgets_values": [
         "bad anatomy, deformed, blurry, plastic skin, text, watermark"
       ]
@@ -392,7 +449,14 @@
           "type": "CONDITIONING"
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "control_apply",
+        "studio_widgets": [
+          "strength",
+          "start_percent",
+          "end_percent"
+        ]
+      },
       "widgets_values": [
         0.85,
         0,
@@ -429,7 +493,12 @@
           "type": "STRING"
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "resolution",
+        "studio_widgets": [
+          "preset"
+        ]
+      },
       "widgets_values": [
         "Square 1:1"
       ]
@@ -437,174 +506,140 @@
   ],
   "links": [
     [
-      [
-        1,
-        1,
-        0,
-        11,
-        0,
-        "MODEL"
-      ]
+      1,
+      1,
+      0,
+      11,
+      0,
+      "MODEL"
     ],
     [
-      [
-        10,
-        7,
-        0,
-        8,
-        1,
-        "CONDITIONING"
-      ]
+      10,
+      7,
+      0,
+      8,
+      1,
+      "CONDITIONING"
     ],
     [
-      [
-        11,
-        8,
-        0,
-        11,
-        1,
-        "CONDITIONING"
-      ]
+      11,
+      8,
+      0,
+      11,
+      1,
+      "CONDITIONING"
     ],
     [
-      [
-        12,
-        8,
-        1,
-        11,
-        2,
-        "CONDITIONING"
-      ]
+      12,
+      8,
+      1,
+      11,
+      2,
+      "CONDITIONING"
     ],
     [
-      [
-        13,
-        9,
-        0,
-        10,
-        0,
-        "INT"
-      ]
+      13,
+      9,
+      0,
+      10,
+      0,
+      "INT"
     ],
     [
-      [
-        14,
-        9,
-        1,
-        10,
-        1,
-        "INT"
-      ]
+      14,
+      9,
+      1,
+      10,
+      1,
+      "INT"
     ],
     [
-      [
-        15,
-        10,
-        0,
-        11,
-        3,
-        "LATENT"
-      ]
+      15,
+      10,
+      0,
+      11,
+      3,
+      "LATENT"
     ],
     [
-      [
-        16,
-        11,
-        0,
-        12,
-        0,
-        "LATENT"
-      ]
+      16,
+      11,
+      0,
+      12,
+      0,
+      "LATENT"
     ],
     [
-      [
-        17,
-        12,
-        0,
-        13,
-        0,
-        "IMAGE"
-      ]
+      17,
+      12,
+      0,
+      13,
+      0,
+      "IMAGE"
     ],
     [
-      [
-        2,
-        1,
-        1,
-        6,
-        0,
-        "CLIP"
-      ]
+      2,
+      1,
+      1,
+      6,
+      0,
+      "CLIP"
     ],
     [
-      [
-        3,
-        1,
-        1,
-        7,
-        0,
-        "CLIP"
-      ]
+      3,
+      1,
+      1,
+      7,
+      0,
+      "CLIP"
     ],
     [
-      [
-        4,
-        1,
-        2,
-        12,
-        1,
-        "VAE"
-      ]
+      4,
+      1,
+      2,
+      12,
+      1,
+      "VAE"
     ],
     [
-      [
-        5,
-        2,
-        0,
-        3,
-        0,
-        "IMAGE"
-      ]
+      5,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
     ],
     [
-      [
-        6,
-        3,
-        0,
-        8,
-        3,
-        "IMAGE"
-      ]
+      6,
+      3,
+      0,
+      8,
+      3,
+      "IMAGE"
     ],
     [
-      [
-        7,
-        4,
-        0,
-        5,
-        0,
-        "CONTROL_NET"
-      ]
+      7,
+      4,
+      0,
+      5,
+      0,
+      "CONTROL_NET"
     ],
     [
-      [
-        8,
-        5,
-        0,
-        8,
-        2,
-        "CONTROL_NET"
-      ]
+      8,
+      5,
+      0,
+      8,
+      2,
+      "CONTROL_NET"
     ],
     [
-      [
-        9,
-        6,
-        0,
-        8,
-        0,
-        "CONDITIONING"
-      ]
+      9,
+      6,
+      0,
+      8,
+      0,
+      "CONDITIONING"
     ]
   ],
   "config": {},

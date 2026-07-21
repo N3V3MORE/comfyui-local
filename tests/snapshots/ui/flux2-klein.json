@@ -1,7 +1,7 @@
 {
   "id": "92112d97-bb64-4b44-86f2-ea5691ef8f6e",
   "revision": 0,
-  "last_node_id": 79,
+  "last_node_id": 78,
   "last_link_id": 157,
   "nodes": [
     {
@@ -32,7 +32,11 @@
         "hasSecondTab": false,
         "secondTabText": "Send Back",
         "secondTabOffset": 80,
-        "secondTabWidth": 65
+        "secondTabWidth": 65,
+        "studio_key": "positive_prompt",
+        "studio_widgets": [
+          "text"
+        ]
       },
       "widgets_values": [
         "A hedgehog wearing a tiny party hat surrounded by confetti, early digital camera style, slight sensor noise, direct flash photography, candid 2000s birthday moment"
@@ -142,36 +146,34 @@
         "hasSecondTab": false,
         "secondTabText": "Send Back",
         "secondTabOffset": 80,
-        "secondTabWidth": 65
+        "secondTabWidth": 65,
+        "studio_key": "save_image",
+        "studio_widgets": [
+          "filename_prefix"
+        ]
       },
       "widgets_values": [
-        "Flux2-Klein"
+        "flux2-klein"
       ]
     }
   ],
   "links": [
-    {
-      "value": [
-        156,
-        77,
-        0,
-        78,
-        0,
-        "IMAGE"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        157,
-        76,
-        0,
-        77,
-        0,
-        "STRING"
-      ],
-      "Count": 6
-    }
+    [
+      156,
+      77,
+      0,
+      78,
+      0,
+      "IMAGE"
+    ],
+    [
+      157,
+      76,
+      0,
+      77,
+      0,
+      "STRING"
+    ]
   ],
   "definitions": {
     "subgraphs": [
@@ -324,7 +326,11 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "sampler_select",
+              "studio_widgets": [
+                "sampler_name"
+              ]
             },
             "widgets_values": [
               "euler"
@@ -376,7 +382,13 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "scheduler",
+              "studio_widgets": [
+                "steps",
+                "width",
+                "height"
+              ]
             },
             "widgets_values": [
               4,
@@ -430,10 +442,14 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "guider",
+              "studio_widgets": [
+                "cfg"
+              ]
             },
             "widgets_values": [
-              1
+              1.0
             ]
           },
           {
@@ -642,7 +658,11 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "width",
+              "studio_widgets": [
+                "value"
+              ]
             },
             "widgets_values": [
               1024,
@@ -688,7 +708,11 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "height",
+              "studio_widgets": [
+                "value"
+              ]
             },
             "widgets_values": [
               1024,
@@ -732,7 +756,11 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "diffusion_loader",
+              "studio_widgets": [
+                "unet_name"
+              ]
             },
             "widgets_values": [
               "flux-2-klein-4b-fp8.safetensors",
@@ -776,7 +804,11 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "text_encoder_loader",
+              "studio_widgets": [
+                "clip_name"
+              ]
             },
             "widgets_values": [
               "qwen_3_4b_fp4_flux2.safetensors",
@@ -821,7 +853,11 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "vae_loader",
+              "studio_widgets": [
+                "vae_name"
+              ]
             },
             "widgets_values": [
               "flux2-vae.safetensors"
@@ -854,7 +890,12 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "noise",
+              "studio_widgets": [
+                "noise_seed",
+                "control_after_generate"
+              ]
             },
             "widgets_values": [
               246813579,
@@ -1142,7 +1183,9 @@
         ],
         "extra": {
           "workflowRendererVersion": "LG"
-        }
+        },
+        "last_node_id": 76,
+        "last_link_id": 164
       }
     ]
   },

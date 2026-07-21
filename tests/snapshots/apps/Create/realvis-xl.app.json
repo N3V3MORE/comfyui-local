@@ -40,7 +40,18 @@
           "slot_index": 0
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "sampler",
+        "studio_widgets": [
+          "seed",
+          "control_after_generate",
+          "steps",
+          "cfg",
+          "sampler_name",
+          "scheduler",
+          "denoise"
+        ]
+      },
       "widgets_values": [
         246813579,
         "fixed",
@@ -84,7 +95,12 @@
           "slot_index": 2
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "checkpoint",
+        "studio_widgets": [
+          "ckpt_name"
+        ]
+      },
       "widgets_values": [
         "realistic\\RealVisXL_V5.0_fp16.safetensors"
       ]
@@ -105,7 +121,14 @@
           "slot_index": 0
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "latent",
+        "studio_widgets": [
+          "width",
+          "height",
+          "batch_size"
+        ]
+      },
       "widgets_values": [
         1024,
         1024,
@@ -135,7 +158,12 @@
           "slot_index": 0
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "positive_prompt",
+        "studio_widgets": [
+          "text"
+        ]
+      },
       "widgets_values": [
         "A natural documentary photograph of a person walking through a lively London street after rain, realistic skin texture, soft overcast daylight, candid composition, 50mm lens"
       ]
@@ -163,7 +191,12 @@
           "slot_index": 0
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "negative_prompt",
+        "studio_widgets": [
+          "text"
+        ]
+      },
       "widgets_values": [
         "bad hands, bad anatomy, deformed eyes, plastic skin, text, watermark, oversaturated"
       ]
@@ -211,9 +244,14 @@
           "link": 9
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "save_image",
+        "studio_widgets": [
+          "filename_prefix"
+        ]
+      },
       "widgets_values": [
-        "realvis-xl-v5"
+        "realvis-xl"
       ]
     }
   ],

@@ -1,8 +1,8 @@
 {
   "id": "9ae6082b-c7f4-433c-9971-7a8f65a3ea65",
   "revision": 0,
-  "last_node_id": 72,
-  "last_link_id": 87,
+  "last_node_id": 70,
+  "last_link_id": 82,
   "nodes": [
     {
       "id": 56,
@@ -118,7 +118,11 @@
           "widget_ue_connectable": {},
           "version": "7.7",
           "input_ue_unconnectable": {}
-        }
+        },
+        "studio_key": "input_image",
+        "studio_widgets": [
+          "image"
+        ]
       },
       "widgets_values": [
         "studio-reference.webp",
@@ -278,10 +282,14 @@
           "widget_ue_connectable": {},
           "version": "7.7",
           "input_ue_unconnectable": {}
-        }
+        },
+        "studio_key": "save_image",
+        "studio_widgets": [
+          "filename_prefix"
+        ]
       },
       "widgets_values": [
-        "z-image-turbo"
+        "z-image-canny"
       ]
     }
   ],
@@ -515,7 +523,11 @@
                 "widget_ue_connectable": {},
                 "version": "7.7",
                 "input_ue_unconnectable": {}
-              }
+              },
+              "studio_key": "text_encoder_loader",
+              "studio_widgets": [
+                "clip_name"
+              ]
             },
             "widgets_values": [
               "qwen_3_4b_fp4_mixed.safetensors",
@@ -573,7 +585,11 @@
                 "widget_ue_connectable": {},
                 "version": "7.7",
                 "input_ue_unconnectable": {}
-              }
+              },
+              "studio_key": "vae_loader",
+              "studio_widgets": [
+                "vae_name"
+              ]
             },
             "widgets_values": [
               "ae.safetensors"
@@ -801,13 +817,23 @@
                 "widget_ue_connectable": {},
                 "version": "7.7",
                 "input_ue_unconnectable": {}
-              }
+              },
+              "studio_key": "sampler",
+              "studio_widgets": [
+                "seed",
+                "control_after_generate",
+                "steps",
+                "cfg",
+                "sampler_name",
+                "scheduler",
+                "denoise"
+              ]
             },
             "widgets_values": [
-              729703840979498,
+              246813579,
               "randomize",
               8,
-              1,
+              1.0,
               "res_multistep",
               "simple",
               1
@@ -862,10 +888,14 @@
                 "widget_ue_connectable": {},
                 "version": "7.7",
                 "input_ue_unconnectable": {}
-              }
+              },
+              "studio_key": "positive_prompt",
+              "studio_widgets": [
+                "text"
+              ]
             },
             "widgets_values": [
-              "Realistic photo, close-up of a latina model peeking through pine branches, dappled sunlight on her face, natural, moody, smooth skin, a little bit film grain.\n"
+              "A candid close-up photograph of a woman with thick wavy hair beside a working harbour, pastel houses and small boats behind her, breezy seaside light, realistic skin, warm tones, 50mm lens"
             ],
             "color": "#232",
             "bgcolor": "#353"
@@ -919,7 +949,11 @@
                 "widget_ue_connectable": {},
                 "version": "7.7",
                 "input_ue_unconnectable": {}
-              }
+              },
+              "studio_key": "diffusion_loader",
+              "studio_widgets": [
+                "unet_name"
+              ]
             },
             "widgets_values": [
               "z_image_turbo_nvfp4.safetensors",
@@ -1091,7 +1125,11 @@
                 "widget_ue_connectable": {},
                 "version": "7.7",
                 "input_ue_unconnectable": {}
-              }
+              },
+              "studio_key": "control_patch",
+              "studio_widgets": [
+                "name"
+              ]
             },
             "widgets_values": [
               "Z-Image-Turbo-Fun-Controlnet-Union-2.1-lite-2602-8steps.safetensors"
@@ -1346,7 +1384,9 @@
         "extra": {
           "workflowRendererVersion": "LG",
           "ue_links": []
-        }
+        },
+        "last_node_id": 69,
+        "last_link_id": 87
       }
     ]
   },

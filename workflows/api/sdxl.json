@@ -1,41 +1,107 @@
 {
   "1": {
     "class_type": "CheckpointLoaderSimple",
-    "inputs": { "ckpt_name": "placeholder.safetensors" }
+    "inputs": {
+      "ckpt_name": "realistic\\RealVisXL_V5.0_fp16.safetensors"
+    },
+    "_meta": {
+      "studio_key": "checkpoint"
+    }
   },
   "2": {
     "class_type": "CLIPTextEncode",
-    "inputs": { "text": "positive", "clip": ["1", 1] }
+    "inputs": {
+      "text": "A natural documentary photograph of a person walking through a lively London street after rain, realistic skin texture, soft overcast daylight, candid composition, 50mm lens",
+      "clip": [
+        "1",
+        1
+      ]
+    },
+    "_meta": {
+      "studio_key": "positive_prompt"
+    }
   },
   "3": {
     "class_type": "CLIPTextEncode",
-    "inputs": { "text": "negative", "clip": ["1", 1] }
+    "inputs": {
+      "text": "bad hands, bad anatomy, deformed eyes, plastic skin, text, watermark, oversaturated",
+      "clip": [
+        "1",
+        1
+      ]
+    },
+    "_meta": {
+      "studio_key": "negative_prompt"
+    }
   },
   "4": {
     "class_type": "EmptyLatentImage",
-    "inputs": { "width": 1024, "height": 1024, "batch_size": 1 }
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    },
+    "_meta": {
+      "studio_key": "latent"
+    }
   },
   "5": {
     "class_type": "KSampler",
     "inputs": {
-      "seed": 0,
+      "seed": 246813579,
       "steps": 30,
       "cfg": 5.0,
       "sampler_name": "dpmpp_2m",
       "scheduler": "karras",
       "denoise": 1.0,
-      "model": ["1", 0],
-      "positive": ["2", 0],
-      "negative": ["3", 0],
-      "latent_image": ["4", 0]
+      "model": [
+        "1",
+        0
+      ],
+      "positive": [
+        "2",
+        0
+      ],
+      "negative": [
+        "3",
+        0
+      ],
+      "latent_image": [
+        "4",
+        0
+      ]
+    },
+    "_meta": {
+      "studio_key": "sampler"
     }
   },
   "6": {
     "class_type": "VAEDecode",
-    "inputs": { "samples": ["5", 0], "vae": ["1", 2] }
+    "inputs": {
+      "samples": [
+        "5",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    },
+    "_meta": {
+      "studio_key": "decode"
+    }
   },
   "7": {
     "class_type": "SaveImage",
-    "inputs": { "images": ["6", 0], "filename_prefix": "proof/sdxl" }
+    "inputs": {
+      "images": [
+        "6",
+        0
+      ],
+      "filename_prefix": "realvis-xl"
+    },
+    "_meta": {
+      "studio_key": "save_image"
+    }
   }
 }

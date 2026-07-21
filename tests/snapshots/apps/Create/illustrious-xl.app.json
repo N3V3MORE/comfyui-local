@@ -40,7 +40,18 @@
           "slot_index": 0
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "sampler",
+        "studio_widgets": [
+          "seed",
+          "control_after_generate",
+          "steps",
+          "cfg",
+          "sampler_name",
+          "scheduler",
+          "denoise"
+        ]
+      },
       "widgets_values": [
         246813579,
         "fixed",
@@ -84,7 +95,12 @@
           "slot_index": 2
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "checkpoint",
+        "studio_widgets": [
+          "ckpt_name"
+        ]
+      },
       "widgets_values": [
         "anime\\Illustrious-XL-v2.0.safetensors"
       ]
@@ -105,7 +121,14 @@
           "slot_index": 0
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "latent",
+        "studio_widgets": [
+          "width",
+          "height",
+          "batch_size"
+        ]
+      },
       "widgets_values": [
         1024,
         1024,
@@ -135,7 +158,12 @@
           "slot_index": 0
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "positive_prompt",
+        "studio_widgets": [
+          "text"
+        ]
+      },
       "widgets_values": [
         "1girl, solo, detailed eyes, windswept hair, seaside promenade, pastel houses, clean line art, dramatic clouds, masterpiece, best quality"
       ]
@@ -163,7 +191,12 @@
           "slot_index": 0
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "negative_prompt",
+        "studio_widgets": [
+          "text"
+        ]
+      },
       "widgets_values": [
         "lowres, bad anatomy, bad hands, text, extra digits, worst quality, watermark, signature, blurry"
       ]
@@ -211,9 +244,14 @@
           "link": 9
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "save_image",
+        "studio_widgets": [
+          "filename_prefix"
+        ]
+      },
       "widgets_values": [
-        "illustrious-xl-v2"
+        "illustrious-xl"
       ]
     }
   ],

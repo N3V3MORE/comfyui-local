@@ -94,13 +94,23 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "KSampler"
+        "Node name for S&R": "KSampler",
+        "studio_key": "sampler",
+        "studio_widgets": [
+          "seed",
+          "control_after_generate",
+          "steps",
+          "cfg",
+          "sampler_name",
+          "scheduler",
+          "denoise"
+        ]
       },
       "widgets_values": [
         246813579,
         "fixed",
         30,
-        5,
+        5.0,
         "dpmpp_2m",
         "karras",
         1
@@ -125,11 +135,17 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "EmptyLatentImage"
+        "Node name for S&R": "EmptyLatentImage",
+        "studio_key": "latent",
+        "studio_widgets": [
+          "width",
+          "height",
+          "batch_size"
+        ]
       },
       "widgets_values": [
-        832,
-        1216,
+        1024,
+        1024,
         1
       ],
       "color": "#322",
@@ -258,7 +274,11 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "CheckpointLoaderSimple"
+        "Node name for S&R": "CheckpointLoaderSimple",
+        "studio_key": "checkpoint",
+        "studio_widgets": [
+          "ckpt_name"
+        ]
       },
       "widgets_values": [
         "realistic\\RealVisXL_V5.0_fp16.safetensors"
@@ -314,10 +334,14 @@
       ],
       "title": "Positive",
       "properties": {
-        "Node name for S&R": "CLIPTextEncode"
+        "Node name for S&R": "CLIPTextEncode",
+        "studio_key": "positive_prompt",
+        "studio_widgets": [
+          "text"
+        ]
       },
       "widgets_values": [
-        "Professional portrait photograph, natural skin, detailed eyes, soft studio lighting"
+        "A natural documentary photograph of a person walking through a lively London street after rain, realistic skin texture, soft overcast daylight, candid composition, 50mm lens"
       ],
       "color": "#322",
       "bgcolor": "#533"
@@ -440,7 +464,19 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "FaceDetailer"
+        "Node name for S&R": "FaceDetailer",
+        "studio_key": "face_detailer",
+        "studio_widgets": [
+          "guide_size",
+          "guide_size_for",
+          "max_size",
+          "seed",
+          "steps",
+          "cfg",
+          "sampler_name",
+          "scheduler",
+          "denoise"
+        ]
       },
       "widgets_values": [
         360,
@@ -522,7 +558,11 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "UltralyticsDetectorProvider"
+        "Node name for S&R": "UltralyticsDetectorProvider",
+        "studio_key": "detector",
+        "studio_widgets": [
+          "model_name"
+        ]
       },
       "widgets_values": [
         "bbox/face_yolov8n.pt"
@@ -695,10 +735,14 @@
       ],
       "title": "Negative",
       "properties": {
-        "Node name for S&R": "CLIPTextEncode"
+        "Node name for S&R": "CLIPTextEncode",
+        "studio_key": "negative_prompt",
+        "studio_widgets": [
+          "text"
+        ]
       },
       "widgets_values": [
-        "bad anatomy, deformed face, blurry, plastic skin, text, watermark"
+        "bad hands, bad anatomy, deformed eyes, plastic skin, text, watermark, oversaturated"
       ],
       "color": "#322",
       "bgcolor": "#533"
@@ -776,7 +820,9 @@
       "outputs": [],
       "title": "Enhanced",
       "properties": {
-        "Node name for S&R": "PreviewImage"
+        "Node name for S&R": "PreviewImage",
+        "studio_key": "save_image",
+        "studio_widgets": []
       },
       "widgets_values": [],
       "color": "#223",
@@ -784,325 +830,238 @@
     }
   ],
   "links": [
-    {
-      "value": [
-        57,
-        5,
-        0,
-        28,
-        1,
-        "CONDITIONING"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        59,
-        29,
-        0,
-        28,
-        3,
-        "LATENT"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        60,
-        28,
-        0,
-        30,
-        0,
-        "LATENT"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        64,
-        4,
-        0,
-        31,
-        0,
-        "*"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        65,
-        31,
-        0,
-        28,
-        0,
-        "MODEL"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        78,
-        30,
-        0,
-        33,
-        0,
-        "IMAGE"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        107,
-        17,
-        0,
-        18,
-        0,
-        "IMAGE"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        141,
-        51,
-        0,
-        7,
-        0,
-        "IMAGE"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        142,
-        51,
-        1,
-        43,
-        0,
-        "IMAGE"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        146,
-        51,
-        2,
-        52,
-        0,
-        "IMAGE"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        148,
-        4,
-        1,
-        5,
-        0,
-        "CLIP"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        149,
-        4,
-        1,
-        6,
-        0,
-        "CLIP"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        150,
-        53,
-        0,
-        51,
-        6,
-        "BBOX_DETECTOR"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        152,
-        30,
-        0,
-        51,
-        0,
-        "IMAGE"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        153,
-        51,
-        3,
-        17,
-        0,
-        "MASK"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        157,
-        4,
-        0,
-        55,
-        0,
-        "*"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        158,
-        55,
-        0,
-        51,
-        1,
-        "MODEL"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        159,
-        4,
-        1,
-        56,
-        0,
-        "*"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        160,
-        56,
-        0,
-        51,
-        2,
-        "CLIP"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        161,
-        4,
-        2,
-        57,
-        0,
-        "*"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        162,
-        57,
-        0,
-        51,
-        3,
-        "VAE"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        163,
-        4,
-        2,
-        58,
-        0,
-        "*"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        164,
-        58,
-        0,
-        30,
-        1,
-        "VAE"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        165,
-        5,
-        0,
-        59,
-        0,
-        "*"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        166,
-        59,
-        0,
-        51,
-        4,
-        "CONDITIONING"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        167,
-        6,
-        0,
-        60,
-        0,
-        "*"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        168,
-        60,
-        0,
-        61,
-        0,
-        "*"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        169,
-        61,
-        0,
-        51,
-        5,
-        "CONDITIONING"
-      ],
-      "Count": 6
-    },
-    {
-      "value": [
-        170,
-        60,
-        0,
-        28,
-        2,
-        "CONDITIONING"
-      ],
-      "Count": 6
-    }
+    [
+      107,
+      17,
+      0,
+      18,
+      0,
+      "IMAGE"
+    ],
+    [
+      141,
+      51,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      142,
+      51,
+      1,
+      43,
+      0,
+      "IMAGE"
+    ],
+    [
+      146,
+      51,
+      2,
+      52,
+      0,
+      "IMAGE"
+    ],
+    [
+      148,
+      4,
+      1,
+      5,
+      0,
+      "CLIP"
+    ],
+    [
+      149,
+      4,
+      1,
+      6,
+      0,
+      "CLIP"
+    ],
+    [
+      150,
+      53,
+      0,
+      51,
+      6,
+      "BBOX_DETECTOR"
+    ],
+    [
+      152,
+      30,
+      0,
+      51,
+      0,
+      "IMAGE"
+    ],
+    [
+      153,
+      51,
+      3,
+      17,
+      0,
+      "MASK"
+    ],
+    [
+      157,
+      4,
+      0,
+      55,
+      0,
+      "*"
+    ],
+    [
+      158,
+      55,
+      0,
+      51,
+      1,
+      "MODEL"
+    ],
+    [
+      159,
+      4,
+      1,
+      56,
+      0,
+      "*"
+    ],
+    [
+      160,
+      56,
+      0,
+      51,
+      2,
+      "CLIP"
+    ],
+    [
+      161,
+      4,
+      2,
+      57,
+      0,
+      "*"
+    ],
+    [
+      162,
+      57,
+      0,
+      51,
+      3,
+      "VAE"
+    ],
+    [
+      163,
+      4,
+      2,
+      58,
+      0,
+      "*"
+    ],
+    [
+      164,
+      58,
+      0,
+      30,
+      1,
+      "VAE"
+    ],
+    [
+      165,
+      5,
+      0,
+      59,
+      0,
+      "*"
+    ],
+    [
+      166,
+      59,
+      0,
+      51,
+      4,
+      "CONDITIONING"
+    ],
+    [
+      167,
+      6,
+      0,
+      60,
+      0,
+      "*"
+    ],
+    [
+      168,
+      60,
+      0,
+      61,
+      0,
+      "*"
+    ],
+    [
+      169,
+      61,
+      0,
+      51,
+      5,
+      "CONDITIONING"
+    ],
+    [
+      170,
+      60,
+      0,
+      28,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      57,
+      5,
+      0,
+      28,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      59,
+      29,
+      0,
+      28,
+      3,
+      "LATENT"
+    ],
+    [
+      60,
+      28,
+      0,
+      30,
+      0,
+      "LATENT"
+    ],
+    [
+      64,
+      4,
+      0,
+      31,
+      0,
+      "*"
+    ],
+    [
+      65,
+      31,
+      0,
+      28,
+      0,
+      "MODEL"
+    ],
+    [
+      78,
+      30,
+      0,
+      33,
+      0,
+      "IMAGE"
+    ]
   ],
   "config": {},
   "extra": {

@@ -2,32 +2,44 @@
   "1": {
     "class_type": "UNETLoader",
     "inputs": {
-      "unet_name": "placeholder.safetensors",
+      "unet_name": "z_image_turbo_nvfp4.safetensors",
       "weight_dtype": "default"
+    },
+    "_meta": {
+      "studio_key": "diffusion_loader"
     }
   },
   "2": {
     "class_type": "CLIPLoader",
     "inputs": {
-      "clip_name": "placeholder.safetensors",
+      "clip_name": "qwen_3_4b_fp4_mixed.safetensors",
       "type": "lumina2",
       "device": "default"
+    },
+    "_meta": {
+      "studio_key": "text_encoder_loader"
     }
   },
   "3": {
     "class_type": "VAELoader",
     "inputs": {
-      "vae_name": "placeholder.safetensors"
+      "vae_name": "ae.safetensors"
+    },
+    "_meta": {
+      "studio_key": "vae_loader"
     }
   },
   "4": {
     "class_type": "CLIPTextEncode",
     "inputs": {
-      "text": "positive",
+      "text": "A candid close-up photograph of a woman with thick wavy hair beside a working harbour, pastel houses and small boats behind her, breezy seaside light, realistic skin, warm tones, 50mm lens",
       "clip": [
         "2",
         0
       ]
+    },
+    "_meta": {
+      "studio_key": "positive_prompt"
     }
   },
   "5": {
@@ -37,6 +49,9 @@
         "4",
         0
       ]
+    },
+    "_meta": {
+      "studio_key": "negative_conditioning"
     }
   },
   "6": {
@@ -47,6 +62,9 @@
         0
       ],
       "shift": 3.0
+    },
+    "_meta": {
+      "studio_key": "model_sampling"
     }
   },
   "7": {
@@ -55,12 +73,15 @@
       "width": 1024,
       "height": 1024,
       "batch_size": 1
+    },
+    "_meta": {
+      "studio_key": "latent"
     }
   },
   "8": {
     "class_type": "KSampler",
     "inputs": {
-      "seed": 0,
+      "seed": 246813579,
       "steps": 8,
       "cfg": 1.0,
       "sampler_name": "res_multistep",
@@ -82,6 +103,9 @@
         "7",
         0
       ]
+    },
+    "_meta": {
+      "studio_key": "sampler"
     }
   },
   "9": {
@@ -95,6 +119,9 @@
         "3",
         0
       ]
+    },
+    "_meta": {
+      "studio_key": "decode"
     }
   },
   "10": {
@@ -104,7 +131,10 @@
         "9",
         0
       ],
-      "filename_prefix": "proof/z-image"
+      "filename_prefix": "z-image-turbo"
+    },
+    "_meta": {
+      "studio_key": "save_image"
     }
   }
 }

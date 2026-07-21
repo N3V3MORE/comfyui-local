@@ -1,5 +1,5 @@
 {
-  "last_node_id": 13,
+  "last_node_id": 12,
   "last_link_id": 17,
   "nodes": [
     {
@@ -43,7 +43,11 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "IPAdapter"
+        "Node name for S&R": "IPAdapter",
+        "studio_key": "ipadapter",
+        "studio_widgets": [
+          "weight"
+        ]
       },
       "widgets_values": [
         0.8,
@@ -90,7 +94,11 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "IPAdapterUnifiedLoader"
+        "Node name for S&R": "IPAdapterUnifiedLoader",
+        "studio_key": "ipadapter_loader",
+        "studio_widgets": [
+          "preset"
+        ]
       },
       "widgets_values": [
         "PLUS (high strength)"
@@ -119,7 +127,11 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "LoadImage"
+        "Node name for S&R": "LoadImage",
+        "studio_key": "input_image",
+        "studio_widgets": [
+          "image"
+        ]
       },
       "widgets_values": [
         "studio-reference.webp",
@@ -165,13 +177,23 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "KSampler"
+        "Node name for S&R": "KSampler",
+        "studio_key": "sampler",
+        "studio_widgets": [
+          "seed",
+          "control_after_generate",
+          "steps",
+          "cfg",
+          "sampler_name",
+          "scheduler",
+          "denoise"
+        ]
       },
       "widgets_values": [
         246813579,
         "fixed",
         30,
-        5,
+        5.0,
         "dpmpp_2m",
         "karras",
         1
@@ -211,7 +233,11 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "CheckpointLoaderSimple"
+        "Node name for S&R": "CheckpointLoaderSimple",
+        "studio_key": "checkpoint",
+        "studio_widgets": [
+          "ckpt_name"
+        ]
       },
       "widgets_values": [
         "realistic\\RealVisXL_V5.0_fp16.safetensors"
@@ -234,7 +260,13 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "EmptyLatentImage"
+        "Node name for S&R": "EmptyLatentImage",
+        "studio_key": "latent",
+        "studio_widgets": [
+          "width",
+          "height",
+          "batch_size"
+        ]
       },
       "widgets_values": [
         1024,
@@ -266,10 +298,14 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "CLIPTextEncode"
+        "Node name for S&R": "CLIPTextEncode",
+        "studio_key": "positive_prompt",
+        "studio_widgets": [
+          "text"
+        ]
       },
       "widgets_values": [
-        "A natural editorial photograph, detailed subject, realistic light and texture"
+        "A natural documentary photograph of a person walking through a lively London street after rain, realistic skin texture, soft overcast daylight, candid composition, 50mm lens"
       ]
     },
     {
@@ -296,10 +332,14 @@
         }
       ],
       "properties": {
-        "Node name for S&R": "CLIPTextEncode"
+        "Node name for S&R": "CLIPTextEncode",
+        "studio_key": "negative_prompt",
+        "studio_widgets": [
+          "text"
+        ]
       },
       "widgets_values": [
-        "bad anatomy, deformed, blurry, plastic skin, text, watermark"
+        "bad hands, bad anatomy, deformed eyes, plastic skin, text, watermark, oversaturated"
       ]
     },
     {
@@ -347,9 +387,14 @@
           "link": 9
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "save_image",
+        "studio_widgets": [
+          "filename_prefix"
+        ]
+      },
       "widgets_values": [
-        "IPAdapter"
+        "sdxl-ipadapter"
       ]
     }
   ],

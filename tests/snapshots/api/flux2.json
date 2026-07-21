@@ -2,32 +2,44 @@
   "1": {
     "class_type": "UNETLoader",
     "inputs": {
-      "unet_name": "placeholder.safetensors",
+      "unet_name": "flux-2-klein-4b-fp8.safetensors",
       "weight_dtype": "default"
+    },
+    "_meta": {
+      "studio_key": "diffusion_loader"
     }
   },
   "2": {
     "class_type": "CLIPLoader",
     "inputs": {
-      "clip_name": "placeholder.safetensors",
+      "clip_name": "qwen_3_4b_fp4_flux2.safetensors",
       "type": "flux2",
       "device": "default"
+    },
+    "_meta": {
+      "studio_key": "text_encoder_loader"
     }
   },
   "3": {
     "class_type": "VAELoader",
     "inputs": {
-      "vae_name": "placeholder.safetensors"
+      "vae_name": "flux2-vae.safetensors"
+    },
+    "_meta": {
+      "studio_key": "vae_loader"
     }
   },
   "4": {
     "class_type": "CLIPTextEncode",
     "inputs": {
-      "text": "positive",
+      "text": "A hedgehog wearing a tiny party hat surrounded by confetti, early digital camera style, slight sensor noise, direct flash photography, candid 2000s birthday moment",
       "clip": [
         "2",
         0
       ]
+    },
+    "_meta": {
+      "studio_key": "positive_prompt"
     }
   },
   "5": {
@@ -37,6 +49,9 @@
         "4",
         0
       ]
+    },
+    "_meta": {
+      "studio_key": "negative_conditioning"
     }
   },
   "6": {
@@ -55,18 +70,27 @@
         0
       ],
       "cfg": 1.0
+    },
+    "_meta": {
+      "studio_key": "guider"
     }
   },
   "7": {
     "class_type": "RandomNoise",
     "inputs": {
-      "noise_seed": 0
+      "noise_seed": 246813579
+    },
+    "_meta": {
+      "studio_key": "noise"
     }
   },
   "8": {
     "class_type": "KSamplerSelect",
     "inputs": {
       "sampler_name": "euler"
+    },
+    "_meta": {
+      "studio_key": "sampler_select"
     }
   },
   "9": {
@@ -75,6 +99,9 @@
       "steps": 4,
       "width": 1024,
       "height": 1024
+    },
+    "_meta": {
+      "studio_key": "scheduler"
     }
   },
   "10": {
@@ -83,6 +110,9 @@
       "width": 1024,
       "height": 1024,
       "batch_size": 1
+    },
+    "_meta": {
+      "studio_key": "latent"
     }
   },
   "11": {
@@ -108,6 +138,9 @@
         "10",
         0
       ]
+    },
+    "_meta": {
+      "studio_key": "sampler_advanced"
     }
   },
   "12": {
@@ -121,6 +154,9 @@
         "3",
         0
       ]
+    },
+    "_meta": {
+      "studio_key": "decode"
     }
   },
   "13": {
@@ -130,7 +166,10 @@
         "12",
         0
       ],
-      "filename_prefix": "proof/flux2"
+      "filename_prefix": "flux2-klein"
+    },
+    "_meta": {
+      "studio_key": "save_image"
     }
   }
 }

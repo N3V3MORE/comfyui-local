@@ -40,12 +40,23 @@
           "slot_index": 0
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "sampler",
+        "studio_widgets": [
+          "seed",
+          "control_after_generate",
+          "steps",
+          "cfg",
+          "sampler_name",
+          "scheduler",
+          "denoise"
+        ]
+      },
       "widgets_values": [
         246813579,
-        true,
+        "fixed",
         28,
-        5,
+        5.0,
         "euler_ancestral",
         "normal",
         1
@@ -84,7 +95,12 @@
           "slot_index": 2
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "checkpoint",
+        "studio_widgets": [
+          "ckpt_name"
+        ]
+      },
       "widgets_values": [
         "anime\\animagine-xl-4.0-opt.safetensors"
       ]
@@ -105,7 +121,14 @@
           "slot_index": 0
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "latent",
+        "studio_widgets": [
+          "width",
+          "height",
+          "batch_size"
+        ]
+      },
       "widgets_values": [
         1024,
         1024,
@@ -135,7 +158,12 @@
           "slot_index": 0
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "positive_prompt",
+        "studio_widgets": [
+          "text"
+        ]
+      },
       "widgets_values": [
         "1girl, solo, green hair, sweater, looking at viewer, outdoors, night, soft city lights, safe, masterpiece, high score, great score, absurdres"
       ]
@@ -163,7 +191,12 @@
           "slot_index": 0
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "negative_prompt",
+        "studio_widgets": [
+          "text"
+        ]
+      },
       "widgets_values": [
         "lowres, bad anatomy, bad hands, text, error, extra digits, cropped, worst quality, watermark, signature, blurry"
       ]
@@ -211,9 +244,14 @@
           "link": 9
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "save_image",
+        "studio_widgets": [
+          "filename_prefix"
+        ]
+      },
       "widgets_values": [
-        "anime-sdxl"
+        "animagine-xl"
       ]
     }
   ],

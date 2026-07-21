@@ -8,23 +8,30 @@
       "flags": {},
       "order": 0,
       "mode": 0,
+      "inputs": [],
       "outputs": [
         {
-          "links": [
-            1
-          ],
-          "slot_index": 0,
           "name": "IMAGE",
-          "type": "IMAGE"
+          "type": "IMAGE",
+          "links": [
+            2
+          ],
+          "slot_index": 0
         },
         {
-          "links": null,
-          "slot_index": 1,
           "name": "MASK",
-          "type": "MASK"
+          "type": "MASK",
+          "links": null,
+          "slot_index": 1
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "input_image",
+        "studio_widgets": [
+          "image",
+          "upload"
+        ]
+      },
       "widgets_values": [
         "studio-reference.webp",
         "image"
@@ -36,17 +43,23 @@
       "flags": {},
       "order": 1,
       "mode": 0,
+      "inputs": [],
       "outputs": [
         {
-          "links": [
-            2
-          ],
-          "slot_index": 0,
           "name": "UPSCALE_MODEL",
-          "type": "UPSCALE_MODEL"
+          "type": "UPSCALE_MODEL",
+          "links": [
+            1
+          ],
+          "slot_index": 0
         }
       ],
-      "properties": {},
+      "properties": {
+        "studio_key": "upscale_loader",
+        "studio_widgets": [
+          "model_name"
+        ]
+      },
       "widgets_values": [
         "RealESRGAN_x4plus.pth"
       ]
@@ -59,27 +72,31 @@
       "mode": 0,
       "inputs": [
         {
-          "link": 2,
           "name": "upscale_model",
-          "type": "UPSCALE_MODEL"
+          "type": "UPSCALE_MODEL",
+          "link": 1
         },
         {
-          "link": 1,
           "name": "image",
-          "type": "IMAGE"
+          "type": "IMAGE",
+          "link": 2
         }
       ],
       "outputs": [
         {
+          "name": "IMAGE",
+          "type": "IMAGE",
           "links": [
             3
           ],
-          "slot_index": 0,
-          "name": "IMAGE",
-          "type": "IMAGE"
+          "slot_index": 0
         }
       ],
-      "properties": {}
+      "properties": {
+        "studio_key": "upscale",
+        "studio_widgets": []
+      },
+      "widgets_values": []
     },
     {
       "id": 4,
@@ -89,13 +106,18 @@
       "mode": 0,
       "inputs": [
         {
-          "link": 3,
           "name": "images",
-          "type": "IMAGE"
+          "type": "IMAGE",
+          "link": 3
         }
       ],
       "outputs": [],
-      "properties": {},
+      "properties": {
+        "studio_key": "save_image",
+        "studio_widgets": [
+          "filename_prefix"
+        ]
+      },
       "widgets_values": [
         "upscale-photo-4x"
       ]
@@ -103,34 +125,28 @@
   ],
   "links": [
     [
-      [
-        1,
-        1,
-        0,
-        3,
-        1,
-        "IMAGE"
-      ]
+      1,
+      2,
+      0,
+      3,
+      0,
+      "UPSCALE_MODEL"
     ],
     [
-      [
-        2,
-        2,
-        0,
-        3,
-        0,
-        "UPSCALE_MODEL"
-      ]
+      2,
+      1,
+      0,
+      3,
+      1,
+      "IMAGE"
     ],
     [
-      [
-        3,
-        3,
-        0,
-        4,
-        0,
-        "IMAGE"
-      ]
+      3,
+      3,
+      0,
+      4,
+      0,
+      "IMAGE"
     ]
   ],
   "config": {},
