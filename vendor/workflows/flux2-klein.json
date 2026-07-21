@@ -38,7 +38,9 @@
         "secondTabOffset": 80,
         "secondTabWidth": 65,
         "studio_key": "save_image",
-        "studio_widgets": []
+        "studio_widgets": [
+          "filename_prefix"
+        ]
       },
       "widgets_values": [
         "Flux2-Klein"
@@ -83,7 +85,7 @@
         "secondTabWidth": 65,
         "studio_key": "positive_prompt",
         "studio_widgets": [
-          "value"
+          "text"
         ]
       },
       "widgets_values": [
@@ -371,7 +373,11 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "sampler_select",
+              "studio_widgets": [
+                "sampler_name"
+              ]
             },
             "widgets_values": [
               "euler"
@@ -722,7 +728,8 @@
               "secondTabWidth": 65,
               "studio_key": "noise",
               "studio_widgets": [
-                "noise_seed"
+                "noise_seed",
+                "control_after_generate"
               ]
             },
             "widgets_values": [
@@ -777,7 +784,9 @@
               "secondTabOffset": 80,
               "secondTabWidth": 65,
               "studio_key": "diffusion_loader",
-              "studio_widgets": []
+              "studio_widgets": [
+                "unet_name"
+              ]
             },
             "widgets_values": [
               "flux-2-klein-4b-fp8.safetensors",
@@ -831,7 +840,9 @@
               "secondTabOffset": 80,
               "secondTabWidth": 65,
               "studio_key": "text_encoder_loader",
-              "studio_widgets": []
+              "studio_widgets": [
+                "clip_name"
+              ]
             },
             "widgets_values": [
               "qwen_3_4b_fp4_flux2.safetensors",
@@ -886,7 +897,9 @@
               "secondTabOffset": 80,
               "secondTabWidth": 65,
               "studio_key": "vae_loader",
-              "studio_widgets": []
+              "studio_widgets": [
+                "vae_name"
+              ]
             },
             "widgets_values": [
               "flux2-vae.safetensors"
@@ -946,7 +959,11 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "guider",
+              "studio_widgets": [
+                "cfg"
+              ]
             },
             "widgets_values": [
               1
@@ -1114,7 +1131,13 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "scheduler",
+              "studio_widgets": [
+                "steps",
+                "width",
+                "height"
+              ]
             },
             "widgets_values": [
               4,

@@ -244,7 +244,9 @@
           "input_ue_unconnectable": {}
         },
         "studio_key": "save_image",
-        "studio_widgets": []
+        "studio_widgets": [
+          "filename_prefix"
+        ]
       },
       "widgets_values": [
         "z-image-turbo"
@@ -594,7 +596,9 @@
                 "input_ue_unconnectable": {}
               },
               "studio_key": "text_encoder_loader",
-              "studio_widgets": []
+              "studio_widgets": [
+                "clip_name"
+              ]
             },
             "widgets_values": [
               "qwen_3_4b_fp4_mixed.safetensors",
@@ -661,7 +665,9 @@
                 "input_ue_unconnectable": {}
               },
               "studio_key": "diffusion_loader",
-              "studio_widgets": []
+              "studio_widgets": [
+                "unet_name"
+              ]
             },
             "widgets_values": [
               "z_image_turbo_nvfp4.safetensors",
@@ -728,7 +734,9 @@
                 "input_ue_unconnectable": {}
               },
               "studio_key": "vae_loader",
-              "studio_widgets": []
+              "studio_widgets": [
+                "vae_name"
+              ]
             },
             "widgets_values": [
               "ae.safetensors"
@@ -793,7 +801,9 @@
                 "input_ue_unconnectable": {}
               },
               "studio_key": "control_patch",
-              "studio_widgets": []
+              "studio_widgets": [
+                "name"
+              ]
             },
             "widgets_values": [
               "Z-Image-Turbo-Fun-Controlnet-Union-2.1-lite-2602-8steps.safetensors"
@@ -989,7 +999,13 @@
               },
               "studio_key": "sampler",
               "studio_widgets": [
-                "seed"
+                "seed",
+                "control_after_generate",
+                "steps",
+                "cfg",
+                "sampler_name",
+                "scheduler",
+                "denoise"
               ]
             },
             "widgets_values": [

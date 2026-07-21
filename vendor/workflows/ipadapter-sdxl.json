@@ -51,7 +51,9 @@
       "properties": {
         "Node name for S&R": "IPAdapterUnifiedLoader",
         "studio_key": "ipadapter_loader",
-        "studio_widgets": []
+        "studio_widgets": [
+          "preset"
+        ]
       },
       "widgets_values": [
         "PLUS (high strength)"
@@ -101,7 +103,9 @@
       "properties": {
         "Node name for S&R": "CheckpointLoaderSimple",
         "studio_key": "checkpoint",
-        "studio_widgets": []
+        "studio_widgets": [
+          "ckpt_name"
+        ]
       },
       "widgets_values": [
         "realistic\\RealVisXL_V5.0_fp16.safetensors"
@@ -199,7 +203,13 @@
         "Node name for S&R": "KSampler",
         "studio_key": "sampler",
         "studio_widgets": [
-          "seed"
+          "seed",
+          "control_after_generate",
+          "steps",
+          "cfg",
+          "sampler_name",
+          "scheduler",
+          "denoise"
         ]
       },
       "widgets_values": [
@@ -338,7 +348,9 @@
       ],
       "properties": {
         "studio_key": "save_image",
-        "studio_widgets": []
+        "studio_widgets": [
+          "filename_prefix"
+        ]
       },
       "widgets_values": [
         "IPAdapter"
@@ -455,7 +467,8 @@
         "studio_key": "latent",
         "studio_widgets": [
           "width",
-          "height"
+          "height",
+          "batch_size"
         ]
       },
       "widgets_values": [

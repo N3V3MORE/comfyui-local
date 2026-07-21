@@ -53,7 +53,13 @@
         "Node name for S&R": "KSampler",
         "studio_key": "sampler",
         "studio_widgets": [
-          "seed"
+          "seed",
+          "control_after_generate",
+          "steps",
+          "cfg",
+          "sampler_name",
+          "scheduler",
+          "denoise"
         ]
       },
       "widgets_values": [
@@ -162,7 +168,9 @@
       "properties": {
         "Node name for S&R": "UltralyticsDetectorProvider",
         "studio_key": "detector",
-        "studio_widgets": []
+        "studio_widgets": [
+          "model_name"
+        ]
       },
       "widgets_values": [
         "bbox/face_yolov8n.pt"
@@ -262,7 +270,9 @@
       "properties": {
         "Node name for S&R": "CheckpointLoaderSimple",
         "studio_key": "checkpoint",
-        "studio_widgets": []
+        "studio_widgets": [
+          "ckpt_name"
+        ]
       },
       "widgets_values": [
         "realistic\\RealVisXL_V5.0_fp16.safetensors"
@@ -499,7 +509,8 @@
         "studio_key": "latent",
         "studio_widgets": [
           "width",
-          "height"
+          "height",
+          "batch_size"
         ]
       },
       "widgets_values": [
@@ -639,6 +650,14 @@
         "Node name for S&R": "FaceDetailer",
         "studio_key": "face_detailer",
         "studio_widgets": [
+          "guide_size",
+          "guide_size_for",
+          "max_size",
+          "seed",
+          "steps",
+          "cfg",
+          "sampler_name",
+          "scheduler",
           "denoise"
         ]
       },

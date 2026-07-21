@@ -38,7 +38,9 @@
         "secondTabOffset": 80,
         "secondTabWidth": 65,
         "studio_key": "save_image",
-        "studio_widgets": []
+        "studio_widgets": [
+          "filename_prefix"
+        ]
       },
       "widgets_values": [
         "z-image-turbo"
@@ -354,7 +356,9 @@
               "secondTabOffset": 80,
               "secondTabWidth": 65,
               "studio_key": "text_encoder_loader",
-              "studio_widgets": []
+              "studio_widgets": [
+                "clip_name"
+              ]
             },
             "widgets_values": [
               "qwen_3_4b_fp4_mixed.safetensors",
@@ -409,7 +413,9 @@
               "secondTabOffset": 80,
               "secondTabWidth": 65,
               "studio_key": "vae_loader",
-              "studio_widgets": []
+              "studio_widgets": [
+                "vae_name"
+              ]
             },
             "widgets_values": [
               "ae.safetensors"
@@ -561,7 +567,9 @@
               "secondTabOffset": 80,
               "secondTabWidth": 65,
               "studio_key": "diffusion_loader",
-              "studio_widgets": []
+              "studio_widgets": [
+                "unet_name"
+              ]
             },
             "widgets_values": [
               "z_image_turbo_nvfp4.safetensors",
@@ -620,7 +628,11 @@
               "hasSecondTab": false,
               "secondTabText": "Send Back",
               "secondTabOffset": 80,
-              "secondTabWidth": 65
+              "secondTabWidth": 65,
+              "studio_key": "prompt_encoder",
+              "studio_widgets": [
+                "text"
+              ]
             },
             "widgets_values": [
               "A candid close-up photograph of a woman with thick wavy hair beside a working harbour, pastel houses and small boats behind her, breezy seaside light, realistic skin, warm tones, 50mm lens"
@@ -685,7 +697,8 @@
               "studio_key": "latent",
               "studio_widgets": [
                 "width",
-                "height"
+                "height",
+                "batch_size"
               ]
             },
             "widgets_values": [
@@ -825,7 +838,13 @@
               "secondTabWidth": 65,
               "studio_key": "sampler",
               "studio_widgets": [
-                "seed"
+                "seed",
+                "control_after_generate",
+                "steps",
+                "cfg",
+                "sampler_name",
+                "scheduler",
+                "denoise"
               ]
             },
             "widgets_values": [

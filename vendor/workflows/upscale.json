@@ -69,7 +69,9 @@
       ],
       "properties": {
         "studio_key": "upscale_loader",
-        "studio_widgets": []
+        "studio_widgets": [
+          "model_name"
+        ]
       },
       "widgets_values": [
         "RealESRGAN_x2plus.pth"
@@ -137,7 +139,9 @@
       "outputs": [],
       "properties": {
         "studio_key": "save_image",
-        "studio_widgets": []
+        "studio_widgets": [
+          "filename_prefix"
+        ]
       },
       "widgets_values": [
         "upscale-photo-2x"

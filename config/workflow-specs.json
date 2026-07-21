@@ -216,7 +216,7 @@
       "exposedInputs": [
         {
           "node": "positive_prompt",
-          "widget": "value"
+          "widget": "text"
         },
         {
           "node": "width",

@@ -21,7 +21,7 @@ foreach ($expectation in $expectations) {
         foreach ($required in $expectation.Required) {
             Assert-True ($raw.Contains($required)) "$($expectation.File) must contain $required"
         }
-    }.GetNewClosure()
+    }
 }
 
 Test-Case 'modern workflows contain only their selected generation subgraph' {

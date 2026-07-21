@@ -45,7 +45,9 @@
       ],
       "properties": {
         "studio_key": "checkpoint",
-        "studio_widgets": []
+        "studio_widgets": [
+          "ckpt_name"
+        ]
       },
       "widgets_values": [
         "realistic\\RealVisXL_V5.0_fp16.safetensors"
@@ -125,7 +127,11 @@
       ],
       "properties": {
         "studio_key": "preprocessor",
-        "studio_widgets": []
+        "studio_widgets": [
+          "low_threshold",
+          "high_threshold",
+          "resolution"
+        ]
       },
       "widgets_values": [
         100,
@@ -159,7 +165,9 @@
       ],
       "properties": {
         "studio_key": "controlnet_loader",
-        "studio_widgets": []
+        "studio_widgets": [
+          "control_net_name"
+        ]
       },
       "widgets_values": [
         "sdxl-controlnet-union-promax.safetensors"
@@ -198,7 +206,9 @@
       ],
       "properties": {
         "studio_key": "union_type",
-        "studio_widgets": []
+        "studio_widgets": [
+          "type"
+        ]
       },
       "widgets_values": [
         "canny/lineart/anime_lineart/mlsd"
@@ -343,7 +353,9 @@
       "properties": {
         "studio_key": "control_apply",
         "studio_widgets": [
-          "strength"
+          "strength",
+          "start_percent",
+          "end_percent"
         ]
       },
       "widgets_values": [
@@ -498,7 +510,13 @@
       "properties": {
         "studio_key": "sampler",
         "studio_widgets": [
-          "seed"
+          "seed",
+          "control_after_generate",
+          "steps",
+          "cfg",
+          "sampler_name",
+          "scheduler",
+          "denoise"
         ]
       },
       "widgets_values": [
@@ -573,7 +591,9 @@
       "outputs": [],
       "properties": {
         "studio_key": "save_image",
-        "studio_widgets": []
+        "studio_widgets": [
+          "filename_prefix"
+        ]
       },
       "widgets_values": [
         "sdxl-canny"

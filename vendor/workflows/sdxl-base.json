@@ -112,7 +112,8 @@
         "studio_key": "latent",
         "studio_widgets": [
           "width",
-          "height"
+          "height",
+          "batch_size"
         ]
       },
       "widgets_values": [
@@ -170,7 +171,13 @@
       "properties": {
         "studio_key": "sampler",
         "studio_widgets": [
-          "seed"
+          "seed",
+          "control_after_generate",
+          "steps",
+          "cfg",
+          "sampler_name",
+          "scheduler",
+          "denoise"
         ]
       },
       "widgets_values": [
@@ -244,7 +251,9 @@
       ],
       "properties": {
         "studio_key": "save_image",
-        "studio_widgets": []
+        "studio_widgets": [
+          "filename_prefix"
+        ]
       },
       "widgets_values": [
         "realvis-xl-v5"
@@ -293,7 +302,9 @@
       ],
       "properties": {
         "studio_key": "checkpoint",
-        "studio_widgets": []
+        "studio_widgets": [
+          "ckpt_name"
+        ]
       },
       "widgets_values": [
         "realistic\\RealVisXL_V5.0_fp16.safetensors"
