@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "apps": [
+    {"id":"realvis-xl","name":"RealVisXL Natural Photo","group":"Create","file":"Create/realvis-xl.app.json","model":"RealVisXL V5.0","purpose":"Natural realistic photography","supportArtifacts":[]},
+    {"id":"juggernaut-xl","name":"Juggernaut Cinematic Photo","group":"Create","file":"Create/juggernaut-xl.app.json","model":"Juggernaut XL v9","purpose":"Cinematic realistic photography","supportArtifacts":[]},
+    {"id":"animagine-xl","name":"Animagine Anime","group":"Create","file":"Create/animagine-xl.app.json","model":"Animagine XL 4.0 Opt","purpose":"Clean modern anime","supportArtifacts":[]},
+    {"id":"illustrious-xl","name":"Illustrious Anime","group":"Create","file":"Create/illustrious-xl.app.json","model":"Illustrious XL v2.0","purpose":"Detailed character illustration","supportArtifacts":[]},
+    {"id":"z-image-turbo","name":"Z-Image Photoreal","group":"Create","file":"Create/z-image-turbo.app.json","model":"Z-Image Turbo","purpose":"Fast modern photorealism","supportArtifacts":[]},
+    {"id":"flux2-klein","name":"FLUX.2 Klein Photoreal","group":"Create","file":"Create/flux2-klein.app.json","model":"FLUX.2 Klein 4B","purpose":"Fast prompt-following photorealism","supportArtifacts":[]},
+    {"id":"sdxl-canny","name":"SDXL Canny Control","group":"Control","file":"Control/sdxl-canny.app.json","model":"RealVisXL V5.0","purpose":"Follow edges and composition","supportArtifacts":["sdxl-controlnet-union-promax"]},
+    {"id":"sdxl-depth","name":"SDXL Depth Control","group":"Control","file":"Control/sdxl-depth.app.json","model":"RealVisXL V5.0","purpose":"Follow scene depth","supportArtifacts":["sdxl-controlnet-union-promax","depth-anything-v2-small"]},
+    {"id":"sdxl-pose","name":"SDXL Pose Control","group":"Control","file":"Control/sdxl-pose.app.json","model":"RealVisXL V5.0","purpose":"Follow a person pose","supportArtifacts":["sdxl-controlnet-union-promax","dwpose-torchscript","yolox-l-torchscript"]},
+    {"id":"z-image-canny","name":"Z-Image Canny Control","group":"Control","file":"Control/z-image-canny.app.json","model":"Z-Image Turbo","purpose":"Fast photorealistic edge control","supportArtifacts":["z-image-controlnet-union-lite"]},
+    {"id":"sdxl-ipadapter","name":"SDXL Reference Image","group":"Reference","file":"Reference/sdxl-ipadapter.app.json","model":"RealVisXL V5.0","purpose":"Guide style and composition with an image","supportArtifacts":["clip-vision-vit-h","ipadapter-plus-sdxl-vit-h"]},
+    {"id":"sdxl-face-detail","name":"SDXL Face Detail","group":"Detail","file":"Detail/sdxl-face-detail.app.json","model":"RealVisXL V5.0","purpose":"Generate and refine detected faces","supportArtifacts":["face-yolov8n"]},
+    {"id":"upscale-photo-2x","name":"Photo Upscale 2x","group":"Upscale","file":"Upscale/upscale-photo-2x.app.json","model":"RealESRGAN x2 Plus","purpose":"Double a photo cleanly","supportArtifacts":["realesrgan-x2plus"]},
+    {"id":"upscale-photo-4x","name":"Photo Upscale 4x","group":"Upscale","file":"Upscale/upscale-photo-4x.app.json","model":"RealESRGAN x4 Plus","purpose":"Enlarge a photo four times","supportArtifacts":["realesrgan-x4plus"]},
+    {"id":"upscale-anime-4x","name":"Anime Upscale 4x","group":"Upscale","file":"Upscale/upscale-anime-4x.app.json","model":"RealESRGAN x4 Plus Anime 6B","purpose":"Enlarge anime line art four times","supportArtifacts":["realesrgan-x4plus-anime"]}
+  ]
+}

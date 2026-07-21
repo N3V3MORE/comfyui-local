@@ -3,6 +3,6 @@ ComfyUI/
 models/
 results/
 work/
+data/
 *.partial
 __pycache__/
-

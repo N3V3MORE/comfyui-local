@@ -1,54 +1,101 @@
-# ComfyUI local: six-model 8 GB setup
+# ComfyUI Local Studio: six models for 8 GB VRAM
 
-This is a pinned, tested ComfyUI installation for this PC's NVIDIA GeForce RTX 5060 Laptop GPU (8 GB). It includes six image models, four editable UI workflows, seven canvas presets, verified downloads, and a reproducible benchmark.
+This is a pinned ComfyUI installation for this PC's NVIDIA GeForce RTX 5060 Laptop GPU (8 GB). It provides six isolated image-generation apps, nine control/detail/upscale apps, seven aspect-ratio presets, verified model downloads, and reproducible local benchmarks.
 
-## Start
+## Start in Opera GX
 
 ```powershell
 cd C:\Users\Sushmit\Desktop\Code\comfyui-local
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start.ps1
 ```
 
-Open [http://127.0.0.1:8188](http://127.0.0.1:8188). The server is loopback-only; other devices cannot reach it.
+Open [http://127.0.0.1:8188](http://127.0.0.1:8188), then:
 
-In ComfyUI, load one of these files:
+1. Click **Workflows** in the left sidebar.
+2. Expand **ComfyUI Local Studio**.
+3. Open an app from **Create**, **Control**, **Detail**, **Reference**, or **Upscale**.
+4. Change the controls in the right input panel and click **Run**.
 
-- `workflows\ui\realistic-sdxl.json` — RealVisXL by default; select Juggernaut in the checkpoint node for the second realistic style.
-- `workflows\ui\anime-sdxl.json` — Animagine by default; select Illustrious in the checkpoint node for the second anime style.
-- `workflows\ui\z-image-turbo.json` — fast photorealistic Z-Image.
-- `workflows\ui\flux2-klein.json` — fastest four-step photorealistic model in this set.
+The apps open in ComfyUI's simplified [App Mode](https://docs.comfy.org/interface/app-mode). Opera GX is supported because generation runs in the local ComfyUI server, not inside the browser. Generated files are saved under `results\images`.
 
-The downloader also creates zero-copy aliases for ComfyUI's built-in Z-Image and distilled FLUX.2 template filenames. These aliases consume no second copy of the model weights and prevent missing template filenames from silently falling back to an incompatible model.
+For Control, Reference, and Upscale apps, select or upload an image in the right input panel before clicking Run. The bundled reference image keeps the underlying graph complete, but App Mode intentionally treats image inputs as a user choice.
 
-Change width and height in the grouped node labelled **Canvas - edit width and height here**. The tested core orientations are square `1024 × 1024`, landscape `1216 × 832`, and portrait `832 × 1216`.
+## Six core generation apps
 
-## Canvas presets
+These are separate apps on purpose: each graph loads only the model, text encoder, and VAE belonging to its own architecture.
 
-| Orientation | Label | Size | Ratio |
+| App | Type | Best for | Steps | Measured average | Measured peak VRAM |
+|---|---|---|---:|---:|---:|
+| RealVisXL Natural Photo | Realistic | Natural people and everyday photography | 30 | 18.91 s | 7,726 MiB |
+| Juggernaut Cinematic Photo | Realistic | Dramatic lighting and cinematic scenes | 35 | 21.71 s | 7,409 MiB |
+| Animagine Anime | Anime | Rich modern anime character art | 28 | 18.18 s | 7,475 MiB |
+| Illustrious Anime | Anime | Clean, detailed illustration | 30 | 19.64 s | 7,440 MiB |
+| Z-Image Photoreal | Photorealistic | Faces, skin texture, and fast finished images | 8 | 9.27 s | 7,605 MiB |
+| FLUX.2 Klein Photoreal | Photorealistic | Fast previews and strong prompt following | 4 | 5.23 s | 7,640 MiB |
+
+Times are averages across square, landscape, and portrait runs on this PC. See [MODEL_COMPARISON.md](MODEL_COMPARISON.md) for payload, architecture, precision, per-orientation results, source cards, and license notes.
+
+## Nine advanced apps
+
+| Group | App | What it does | Required input |
+|---|---|---|---|
+| Control | SDXL Canny Control | Follows edges and composition | Image, prompt, aspect ratio |
+| Control | SDXL Depth Control | Follows scene depth | Image, prompt, aspect ratio |
+| Control | SDXL Pose Control | Follows a person's pose | Image, prompt, aspect ratio |
+| Control | Z-Image Canny Control | Fast photorealistic edge control | Image and prompt |
+| Reference | SDXL Reference Image | Guides style and composition with IPAdapter | Image and prompt |
+| Detail | SDXL Face Detail | Generates and refines detected faces | Prompt and canvas size |
+| Upscale | Photo Upscale 2x | Doubles photo dimensions | Image |
+| Upscale | Photo Upscale 4x | Enlarges photos four times | Image |
+| Upscale | Anime Upscale 4x | Enlarges anime line art four times | Image |
+
+The advanced stack is pinned to five reviewed extensions and 11 support assets. Canny, depth, pose, Z-Image ControlNet, IPAdapter, FaceDetailer, and all three upscalers have completed real prompts through the live local server.
+
+## Aspect ratios and orientations
+
+| Orientation | App label | Size | Ratio |
 |---|---|---:|---:|
-| Square | Square | 1024 × 1024 | 1:1 |
-| Landscape | Standard | 1152 × 896 | 9:7 |
-| Landscape | Photo | 1216 × 832 | 19:13 |
-| Landscape | Wide | 1344 × 768 | 7:4 |
-| Portrait | Standard | 896 × 1152 | 7:9 |
-| Portrait | Photo | 832 × 1216 | 13:19 |
-| Portrait | Tall | 768 × 1344 | 4:7 |
+| Square | Square 1:1 | 1024 × 1024 | 1:1 |
+| Portrait | Portrait 4:5 | 896 × 1152 | 4:5 |
+| Portrait | Photo Portrait 2:3 | 832 × 1216 | 2:3 |
+| Portrait | Tall 9:16 | 768 × 1344 | 9:16 |
+| Landscape | Landscape 5:4 | 1152 × 896 | 5:4 |
+| Landscape | Photo Landscape 3:2 | 1216 × 832 | 3:2 |
+| Landscape | Wide 16:9 | 1344 × 768 | 16:9 |
 
-Use dimensions divisible by 16 for the modern workflows. The supplied presets are deliberately conservative for 8 GB VRAM.
+The four SDXL Create apps expose width and height directly. Control apps expose the named preset dropdown. Z-Image and FLUX.2 expose their model-safe width and height controls. The supplied sizes are divisible by 16 and conservative for 8 GB VRAM.
 
-## Useful commands
+## Why the matrix-shape error happened
+
+The earlier error was:
+
+```text
+RuntimeError: mat1 and mat2 shapes cannot be multiplied (512x2560 and 7680x3072)
+```
+
+This is a model-family mismatch, not an Opera GX problem. An SDXL, Z-Image, or FLUX.2 text encoder produced embeddings with a shape that a different model architecture could not accept. The Local Studio apps prevent this by isolating each family:
+
+| Family | Loader shape |
+|---|---|
+| SDXL | One checkpoint supplies its matching model, CLIP encoders, and VAE |
+| Z-Image | Z-Image diffusion model + matching Qwen encoder + Z-Image VAE |
+| FLUX.2 | FLUX.2 Klein diffusion model + matching Qwen encoder + FLUX.2 VAE |
+
+Do not swap loaders, text encoders, LoRAs, or conditioning links between these rows. Open another Local Studio app when changing families. The official Z-Image and [FLUX.2 Klein](https://docs.comfy.org/tutorials/flux/flux-2-klein) guides likewise define separate diffusion, text-encoder, and VAE files for their workflows.
+
+## Verification and maintenance
 
 ```powershell
-# Quick runtime/config check; does not re-hash 44.5 GB
-.\scripts\verify.ps1 -StaticOnly -SkipArtifactHashes
+# Fast check: runtime, GPU, app JSON, and exact extension pins
+.\scripts\verify.ps1 -StaticOnly -SkipArtifactHashes -RequireExtensions
 
-# Full independent model size and SHA-256 check
-.\scripts\verify.ps1 -StaticOnly -RequireModels
+# Full check: all core models, support assets, apps, nodes, and live HTTP server
+.\scripts\verify.ps1 -RequireModels -RequireExtensions -RequireSupportAssets
 
-# Recreate all 18 square/landscape/portrait proofs and metrics
+# Recreate the 18 core model/orientation proofs and metrics
 .\scripts\benchmark.ps1
 
-# Optional troubleshooting mode; the tested default is preferred
+# Optional troubleshooting mode; use only if the normal launch runs out of memory
 .\scripts\start.ps1 -LowVram
 ```
 
@@ -57,36 +104,37 @@ Press `Ctrl+C` in the launch terminal to stop ComfyUI. If the verified server is
 ## What is pinned
 
 - ComfyUI commit `d0fec2ef7e7086533fde261de3fdb88289bdca9e`
-- Python 3.13 isolated in `.venv`
+- Python 3.13 in `.venv`
 - PyTorch `2.11.0+cu130`, torchvision `0.26.0+cu130`, torchaudio `2.11.0+cu130`
-- Ten model artifacts with immutable revision URLs, exact byte counts, and SHA-256 digests
-- Official workflow-template and front-end source commits
+- Ten core model artifacts and 11 support assets with immutable URLs, byte counts, and SHA-256 digests
+- Five exact extension commits plus the small tracked `comfyui_local_studio` node package
+- Fifteen generated App Mode workflows installed by `scripts\setup.ps1`
 
-The choices follow ComfyUI's current [Python 3.13 and CUDA 13 guidance](https://docs.comfy.org/installation/system_requirements). ComfyUI's [dynamic VRAM system](https://github.com/Comfy-Org/ComfyUI/discussions/12699) is left at its tested default; do not add `--highvram` on this 8 GB GPU.
+ComfyUI's dynamic VRAM behaviour is left at its tested default. Do not add `--highvram` on this 8 GB GPU; close other GPU-heavy programs if a large canvas runs near the limit.
 
 ## Project map
 
-- `model-manifest.json` — six models, prompts, settings, sources, licenses, artifact hashes
-- `config\aspect-ratios.json` — the seven canvas presets
-- `workflows\ui` — editable ComfyUI graphs
-- `workflows\api` — minimal benchmark graphs
-- `scripts\setup.ps1` — idempotent runtime provisioning
-- `scripts\download-models.ps1` — resumable verified acquisition
-- `scripts\sync-workflows.ps1` — deterministic official-workflow sync
-- `scripts\benchmark.ps1` — generation, timing, GPU-memory sampling, proof copy
-- `MODEL_COMPARISON.md` — model selection and measured statistics
-- `results\proof` — the 18 generated proof PNGs (local, intentionally not committed)
+- `model-manifest.json` — six core models, prompts, settings, sources, licenses, and hashes
+- `support-model-manifest.json` — ControlNet, preprocessors, IPAdapter, face detector, and upscalers
+- `extensions-manifest.json` — five extension repositories and exact commits
+- `workflow-catalog.json` — the 15 installed apps
+- `config\aspect-ratios.json` — seven canvas presets
+- `workflows\apps` — generated, family-isolated App Mode workflows
+- `workflows\ui` — editable core graphs
+- `scripts\setup.ps1` — idempotent runtime and app provisioning
+- `scripts\download-models.ps1` — resumable, hash-verified downloads
+- `scripts\sync-studio-apps.ps1` — deterministic App Mode generation and installation
+- `scripts\benchmark.ps1` — generation, timing, GPU-memory sampling, and proof collection
 
-The runtime checkout, environment, models, and generated images are ignored by Git because they are large or machine-specific. Reproducible configuration and evidence remain tracked.
-
-## Rebuild from scratch
+## Rebuild
 
 ```powershell
 .\scripts\setup.ps1
 .\scripts\download-models.ps1
 .\scripts\sync-workflows.ps1
-.\scripts\verify.ps1 -StaticOnly -RequireModels
+.\scripts\sync-studio-apps.ps1
+.\scripts\verify.ps1 -StaticOnly -RequireModels -RequireExtensions -RequireSupportAssets
 .\scripts\start.ps1
 ```
 
-Model licenses differ. Review the linked model card before commercial deployment; the local comparison is technical guidance, not a grant of rights.
+Model and extension licenses differ. Review each linked source card before redistribution, paid API use, or commercial deployment.

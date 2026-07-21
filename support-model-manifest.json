@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "requiredFreeBytes": 12884901888,
+  "artifacts": [
+    {
+      "id": "sdxl-controlnet-union-promax",
+      "name": "SDXL ControlNet Union ProMax",
+      "family": "SDXL",
+      "license": "Apache-2.0",
+      "url": "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/801a4a3fa3d4c936f4feea95b98607bc6726f80c/diffusion_pytorch_model_promax.safetensors?download=true",
+      "target": "controlnet/sdxl-controlnet-union-promax.safetensors",
+      "bytes": 2513342408,
+      "sha256": "9fae2e50cb431bfcbe05822b59ec2228df545ef27f711dea8949e9f4ed9f7cdc"
+    },
+    {
+      "id": "z-image-controlnet-union-lite",
+      "name": "Z-Image Turbo Fun ControlNet Union 2.1 Lite",
+      "family": "Z-Image",
+      "license": "Apache-2.0",
+      "url": "https://huggingface.co/alibaba-pai/Z-Image-Turbo-Fun-Controlnet-Union-2.1/resolve/5155fc56d17821007d6f62ac192c09e0f0e72016/Z-Image-Turbo-Fun-Controlnet-Union-2.1-lite-2602-8steps.safetensors?download=true",
+      "target": "model_patches/Z-Image-Turbo-Fun-Controlnet-Union-2.1-lite-2602-8steps.safetensors",
+      "bytes": 2016627488,
+      "sha256": "3ea098db9bd145be525c7e2366920b6d76c5ffd46b3d7aa8169bbc943fdaee35"
+    },
+    {
+      "id": "clip-vision-vit-h",
+      "name": "OpenCLIP ViT-H image encoder",
+      "family": "SDXL",
+      "license": "Apache-2.0",
+      "url": "https://huggingface.co/h94/IP-Adapter/resolve/018e402774aeeddd60609b4ecdb7e298259dc729/models/image_encoder/model.safetensors?download=true",
+      "target": "clip_vision/CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+      "bytes": 2528373448,
+      "sha256": "6ca9667da1ca9e0b0f75e46bb030f7e011f44f86cbfb8d5a36590fcd7507b030"
+    },
+    {
+      "id": "ipadapter-plus-sdxl-vit-h",
+      "name": "IPAdapter Plus SDXL ViT-H",
+      "family": "SDXL",
+      "license": "Apache-2.0",
+      "url": "https://huggingface.co/h94/IP-Adapter/resolve/018e402774aeeddd60609b4ecdb7e298259dc729/sdxl_models/ip-adapter-plus_sdxl_vit-h.safetensors?download=true",
+      "target": "ipadapter/ip-adapter-plus_sdxl_vit-h.safetensors",
+      "bytes": 847517512,
+      "sha256": "3f5062b8400c94b7159665b21ba5c62acdcd7682262743d7f2aefedef00e6581"
+    },
+    {
+      "id": "depth-anything-v2-small",
+      "name": "Depth Anything V2 Small",
+      "family": "Preprocessor",
+      "license": "Apache-2.0",
+      "url": "https://huggingface.co/depth-anything/Depth-Anything-V2-Small/resolve/03876f8651c73a60fe4c2c48294e09fcb6838fcf/depth_anything_v2_vits.pth?download=true",
+      "target": "controlnet_aux/depth-anything/Depth-Anything-V2-Small/depth_anything_v2_vits.pth",
+      "bytes": 99218434,
+      "sha256": "715fade13be8f229f8a70cc02066f656f2423a59effd0579197bbf57860e1378"
+    },
+    {
+      "id": "dwpose-torchscript",
+      "name": "DWPose TorchScript Batch Size 5",
+      "family": "Preprocessor",
+      "license": "Apache-2.0 weights; non-commercial wrapper limitation",
+      "url": "https://huggingface.co/hr16/DWPose-TorchScript-BatchSize5/resolve/359d662a9b33b73f6d0f21732baf8845f17bb4be/dw-ll_ucoco_384_bs5.torchscript.pt?download=true",
+      "target": "controlnet_aux/hr16/DWPose-TorchScript-BatchSize5/dw-ll_ucoco_384_bs5.torchscript.pt",
+      "bytes": 135059124,
+      "sha256": "d86a0b2b59fddc0901a7076e9f59c9f8602602133ed72511c693fd11eea23d91"
+    },
+    {
+      "id": "yolox-l-torchscript",
+      "name": "YOLOX-L TorchScript",
+      "family": "Preprocessor",
+      "license": "Apache-2.0",
+      "url": "https://huggingface.co/hr16/yolox-onnx/resolve/a124b32c3b7c5cebda1c7cd96178f0f9d2050125/yolox_l.torchscript.pt?download=true",
+      "target": "controlnet_aux/hr16/yolox-onnx/yolox_l.torchscript.pt",
+      "bytes": 217697649,
+      "sha256": "80bc14b13c260c24b3014cd42c02994bf52296ab8fa2d80a60b6afe08c93ef42"
+    },
+    {
+      "id": "realesrgan-x2plus",
+      "name": "RealESRGAN x2 Plus",
+      "family": "Upscaler",
+      "license": "BSD-3-Clause",
+      "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth",
+      "target": "upscale_models/RealESRGAN_x2plus.pth",
+      "bytes": 67061725,
+      "sha256": "49fafd45f8fd7aa8d31ab2a22d14d91b536c34494a5cfe31eb5d89c2fa266abb"
+    },
+    {
+      "id": "realesrgan-x4plus",
+      "name": "RealESRGAN x4 Plus",
+      "family": "Upscaler",
+      "license": "BSD-3-Clause",
+      "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth",
+      "target": "upscale_models/RealESRGAN_x4plus.pth",
+      "bytes": 67040989,
+      "sha256": "4fa0d38905f75ac06eb49a7951b426670021be3018265fd191d2125df9d682f1"
+    },
+    {
+      "id": "realesrgan-x4plus-anime",
+      "name": "RealESRGAN x4 Plus Anime 6B",
+      "family": "Upscaler",
+      "license": "BSD-3-Clause",
+      "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.4/RealESRGAN_x4plus_anime_6B.pth",
+      "target": "upscale_models/RealESRGAN_x4plus_anime_6B.pth",
+      "bytes": 17938799,
+      "sha256": "f872d837d3c90ed2e05227bed711af5671a6fd1c9f7d7e91c911a61f155e99da"
+    },
+    {
+      "id": "face-yolov8n",
+      "name": "YOLOv8n face detector",
+      "family": "Detector",
+      "license": "AGPL-3.0 through the Ultralytics runtime",
+      "url": "https://huggingface.co/Bingsu/adetailer/resolve/53cc19de382014514d9d4038601d261a7faa9b7b/face_yolov8n.pt?download=true",
+      "target": "ultralytics/bbox/face_yolov8n.pt",
+      "bytes": 6230011,
+      "sha256": "70b640f8f60b1cf0dcc72f30caf3da9495eb2fb6509da48c53374ad6806e6a9c"
+    }
+  ]
+}

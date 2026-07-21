@@ -3,7 +3,10 @@ param(
     [switch]$ValidateOnly,
     [switch]$PrintExtraModelPaths,
     [switch]$PrintSyncCommand,
-    [switch]$PrintVenvAction
+    [switch]$PrintVenvAction,
+    [switch]$PrintExtensionPlan,
+    [switch]$PrintExtensionHookPolicy,
+    [switch]$RepairExtensions
 )
 
 $ErrorActionPreference = 'Stop'
@@ -13,10 +16,12 @@ Set-StrictMode -Version Latest
 $root = Get-ProjectRoot
 $version = Read-Json (Join-Path $root 'comfyui-version.json')
 $manifest = Read-Json (Join-Path $root 'model-manifest.json')
+$extensionsManifest = Read-Json (Join-Path $root 'extensions-manifest.json')
 $comfyPath = Join-Path $root 'ComfyUI'
 $venvPath = Join-Path $root '.venv'
 $pythonPath = Join-Path $venvPath 'Scripts\python.exe'
 $lockPath = Join-Path $root 'requirements.lock.txt'
+$extensionDownloadMarker = Join-Path $comfyPath 'custom_nodes\skip_download_model'
 $syncArguments = @(
     'pip', 'sync',
     '--python', $pythonPath,
@@ -70,6 +75,71 @@ function Test-Prerequisites {
     Write-Output ('free disk space: {0:N1} GiB' -f ($drive.Free / 1GB))
 }
 
+function Invoke-ExtensionInstall {
+    param([Parameter(Mandatory)]$Extension)
+
+    $customNodesPath = Join-Path $comfyPath 'custom_nodes'
+    $extensionPath = Join-Path $customNodesPath $Extension.name
+    $wasInstalled = $false
+    New-Item -ItemType Directory -Force -Path $customNodesPath | Out-Null
+
+    if (-not (Test-Path -LiteralPath $extensionPath)) {
+        if ($PSCmdlet.ShouldProcess($extensionPath, "Clone $($Extension.id)")) {
+            Invoke-Native git @('clone', '--filter=blob:none', $Extension.repository, $extensionPath)
+            $wasInstalled = $true
+        }
+    }
+
+    Assert-Condition (Test-Path -LiteralPath (Join-Path $extensionPath '.git')) "$($Extension.id) is not a Git checkout"
+    $origin = (& git -C $extensionPath remote get-url origin).Trim()
+    Assert-Condition ($origin -eq $Extension.repository) "Unexpected $($Extension.id) origin: $origin"
+
+    $dirty = (& git -C $extensionPath status --porcelain) -join ''
+    if (-not [string]::IsNullOrWhiteSpace($dirty)) {
+        Assert-Condition $RepairExtensions "$($Extension.id) has local changes; rerun with -RepairExtensions to restore its pin"
+        if ($PSCmdlet.ShouldProcess($extensionPath, "Discard local changes in $($Extension.id)")) {
+            Invoke-Native git @('-C', $extensionPath, 'reset', '--hard', 'HEAD')
+            Invoke-Native git @('-C', $extensionPath, 'clean', '-fd')
+        }
+    }
+
+    $currentCommit = (& git -C $extensionPath rev-parse HEAD).Trim()
+    if ($currentCommit -ne $Extension.commit) {
+        if ($PSCmdlet.ShouldProcess($extensionPath, "Checkout $($Extension.commit)")) {
+            Invoke-Native git @('-C', $extensionPath, 'fetch', 'origin', $Extension.commit, '--depth', '1')
+            Invoke-Native git @('-C', $extensionPath, 'checkout', '--detach', $Extension.commit)
+            $wasInstalled = $true
+        }
+    }
+
+    $actualCommit = (& git -C $extensionPath rev-parse HEAD).Trim()
+    Assert-Condition ($actualCommit -eq $Extension.commit) "Unexpected $($Extension.id) commit: $actualCommit"
+
+    if ($wasInstalled -and -not [string]::IsNullOrWhiteSpace($Extension.installHook)) {
+        $hook = Join-Path $extensionPath $Extension.installHook
+        Assert-Condition (Test-Path -LiteralPath $hook) "$($Extension.id) install hook is missing"
+        if ($PSCmdlet.ShouldProcess($hook, "Run $($Extension.id) install hook")) {
+            Invoke-Native $pythonPath @($hook)
+        }
+    }
+}
+
+function Install-LocalStudioNode {
+    $source = Join-Path $root 'custom_nodes\comfyui_local_studio'
+    $destination = Join-Path $comfyPath 'custom_nodes\comfyui_local_studio'
+    Assert-Condition (Test-Path -LiteralPath (Join-Path $source '__init__.py')) 'Tracked studio node is missing'
+
+    if (Test-Path -LiteralPath $destination) {
+        $item = Get-Item -LiteralPath $destination -Force
+        Assert-Condition (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) 'Studio node destination exists but is not a link'
+        return
+    }
+
+    if ($PSCmdlet.ShouldProcess($destination, 'Link tracked studio node into ComfyUI')) {
+        New-Item -ItemType Junction -Path $destination -Target $source | Out-Null
+    }
+}
+
 if ($PrintExtraModelPaths) {
     Write-Output (Get-ExtraModelPathsYaml)
     exit 0
@@ -82,6 +152,21 @@ if ($PrintSyncCommand) {
 
 if ($PrintVenvAction) {
     if (Test-Path -LiteralPath $pythonPath) { Write-Output 'reuse' } else { Write-Output 'create' }
+    exit 0
+}
+
+if ($PrintExtensionPlan) {
+    foreach ($extension in $extensionsManifest.extensions) {
+        Write-Output "$($extension.id)@$($extension.commit)"
+    }
+    Write-Output 'comfyui-local-studio@tracked'
+    exit 0
+}
+
+if ($PrintExtensionHookPolicy) {
+    Write-Output "COMFYUI_PATH=$comfyPath"
+    Write-Output "COMFYUI_MODEL_PATH=$(Join-Path $root 'models')"
+    Write-Output "SKIP_DOWNLOAD_MARKER=$extensionDownloadMarker"
     exit 0
 }
 
@@ -114,11 +199,50 @@ if ($PSCmdlet.ShouldProcess($venvPath, 'Create and synchronize Python environmen
     Invoke-Native uv $syncArguments
 }
 
-foreach ($relativePath in @('checkpoints\realistic', 'checkpoints\anime', 'diffusion_models', 'text_encoders', 'vae')) {
+# Impact Pack and its subpack honor this marker. All model downloads belong in
+# the reviewed manifests instead of being hidden side effects of install hooks.
+$customNodesPath = Split-Path -Parent $extensionDownloadMarker
+New-Item -ItemType Directory -Force -Path $customNodesPath | Out-Null
+New-Item -ItemType File -Force -Path $extensionDownloadMarker | Out-Null
+$env:COMFYUI_PATH = $comfyPath
+$env:COMFYUI_MODEL_PATH = Join-Path $root 'models'
+
+foreach ($extension in $extensionsManifest.extensions) {
+    Invoke-ExtensionInstall -Extension $extension
+}
+Install-LocalStudioNode
+
+# Install hooks may inspect or modify the environment. The committed lock wins.
+if ($PSCmdlet.ShouldProcess($venvPath, 'Re-synchronize pinned packages after extension hooks')) {
+    Invoke-Native uv $syncArguments
+}
+
+foreach ($relativePath in @(
+    'checkpoints\realistic',
+    'checkpoints\anime',
+    'diffusion_models',
+    'text_encoders',
+    'vae',
+    'controlnet',
+    'model_patches',
+    'clip_vision',
+    'ipadapter',
+    'controlnet_aux',
+    'upscale_models',
+    'ultralytics\bbox',
+    'loras\sdxl',
+    'loras\z-image',
+    'loras\flux2'
+)) {
     New-Item -ItemType Directory -Force -Path (Join-Path $root "models\$relativePath") | Out-Null
+}
+
+foreach ($relativePath in @('data\user', 'data\input', 'data\temp', 'results\images')) {
+    New-Item -ItemType Directory -Force -Path (Join-Path $root $relativePath) | Out-Null
 }
 
 $extraPathsFile = Join-Path $comfyPath 'extra_model_paths.yaml'
 Set-Content -LiteralPath $extraPathsFile -Value (Get-ExtraModelPathsYaml) -Encoding utf8
+& (Join-Path $PSScriptRoot 'sync-studio-apps.ps1')
 Write-Output "ComfyUI runtime ready at $comfyPath"
 Write-Output "Python environment ready at $venvPath"

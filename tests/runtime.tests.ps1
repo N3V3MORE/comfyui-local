@@ -20,12 +20,30 @@ Test-Case 'low-VRAM launch adds one explicit flag' {
 }
 
 Test-Case 'static verification proves runtime and distinguishes missing models' {
-    $output = ((& $verifyScript -StaticOnly -SkipArtifactHashes) -join "`n")
+    $output = ((& $verifyScript -StaticOnly -SkipArtifactHashes -RequireExtensions) -join "`n")
 
     Assert-True ($output -match 'ComfyUI commit: d0fec2ef7e7086533fde261de3fdb88289bdca9e') 'verification reports exact commit'
     Assert-True ($output -match 'Torch: 2\.11\.0\+cu130') 'verification reports exact Torch'
     Assert-True ($output -match 'CUDA available: True') 'verification reports CUDA'
     Assert-True ($output -match 'GPU: NVIDIA GeForce RTX 5060 Laptop GPU') 'verification reports GPU'
     Assert-True ($output -match 'Artifact records: 10; hash checks skipped') 'routine verification skips expensive model hashes'
+    Assert-True ($output -match 'Support artifact records: 11; hash checks skipped') 'routine verification reports support artifacts'
     Assert-True ($output -match 'UI workflows: 4 valid') 'verification validates four workflows'
+    Assert-True ($output -match 'Studio apps: 15 valid') 'verification validates fifteen apps'
+    Assert-True ($output -match 'Extensions: 5 pinned') 'verification validates extension pins'
+}
+
+Test-Case 'live verification retries a transient Studio workflow listing' {
+    $source = Get-Content -LiteralPath $verifyScript -Raw
+
+    Assert-True ($source -match '\$workflowListAttempts\s*=\s*3') 'live verification defines three bounded workflow-list attempts'
+    Assert-True ($source -match 'Start-Sleep -Seconds 1') 'live verification briefly waits between attempts'
+}
+
+Test-Case 'live verification flattens the Invoke-RestMethod array response' {
+    $source = Get-Content -LiteralPath $verifyScript -Raw
+
+    Assert-True ($source -match '\$workflowResponse\s*=\s*Invoke-RestMethod') 'workflow response is captured before array normalization'
+    Assert-True ($source -match '\$served\s*=\s*@\(\$workflowResponse\)') 'workflow response is flattened from a variable expression'
+    Assert-True ($source -notmatch '\$served\s*=\s*@\(Invoke-RestMethod') 'Invoke-RestMethod is not directly wrapped as a nested array'
 }

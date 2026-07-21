@@ -54,6 +54,15 @@ Test-Case 'queued prompts tolerate an empty history response' {
     Assert-True ((Get-ComfyHistoryEntry -History $completedHistory -PromptId 'prompt-1').status.completed) 'completed prompt entry is returned'
 }
 
+Test-Case 'completed prompts ignore node outputs that do not contain images' {
+    . $benchmarkScript -LibraryOnly
+    $outputs = '{"pose":{"pose_keypoint":[{"people":[]}]},"save":{"images":[{"filename":"pose.png","subfolder":"","type":"output"}]}}' | ConvertFrom-Json
+    $images = @(Get-ComfyImages -Outputs $outputs)
+
+    Assert-Equal 1 $images.Count 'collected image count'
+    Assert-Equal 'pose.png' $images[0].filename 'collected image filename'
+}
+
 Test-Case 'VRAM monitoring keeps the highest valid sample' {
     . $benchmarkScript -LibraryOnly
     $samples = @('1008', '4921', 'not-a-number', '4380')

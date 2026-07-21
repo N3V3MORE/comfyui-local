@@ -12,6 +12,17 @@ Test-Case 'README gives a direct local launch and orientation path' {
     Assert-True ($readme -match '832.+1216') 'README includes portrait dimensions'
 }
 
+Test-Case 'README explains the isolated Opera App Mode workflow' {
+    $readme = Get-Content -LiteralPath (Join-Path $projectRoot 'README.md') -Raw
+
+    Assert-True ($readme -match 'ComfyUI Local Studio') 'README names the installed app collection'
+    Assert-True ($readme -match 'RealVisXL Natural Photo') 'README lists a core create app'
+    Assert-True ($readme -match 'SDXL Canny Control') 'README lists an advanced control app'
+    Assert-True ($readme -match 'Photo Upscale 2x') 'README lists an image-input app'
+    Assert-True ($readme -match 'mat1 and mat2 shapes cannot be multiplied') 'README explains the reported model-family error'
+    Assert-True ($readme -match 'select or upload') 'README explains image input in App Mode'
+}
+
 Test-Case 'comparison documents all six models and measured 8 GB results' {
     $comparisonPath = Join-Path $projectRoot 'MODEL_COMPARISON.md'
     Assert-True (Test-Path -LiteralPath $comparisonPath) 'comparison exists'

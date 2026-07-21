@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
     [switch]$LowVram,
+    [switch]$CoreOnly,
     [switch]$PrintCommand
 )
 
@@ -11,8 +12,25 @@ Set-StrictMode -Version Latest
 $root = Get-ProjectRoot
 $python = Join-Path $root '.venv\Scripts\python.exe'
 $main = Join-Path $root 'ComfyUI\main.py'
-$arguments = @($main, '--listen', '127.0.0.1', '--port', '8188', '--preview-method', 'auto')
+$models = Join-Path $root 'models'
+$user = Join-Path $root 'data\user'
+$inputDirectory = Join-Path $root 'data\input'
+$tempDirectory = Join-Path $root 'data\temp'
+$outputDirectory = Join-Path $root 'results\images'
+$arguments = @(
+    $main,
+    '--listen', '127.0.0.1',
+    '--port', '8188',
+    '--preview-method', 'auto',
+    '--models-directory', $models,
+    '--user-directory', $user,
+    '--input-directory', $inputDirectory,
+    '--temp-directory', $tempDirectory,
+    '--output-directory', $outputDirectory,
+    '--enable-manager'
+)
 if ($LowVram) { $arguments += '--lowvram' }
+if ($CoreOnly) { $arguments += '--disable-all-custom-nodes' }
 
 if ($PrintCommand) {
     Write-Output ((@($python) + $arguments) -join ' ')
@@ -21,6 +39,11 @@ if ($PrintCommand) {
 
 Assert-Condition (Test-Path -LiteralPath $python) 'Run scripts/setup.ps1 before starting ComfyUI'
 Assert-Condition (Test-Path -LiteralPath $main) 'Pinned ComfyUI checkout is missing'
+
+foreach ($path in @($models, $user, $inputDirectory, $tempDirectory, $outputDirectory)) {
+    New-Item -ItemType Directory -Force -Path $path | Out-Null
+}
+$env:AUX_ANNOTATOR_CKPTS_PATH = Join-Path $models 'controlnet_aux'
 
 try {
     $existing = Invoke-RestMethod -Uri 'http://127.0.0.1:8188/system_stats' -TimeoutSec 2
@@ -47,4 +70,3 @@ try {
 finally {
     Pop-Location
 }
-

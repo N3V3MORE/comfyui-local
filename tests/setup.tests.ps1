@@ -42,3 +42,33 @@ Test-Case 'setup reuses an existing virtual environment' {
         Assert-Equal 'create' $action 'missing virtual environment action'
     }
 }
+
+Test-Case 'setup prints the exact extension and local-node installation plan' {
+    $output = @(& $setupScript -PrintExtensionPlan)
+
+    Assert-Equal 6 $output.Count 'extension plan line count'
+    foreach ($expected in @(
+        'rgthree-comfy@27b4f4cdcf3b127c29d5d8135ac1536ecbd4c383',
+        'comfyui-impact-pack@429d0159ad429e64d2b3916e6e7be9c22d025c3c',
+        'comfyui-impact-subpack@50c7b71a6a224734cc9b21963c6d1926816a97f1',
+        'comfyui-controlnet-aux@e8b689a513c3e6b63edc44066560ca5919c0576e',
+        'comfyui-ipadapter-plus@a0f451a5113cf9becb0847b92884cb10cbdec0ef',
+        'comfyui-local-studio@tracked'
+    )) {
+        Assert-True ($expected -in $output) "extension plan must contain $expected"
+    }
+}
+
+Test-Case 'setup blocks extension hooks from downloading unmanifested models' {
+    $output = @(& $setupScript -PrintExtensionHookPolicy)
+
+    Assert-True ($output -contains "COMFYUI_PATH=$projectRoot\ComfyUI") 'hook policy exposes the pinned ComfyUI path'
+    Assert-True ($output -contains "COMFYUI_MODEL_PATH=$projectRoot\models") 'hook policy redirects models to the project model store'
+    Assert-True ($output -contains "SKIP_DOWNLOAD_MARKER=$projectRoot\ComfyUI\custom_nodes\skip_download_model") 'hook policy creates the supported download opt-out marker'
+}
+
+Test-Case 'setup installs the Studio app catalog' {
+    $source = Get-Content -LiteralPath $setupScript -Raw
+
+    Assert-True ($source -match "sync-studio-apps\.ps1") 'setup invokes the deterministic Studio app sync'
+}

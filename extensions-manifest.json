@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "extensions": [
+    {
+      "id": "rgthree-comfy",
+      "name": "rgthree-comfy",
+      "repository": "https://github.com/rgthree/rgthree-comfy.git",
+      "commit": "27b4f4cdcf3b127c29d5d8135ac1536ecbd4c383",
+      "license": "MIT",
+      "purpose": "Graph navigation, seed controls, switches, and workflow quality of life",
+      "installHook": null,
+      "requiredNodeTypes": [
+        "Seed (rgthree)"
+      ]
+    },
+    {
+      "id": "comfyui-impact-pack",
+      "name": "ComfyUI-Impact-Pack",
+      "repository": "https://github.com/ltdrdata/ComfyUI-Impact-Pack.git",
+      "commit": "429d0159ad429e64d2b3916e6e7be9c22d025c3c",
+      "license": "GPL-3.0",
+      "purpose": "Face detail, regional refinement, and lazy workflow switching",
+      "installHook": "install.py",
+      "requiredNodeTypes": [
+        "FaceDetailer",
+        "ImpactSwitch"
+      ]
+    },
+    {
+      "id": "comfyui-impact-subpack",
+      "name": "ComfyUI-Impact-Subpack",
+      "repository": "https://github.com/ltdrdata/ComfyUI-Impact-Subpack.git",
+      "commit": "50c7b71a6a224734cc9b21963c6d1926816a97f1",
+      "license": "AGPL-3.0",
+      "purpose": "Ultralytics detector provider for portrait detailing",
+      "installHook": "install.py",
+      "requiredNodeTypes": [
+        "UltralyticsDetectorProvider"
+      ]
+    },
+    {
+      "id": "comfyui-controlnet-aux",
+      "name": "comfyui_controlnet_aux",
+      "repository": "https://github.com/Fannovel16/comfyui_controlnet_aux.git",
+      "commit": "e8b689a513c3e6b63edc44066560ca5919c0576e",
+      "license": "Apache-2.0; DWPose wrapper contains non-commercial OpenPose-derived code",
+      "purpose": "Depth Anything V2 and DWPose preprocessing",
+      "installHook": null,
+      "requiredNodeTypes": [
+        "DepthAnythingV2Preprocessor",
+        "DWPreprocessor"
+      ]
+    },
+    {
+      "id": "comfyui-ipadapter-plus",
+      "name": "ComfyUI_IPAdapter_plus",
+      "repository": "https://github.com/cubiq/ComfyUI_IPAdapter_plus.git",
+      "commit": "a0f451a5113cf9becb0847b92884cb10cbdec0ef",
+      "license": "GPL-3.0",
+      "purpose": "SDXL image-prompt and style-reference conditioning",
+      "installHook": null,
+      "requiredNodeTypes": [
+        "IPAdapterModelLoader",
+        "IPAdapterAdvanced"
+      ]
+    }
+  ]
+}

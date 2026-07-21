@@ -138,6 +138,18 @@ function Get-ComfyHistoryEntry {
     return $property.Value
 }
 
+function Get-ComfyImages {
+    param([Parameter(Mandatory)]$Outputs)
+
+    foreach ($output in $Outputs.PSObject.Properties.Value) {
+        $imagesProperty = $output.PSObject.Properties['images']
+        if ($null -eq $imagesProperty) { continue }
+        foreach ($image in @($imagesProperty.Value)) {
+            if ($null -ne $image) { Write-Output $image }
+        }
+    }
+}
+
 function Wait-ComfyPrompt {
     param(
         [Parameter(Mandatory)][string]$PromptId,
@@ -154,11 +166,7 @@ function Wait-ComfyPrompt {
                 throw "ComfyUI prompt failed: $PromptId"
             }
             if ([bool]$entry.status.completed) {
-                $images = @(
-                    $entry.outputs.PSObject.Properties.Value |
-                        ForEach-Object { @($_.images) } |
-                        Where-Object { $null -ne $_ }
-                )
+                $images = @(Get-ComfyImages -Outputs $entry.outputs)
                 Assert-Condition ($images.Count -gt 0) "Prompt completed without an image: $PromptId"
                 return [pscustomobject]@{ images = $images }
             }
