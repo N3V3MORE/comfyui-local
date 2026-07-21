@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "models": {
+    "realvis-xl-v5": {
+      "license": "OpenRAIL++",
+      "sourceUrl": "https://huggingface.co/SG161222/RealVisXL_V5.0"
+    },
+    "juggernaut-xl-v9": {
+      "license": "CreativeML Open RAIL-M; paid API deployment restricted",
+      "sourceUrl": "https://huggingface.co/RunDiffusion/Juggernaut-XL-v9"
+    },
+    "animagine-xl-4-opt": {
+      "license": "OpenRAIL++",
+      "sourceUrl": "https://huggingface.co/cagliostrolab/animagine-xl-4.0"
+    },
+    "illustrious-xl-v2": {
+      "license": "CreativeML Open RAIL-M",
+      "sourceUrl": "https://huggingface.co/OnomaAIResearch/Illustrious-XL-v2.0"
+    },
+    "z-image-turbo": {
+      "license": "Apache-2.0",
+      "sourceUrl": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"
+    },
+    "flux2-klein-4b": {
+      "license": "Apache-2.0",
+      "sourceUrl": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8"
+    }
+  },
+  "supportArtifacts": {
+    "sdxl-controlnet-union-promax": {
+      "license": "Apache-2.0",
+      "sourceUrl": "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0"
+    },
+    "z-image-controlnet-union-lite": {
+      "license": "Apache-2.0",
+      "sourceUrl": "https://huggingface.co/alibaba-pai/Z-Image-Turbo-Fun-Controlnet-Union-2.1"
+    },
+    "clip-vision-vit-h": {
+      "license": "Apache-2.0",
+      "sourceUrl": "https://huggingface.co/h94/IP-Adapter"
+    },
+    "ipadapter-plus-sdxl-vit-h": {
+      "license": "Apache-2.0",
+      "sourceUrl": "https://huggingface.co/h94/IP-Adapter"
+    },
+    "depth-anything-v2-small": {
+      "license": "Apache-2.0",
+      "sourceUrl": "https://huggingface.co/depth-anything/Depth-Anything-V2-Small"
+    },
+    "dwpose-torchscript": {
+      "license": "Apache-2.0 weights; non-commercial wrapper limitation",
+      "sourceUrl": "https://huggingface.co/hr16/DWPose-TorchScript-BatchSize5"
+    },
+    "yolox-l-torchscript": {
+      "license": "Apache-2.0",
+      "sourceUrl": "https://huggingface.co/hr16/yolox-onnx"
+    },
+    "realesrgan-x2plus": {
+      "license": "BSD-3-Clause",
+      "sourceUrl": "https://github.com/xinntao/Real-ESRGAN"
+    },
+    "realesrgan-x4plus": {
+      "license": "BSD-3-Clause",
+      "sourceUrl": "https://github.com/xinntao/Real-ESRGAN"
+    },
+    "realesrgan-x4plus-anime": {
+      "license": "BSD-3-Clause",
+      "sourceUrl": "https://github.com/xinntao/Real-ESRGAN"
+    },
+    "face-yolov8n": {
+      "license": "AGPL-3.0 through the Ultralytics runtime",
+      "sourceUrl": "https://huggingface.co/Bingsu/adetailer"
+    }
+  }
+}

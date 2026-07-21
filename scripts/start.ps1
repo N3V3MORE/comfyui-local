@@ -2,7 +2,8 @@
 param(
     [switch]$LowVram,
     [switch]$CoreOnly,
-    [switch]$PrintCommand
+    [switch]$PrintCommand,
+    [switch]$PrintEnvironment
 )
 
 $ErrorActionPreference = 'Stop'
@@ -17,6 +18,7 @@ $user = Join-Path $root 'data\user'
 $inputDirectory = Join-Path $root 'data\input'
 $tempDirectory = Join-Path $root 'data\temp'
 $outputDirectory = Join-Path $root 'results\images'
+$resolutionConfig = Join-Path $root 'config\resolutions.json'
 $arguments = @(
     $main,
     '--listen', '127.0.0.1',
@@ -36,6 +38,10 @@ if ($PrintCommand) {
     Write-Output ((@($python) + $arguments) -join ' ')
     exit 0
 }
+if ($PrintEnvironment) {
+    Write-Output "COMFYUI_LOCAL_CONFIG=$resolutionConfig"
+    exit 0
+}
 
 Assert-Condition (Test-Path -LiteralPath $python) 'Run scripts/setup.ps1 before starting ComfyUI'
 Assert-Condition (Test-Path -LiteralPath $main) 'Pinned ComfyUI checkout is missing'
@@ -44,6 +50,7 @@ foreach ($path in @($models, $user, $inputDirectory, $tempDirectory, $outputDire
     New-Item -ItemType Directory -Force -Path $path | Out-Null
 }
 $env:AUX_ANNOTATOR_CKPTS_PATH = Join-Path $models 'controlnet_aux'
+$env:COMFYUI_LOCAL_CONFIG = $resolutionConfig
 
 try {
     $existing = Invoke-RestMethod -Uri 'http://127.0.0.1:8188/system_stats' -TimeoutSec 2

@@ -1,4 +1,6 @@
 import sys
+import json
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -25,6 +27,16 @@ class StudioPresetTests(unittest.TestCase):
         }
 
         self.assertEqual(expected, self.presets.RESOLUTION_PRESETS)
+
+    def test_resolution_presets_are_loaded_from_json(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "resolutions.json"
+            path.write_text(
+                json.dumps({"version": 1, "resolutions": [{"label": "Tiny", "width": 64, "height": 128}]}),
+                encoding="utf-8",
+            )
+
+            self.assertEqual({"Tiny": (64, 128)}, self.presets.load_resolution_presets(path))
 
     def test_photo_style_composes_positive_and_negative_prompts(self) -> None:
         positive, negative = self.presets.compose_style(

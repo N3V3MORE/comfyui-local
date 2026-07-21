@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "models": [
+    {
+      "id": "realvis-xl-v5",
+      "name": "RealVisXL V5.0",
+      "category": "realistic",
+      "family": "sdxl",
+      "parameters": "2.6B",
+      "precision": "FP16",
+      "artifactIds": [
+        "realvis-xl-v5"
+      ],
+      "components": {
+        "checkpoint": "checkpoints/realistic/RealVisXL_V5.0_fp16.safetensors"
+      },
+      "sampling": {
+        "steps": 30,
+        "cfg": 5.0,
+        "sampler": "dpmpp_2m",
+        "scheduler": "karras"
+      }
+    },
+    {
+      "id": "juggernaut-xl-v9",
+      "name": "Juggernaut XL v9",
+      "category": "realistic",
+      "family": "sdxl",
+      "parameters": "2.6B",
+      "precision": "FP16",
+      "artifactIds": [
+        "juggernaut-xl-v9"
+      ],
+      "components": {
+        "checkpoint": "checkpoints/realistic/Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors"
+      },
+      "sampling": {
+        "steps": 35,
+        "cfg": 5.0,
+        "sampler": "dpmpp_2m",
+        "scheduler": "karras"
+      }
+    },
+    {
+      "id": "animagine-xl-4-opt",
+      "name": "Animagine XL 4.0 Opt",
+      "category": "anime",
+      "family": "sdxl",
+      "parameters": "2.6B",
+      "precision": "FP16",
+      "artifactIds": [
+        "animagine-xl-4-opt"
+      ],
+      "components": {
+        "checkpoint": "checkpoints/anime/animagine-xl-4.0-opt.safetensors"
+      },
+      "sampling": {
+        "steps": 28,
+        "cfg": 5.0,
+        "sampler": "euler_ancestral",
+        "scheduler": "normal"
+      }
+    },
+    {
+      "id": "illustrious-xl-v2",
+      "name": "Illustrious XL v2.0",
+      "category": "anime",
+      "family": "sdxl",
+      "parameters": "2.6B",
+      "precision": "FP16",
+      "artifactIds": [
+        "illustrious-xl-v2"
+      ],
+      "components": {
+        "checkpoint": "checkpoints/anime/Illustrious-XL-v2.0.safetensors"
+      },
+      "sampling": {
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler": "euler_ancestral",
+        "scheduler": "normal"
+      }
+    },
+    {
+      "id": "z-image-turbo",
+      "name": "Z-Image Turbo",
+      "category": "photorealistic",
+      "family": "z-image",
+      "parameters": "6B",
+      "precision": "NVFP4 diffusion + FP4-mixed text encoder",
+      "artifactIds": [
+        "z-image-nvfp4",
+        "z-image-qwen-fp4",
+        "z-image-vae"
+      ],
+      "components": {
+        "diffusion": "diffusion_models/z_image_turbo_nvfp4.safetensors",
+        "textEncoder": "text_encoders/qwen_3_4b_fp4_mixed.safetensors",
+        "vae": "vae/ae.safetensors"
+      },
+      "sampling": {
+        "steps": 8,
+        "cfg": 1.0,
+        "sampler": "res_multistep",
+        "scheduler": "simple"
+      }
+    },
+    {
+      "id": "flux2-klein-4b",
+      "name": "FLUX.2 Klein 4B",
+      "category": "photorealistic",
+      "family": "flux2",
+      "parameters": "4B",
+      "precision": "FP8 diffusion + FP4 text encoder",
+      "artifactIds": [
+        "flux2-klein-fp8",
+        "flux2-qwen-fp4",
+        "flux2-vae"
+      ],
+      "components": {
+        "diffusion": "diffusion_models/flux-2-klein-4b-fp8.safetensors",
+        "textEncoder": "text_encoders/qwen_3_4b_fp4_flux2.safetensors",
+        "vae": "vae/flux2-vae.safetensors"
+      },
+      "sampling": {
+        "steps": 4,
+        "cfg": 1.0,
+        "sampler": "euler",
+        "scheduler": "flux2"
+      }
+    }
+  ]
+}

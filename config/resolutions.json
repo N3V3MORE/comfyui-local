@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "resolutions": [
+    {
+      "id": "1024x1024",
+      "label": "Square 1:1",
+      "width": 1024,
+      "height": 1024,
+      "ratio": "1:1",
+      "orientation": "square"
+    },
+    {
+      "id": "896x1152",
+      "label": "Portrait 4:5",
+      "width": 896,
+      "height": 1152,
+      "ratio": "4:5",
+      "orientation": "portrait"
+    },
+    {
+      "id": "832x1216",
+      "label": "Photo Portrait 2:3",
+      "width": 832,
+      "height": 1216,
+      "ratio": "2:3",
+      "orientation": "portrait"
+    },
+    {
+      "id": "768x1344",
+      "label": "Tall 9:16",
+      "width": 768,
+      "height": 1344,
+      "ratio": "9:16",
+      "orientation": "portrait"
+    },
+    {
+      "id": "1152x896",
+      "label": "Landscape 5:4",
+      "width": 1152,
+      "height": 896,
+      "ratio": "5:4",
+      "orientation": "landscape"
+    },
+    {
+      "id": "1216x832",
+      "label": "Photo Landscape 3:2",
+      "width": 1216,
+      "height": 832,
+      "ratio": "3:2",
+      "orientation": "landscape"
+    },
+    {
+      "id": "1344x768",
+      "label": "Wide 16:9",
+      "width": 1344,
+      "height": 768,
+      "ratio": "16:9",
+      "orientation": "landscape"
+    }
+  ]
+}

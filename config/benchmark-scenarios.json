@@ -1,0 +1,154 @@
+{
+  "version": 1,
+  "performance": [
+    {
+      "id": "photo-performance",
+      "families": [
+        "sdxl",
+        "z-image",
+        "flux2"
+      ],
+      "prompt": "A candid photograph of three friends walking through a lively London street after rain, realistic skin, natural overcast light, 50mm lens",
+      "negativePrompt": "bad anatomy, deformed hands, text, watermark",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "seeds": [
+        101,
+        102,
+        103
+      ]
+    },
+    {
+      "id": "anime-performance",
+      "families": [
+        "sdxl"
+      ],
+      "categories": [
+        "anime"
+      ],
+      "prompt": "1girl, solo, windswept hair, seaside promenade, clean line art, dramatic clouds, masterpiece",
+      "negativePrompt": "lowres, bad anatomy, bad hands, text, watermark",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "seeds": [
+        101,
+        102,
+        103
+      ]
+    }
+  ],
+  "quality": [
+    {
+      "id": "photo-group-three-people",
+      "families": [
+        "sdxl",
+        "z-image",
+        "flux2"
+      ],
+      "prompt": "A candid photograph of three friends at an outdoor cafe, distinct faces and natural hands",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "seeds": [
+        101,
+        102,
+        103
+      ]
+    },
+    {
+      "id": "composition-stress",
+      "families": [
+        "sdxl",
+        "z-image",
+        "flux2"
+      ],
+      "prompt": "A red bicycle leaning against a blue door, yellow umbrella on the left, black cat on the right",
+      "dimensions": [
+        1216,
+        832
+      ],
+      "seeds": [
+        101,
+        102,
+        103
+      ]
+    },
+    {
+      "id": "hands-and-faces",
+      "families": [
+        "sdxl",
+        "z-image",
+        "flux2"
+      ],
+      "prompt": "A close group portrait of four musicians holding their instruments, visible hands and faces",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "seeds": [
+        101,
+        102,
+        103
+      ]
+    },
+    {
+      "id": "embedded-text",
+      "families": [
+        "z-image",
+        "flux2"
+      ],
+      "prompt": "A shopfront sign that clearly reads LOCAL STUDIO, realistic street photograph",
+      "dimensions": [
+        1216,
+        832
+      ],
+      "seeds": [
+        101,
+        102,
+        103
+      ]
+    },
+    {
+      "id": "prompt-adherence",
+      "families": [
+        "sdxl",
+        "z-image",
+        "flux2"
+      ],
+      "prompt": "Exactly two ceramic cups, one green and one orange, on a white table, top-down photograph",
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "seeds": [
+        101,
+        102,
+        103
+      ]
+    },
+    {
+      "id": "anime-character",
+      "families": [
+        "sdxl"
+      ],
+      "categories": [
+        "anime"
+      ],
+      "prompt": "1girl, solo, green hair, red scarf, holding one umbrella, night city, clean line art",
+      "dimensions": [
+        832,
+        1216
+      ],
+      "seeds": [
+        101,
+        102,
+        103
+      ]
+    }
+  ]
+}

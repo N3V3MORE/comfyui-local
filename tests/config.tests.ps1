@@ -1,17 +1,18 @@
 $projectRoot = Split-Path -Parent $PSScriptRoot
 
 Test-Case 'defines seven model-safe aspect ratios' {
-    $path = Join-Path $projectRoot 'config\aspect-ratios.json'
-    $ratios = Get-Content -LiteralPath $path -Raw | ConvertFrom-Json
+    $path = Join-Path $projectRoot 'config\resolutions.json'
+    $ratios = (Get-Content -LiteralPath $path -Raw | ConvertFrom-Json).resolutions
 
-    Assert-Equal 7 $ratios.presets.Count 'preset count'
-    Assert-Equal '1024x1024' $ratios.presets[0].id 'square preset is first'
-    Assert-Equal 1024 $ratios.presets[0].width 'square width'
-    Assert-Equal 1024 $ratios.presets[0].height 'square height'
-    foreach ($preset in $ratios.presets) {
+    Assert-Equal 7 $ratios.Count 'preset count'
+    Assert-Equal '1024x1024' $ratios[0].id 'square preset is first'
+    Assert-Equal 1024 $ratios[0].width 'square width'
+    Assert-Equal 1024 $ratios[0].height 'square height'
+    foreach ($preset in $ratios) {
         Assert-True (($preset.width % 64) -eq 0) "$($preset.id) width must be divisible by 64"
         Assert-True (($preset.height % 64) -eq 0) "$($preset.id) height must be divisible by 64"
     }
+    Assert-True (-not (Test-Path -LiteralPath (Join-Path $projectRoot 'config\aspect-ratios.json'))) 'legacy duplicate resolution file is removed'
 }
 
 Test-Case 'pins the ComfyUI and CUDA environment' {

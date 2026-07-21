@@ -19,6 +19,12 @@ Test-Case 'low-VRAM launch adds one explicit flag' {
     Assert-Equal 1 $matches.Count 'low-VRAM flag count'
 }
 
+Test-Case 'start exposes the shared resolution configuration to custom nodes' {
+    $output = @(& $startScript -PrintEnvironment)
+
+    Assert-True ($output -contains "COMFYUI_LOCAL_CONFIG=$projectRoot\config\resolutions.json") 'start points custom nodes at the shared resolution JSON'
+}
+
 Test-Case 'static verification proves runtime and distinguishes missing models' {
     $output = ((& $verifyScript -StaticOnly -SkipArtifactHashes -RequireExtensions) -join "`n")
 

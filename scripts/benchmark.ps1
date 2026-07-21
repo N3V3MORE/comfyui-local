@@ -197,7 +197,7 @@ if ($LibraryOnly) { return }
 
 $root = Get-ProjectRoot
 $manifest = Read-Json (Join-Path $root 'model-manifest.json')
-$presets = (Read-Json (Join-Path $root 'config\aspect-ratios.json')).presets
+$presets = (Read-Json (Join-Path $root 'config\resolutions.json')).resolutions
 $models = @($manifest.models)
 if ($ModelId.Count -gt 0) {
     $models = @($models | Where-Object { $ModelId -contains $_.id })

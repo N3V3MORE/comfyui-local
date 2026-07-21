@@ -1,0 +1,620 @@
+{
+  "version": 1,
+  "apps": [
+    {
+      "id": "realvis-xl",
+      "name": "RealVisXL Natural Photo",
+      "group": "Create",
+      "family": "sdxl",
+      "kind": "sdxl-create",
+      "template": "vendor/workflows/sdxl-base.json",
+      "modelProfile": "realvis-xl-v5",
+      "output": "Create/realvis-xl.app.json",
+      "purpose": "Natural realistic photography",
+      "supportArtifacts": [],
+      "exposedInputs": [
+        {
+          "node": "positive_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "negative_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "latent",
+          "widget": "width"
+        },
+        {
+          "node": "latent",
+          "widget": "height"
+        },
+        {
+          "node": "sampler",
+          "widget": "seed"
+        }
+      ],
+      "outputKey": "save_image",
+      "defaults": {
+        "filenamePrefix": "realvis-xl",
+        "positivePrompt": "A natural documentary photograph of a person walking through a lively London street after rain, realistic skin texture, soft overcast daylight, candid composition, 50mm lens",
+        "negativePrompt": "bad hands, bad anatomy, deformed eyes, plastic skin, text, watermark, oversaturated",
+        "seed": 246813579
+      }
+    },
+    {
+      "id": "juggernaut-xl",
+      "name": "Juggernaut Cinematic Photo",
+      "group": "Create",
+      "family": "sdxl",
+      "kind": "sdxl-create",
+      "template": "vendor/workflows/sdxl-base.json",
+      "modelProfile": "juggernaut-xl-v9",
+      "output": "Create/juggernaut-xl.app.json",
+      "purpose": "Cinematic realistic photography",
+      "supportArtifacts": [],
+      "exposedInputs": [
+        {
+          "node": "positive_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "negative_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "latent",
+          "widget": "width"
+        },
+        {
+          "node": "latent",
+          "widget": "height"
+        },
+        {
+          "node": "sampler",
+          "widget": "seed"
+        }
+      ],
+      "outputKey": "save_image",
+      "defaults": {
+        "filenamePrefix": "juggernaut-xl",
+        "positivePrompt": "Cinematic mid-shot photograph of an astronaut in a neon-lit Tokyo alley at night, natural skin detail, wet pavement reflections, shallow depth of field, 50mm lens",
+        "negativePrompt": "bad hands, bad anatomy, deformed face, plastic skin, text, watermark, oversaturated",
+        "seed": 246813579
+      }
+    },
+    {
+      "id": "animagine-xl",
+      "name": "Animagine Anime",
+      "group": "Create",
+      "family": "sdxl",
+      "kind": "sdxl-create",
+      "template": "vendor/workflows/sdxl-base.json",
+      "modelProfile": "animagine-xl-4-opt",
+      "output": "Create/animagine-xl.app.json",
+      "purpose": "Clean modern anime",
+      "supportArtifacts": [],
+      "exposedInputs": [
+        {
+          "node": "positive_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "negative_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "latent",
+          "widget": "width"
+        },
+        {
+          "node": "latent",
+          "widget": "height"
+        },
+        {
+          "node": "sampler",
+          "widget": "seed"
+        }
+      ],
+      "outputKey": "save_image",
+      "defaults": {
+        "filenamePrefix": "animagine-xl",
+        "positivePrompt": "1girl, solo, green hair, sweater, looking at viewer, outdoors, night, soft city lights, safe, masterpiece, high score, great score, absurdres",
+        "negativePrompt": "lowres, bad anatomy, bad hands, text, error, extra digits, cropped, worst quality, watermark, signature, blurry",
+        "seed": 246813579
+      }
+    },
+    {
+      "id": "illustrious-xl",
+      "name": "Illustrious Anime",
+      "group": "Create",
+      "family": "sdxl",
+      "kind": "sdxl-create",
+      "template": "vendor/workflows/sdxl-base.json",
+      "modelProfile": "illustrious-xl-v2",
+      "output": "Create/illustrious-xl.app.json",
+      "purpose": "Detailed character illustration",
+      "supportArtifacts": [],
+      "exposedInputs": [
+        {
+          "node": "positive_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "negative_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "latent",
+          "widget": "width"
+        },
+        {
+          "node": "latent",
+          "widget": "height"
+        },
+        {
+          "node": "sampler",
+          "widget": "seed"
+        }
+      ],
+      "outputKey": "save_image",
+      "defaults": {
+        "filenamePrefix": "illustrious-xl",
+        "positivePrompt": "1girl, solo, detailed eyes, windswept hair, seaside promenade, pastel houses, clean line art, dramatic clouds, masterpiece, best quality",
+        "negativePrompt": "lowres, bad anatomy, bad hands, text, extra digits, worst quality, watermark, signature, blurry",
+        "seed": 246813579
+      }
+    },
+    {
+      "id": "z-image-turbo",
+      "name": "Z-Image Photoreal",
+      "group": "Create",
+      "family": "z-image",
+      "kind": "z-create",
+      "template": "vendor/workflows/z-image-turbo.json",
+      "modelProfile": "z-image-turbo",
+      "output": "Create/z-image-turbo.app.json",
+      "purpose": "Fast modern photorealism",
+      "supportArtifacts": [],
+      "exposedInputs": [
+        {
+          "node": "positive_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "width",
+          "widget": "value"
+        },
+        {
+          "node": "height",
+          "widget": "value"
+        },
+        {
+          "node": "sampler",
+          "widget": "seed"
+        }
+      ],
+      "outputKey": "save_image",
+      "defaults": {
+        "filenamePrefix": "z-image-turbo",
+        "positivePrompt": "A candid close-up photograph of a woman with thick wavy hair beside a working harbour, pastel houses and small boats behind her, breezy seaside light, realistic skin, warm tones, 50mm lens",
+        "negativePrompt": "",
+        "seed": 246813579
+      }
+    },
+    {
+      "id": "flux2-klein",
+      "name": "FLUX.2 Klein Photoreal",
+      "group": "Create",
+      "family": "flux2",
+      "kind": "flux-create",
+      "template": "vendor/workflows/flux2-klein.json",
+      "modelProfile": "flux2-klein-4b",
+      "output": "Create/flux2-klein.app.json",
+      "purpose": "Fast prompt-following photorealism",
+      "supportArtifacts": [],
+      "exposedInputs": [
+        {
+          "node": "positive_prompt",
+          "widget": "value"
+        },
+        {
+          "node": "width",
+          "widget": "value"
+        },
+        {
+          "node": "height",
+          "widget": "value"
+        },
+        {
+          "node": "noise",
+          "widget": "noise_seed"
+        }
+      ],
+      "outputKey": "save_image",
+      "defaults": {
+        "filenamePrefix": "flux2-klein",
+        "positivePrompt": "A hedgehog wearing a tiny party hat surrounded by confetti, early digital camera style, slight sensor noise, direct flash photography, candid 2000s birthday moment",
+        "negativePrompt": "",
+        "seed": 246813579
+      }
+    },
+    {
+      "id": "sdxl-canny",
+      "name": "SDXL Canny Control",
+      "group": "Control",
+      "family": "sdxl",
+      "kind": "sdxl-control",
+      "template": "vendor/workflows/sdxl-control.json",
+      "modelProfile": "realvis-xl-v5",
+      "output": "Control/sdxl-canny.app.json",
+      "purpose": "Follow edges and composition",
+      "supportArtifacts": [
+        "sdxl-controlnet-union-promax"
+      ],
+      "exposedInputs": [
+        {
+          "node": "input_image",
+          "widget": "image"
+        },
+        {
+          "node": "positive_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "negative_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "resolution",
+          "widget": "preset"
+        },
+        {
+          "node": "control_apply",
+          "widget": "strength"
+        },
+        {
+          "node": "sampler",
+          "widget": "seed"
+        }
+      ],
+      "outputKey": "save_image",
+      "defaults": {
+        "filenamePrefix": "sdxl-canny",
+        "positivePrompt": "A natural cinematic photograph, realistic texture, detailed subject, balanced composition",
+        "negativePrompt": "bad anatomy, deformed, blurry, plastic skin, text, watermark",
+        "seed": 246813579,
+        "strength": 0.85,
+        "resolution": "Square 1:1"
+      },
+      "variant": {
+        "preprocessor": "canny",
+        "unionType": "canny/lineart/anime_lineart/mlsd"
+      }
+    },
+    {
+      "id": "sdxl-depth",
+      "name": "SDXL Depth Control",
+      "group": "Control",
+      "family": "sdxl",
+      "kind": "sdxl-control",
+      "template": "vendor/workflows/sdxl-control.json",
+      "modelProfile": "realvis-xl-v5",
+      "output": "Control/sdxl-depth.app.json",
+      "purpose": "Follow scene depth",
+      "supportArtifacts": [
+        "sdxl-controlnet-union-promax",
+        "depth-anything-v2-small"
+      ],
+      "exposedInputs": [
+        {
+          "node": "input_image",
+          "widget": "image"
+        },
+        {
+          "node": "positive_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "negative_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "resolution",
+          "widget": "preset"
+        },
+        {
+          "node": "control_apply",
+          "widget": "strength"
+        },
+        {
+          "node": "sampler",
+          "widget": "seed"
+        }
+      ],
+      "outputKey": "save_image",
+      "defaults": {
+        "filenamePrefix": "sdxl-depth",
+        "positivePrompt": "A natural cinematic photograph, realistic texture, detailed subject, balanced composition",
+        "negativePrompt": "bad anatomy, deformed, blurry, plastic skin, text, watermark",
+        "seed": 246813579,
+        "strength": 0.85,
+        "resolution": "Square 1:1"
+      },
+      "variant": {
+        "preprocessor": "depth",
+        "unionType": "depth"
+      }
+    },
+    {
+      "id": "sdxl-pose",
+      "name": "SDXL Pose Control",
+      "group": "Control",
+      "family": "sdxl",
+      "kind": "sdxl-control",
+      "template": "vendor/workflows/sdxl-control.json",
+      "modelProfile": "realvis-xl-v5",
+      "output": "Control/sdxl-pose.app.json",
+      "purpose": "Follow a person pose",
+      "supportArtifacts": [
+        "sdxl-controlnet-union-promax",
+        "dwpose-torchscript",
+        "yolox-l-torchscript"
+      ],
+      "exposedInputs": [
+        {
+          "node": "input_image",
+          "widget": "image"
+        },
+        {
+          "node": "positive_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "negative_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "resolution",
+          "widget": "preset"
+        },
+        {
+          "node": "control_apply",
+          "widget": "strength"
+        },
+        {
+          "node": "sampler",
+          "widget": "seed"
+        }
+      ],
+      "outputKey": "save_image",
+      "defaults": {
+        "filenamePrefix": "sdxl-pose",
+        "positivePrompt": "A natural cinematic photograph, realistic texture, detailed subject, balanced composition",
+        "negativePrompt": "bad anatomy, deformed, blurry, plastic skin, text, watermark",
+        "seed": 246813579,
+        "strength": 0.85,
+        "resolution": "Square 1:1"
+      },
+      "variant": {
+        "preprocessor": "pose",
+        "unionType": "openpose"
+      }
+    },
+    {
+      "id": "z-image-canny",
+      "name": "Z-Image Canny Control",
+      "group": "Control",
+      "family": "z-image",
+      "kind": "z-control",
+      "template": "vendor/workflows/z-image-control.json",
+      "modelProfile": "z-image-turbo",
+      "output": "Control/z-image-canny.app.json",
+      "purpose": "Fast photorealistic edge control",
+      "supportArtifacts": [
+        "z-image-controlnet-union-lite"
+      ],
+      "exposedInputs": [
+        {
+          "node": "input_image",
+          "widget": "image"
+        },
+        {
+          "node": "positive_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "sampler",
+          "widget": "seed"
+        }
+      ],
+      "outputKey": "save_image",
+      "defaults": {
+        "filenamePrefix": "z-image-canny",
+        "positivePrompt": "A candid close-up photograph of a woman with thick wavy hair beside a working harbour, pastel houses and small boats behind her, breezy seaside light, realistic skin, warm tones, 50mm lens",
+        "negativePrompt": "",
+        "seed": 246813579
+      }
+    },
+    {
+      "id": "sdxl-ipadapter",
+      "name": "SDXL Reference Image",
+      "group": "Reference",
+      "family": "sdxl",
+      "kind": "ipadapter",
+      "template": "vendor/workflows/ipadapter-sdxl.json",
+      "modelProfile": "realvis-xl-v5",
+      "output": "Reference/sdxl-ipadapter.app.json",
+      "purpose": "Guide style and composition with an image",
+      "supportArtifacts": [
+        "clip-vision-vit-h",
+        "ipadapter-plus-sdxl-vit-h"
+      ],
+      "exposedInputs": [
+        {
+          "node": "input_image",
+          "widget": "image"
+        },
+        {
+          "node": "positive_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "negative_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "ipadapter",
+          "widget": "weight"
+        },
+        {
+          "node": "latent",
+          "widget": "width"
+        },
+        {
+          "node": "latent",
+          "widget": "height"
+        },
+        {
+          "node": "sampler",
+          "widget": "seed"
+        }
+      ],
+      "outputKey": "save_image",
+      "defaults": {
+        "filenamePrefix": "sdxl-ipadapter",
+        "positivePrompt": "A natural documentary photograph of a person walking through a lively London street after rain, realistic skin texture, soft overcast daylight, candid composition, 50mm lens",
+        "negativePrompt": "bad hands, bad anatomy, deformed eyes, plastic skin, text, watermark, oversaturated",
+        "seed": 246813579
+      }
+    },
+    {
+      "id": "sdxl-face-detail",
+      "name": "SDXL Face Detail",
+      "group": "Detail",
+      "family": "sdxl",
+      "kind": "face-detail",
+      "template": "vendor/workflows/face-detailer-sdxl.json",
+      "modelProfile": "realvis-xl-v5",
+      "output": "Detail/sdxl-face-detail.app.json",
+      "purpose": "Generate and refine detected faces",
+      "supportArtifacts": [
+        "face-yolov8n"
+      ],
+      "exposedInputs": [
+        {
+          "node": "positive_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "negative_prompt",
+          "widget": "text"
+        },
+        {
+          "node": "latent",
+          "widget": "width"
+        },
+        {
+          "node": "latent",
+          "widget": "height"
+        },
+        {
+          "node": "sampler",
+          "widget": "seed"
+        },
+        {
+          "node": "face_detailer",
+          "widget": "denoise"
+        }
+      ],
+      "outputKey": "save_image",
+      "defaults": {
+        "filenamePrefix": "sdxl-face-detail",
+        "positivePrompt": "A natural documentary photograph of a person walking through a lively London street after rain, realistic skin texture, soft overcast daylight, candid composition, 50mm lens",
+        "negativePrompt": "bad hands, bad anatomy, deformed eyes, plastic skin, text, watermark, oversaturated",
+        "seed": 246813579
+      }
+    },
+    {
+      "id": "upscale-photo-2x",
+      "name": "Photo Upscale 2x",
+      "group": "Upscale",
+      "family": "upscale",
+      "kind": "upscale",
+      "template": "vendor/workflows/upscale.json",
+      "modelProfile": null,
+      "output": "Upscale/upscale-photo-2x.app.json",
+      "purpose": "Double a photo cleanly",
+      "supportArtifacts": [
+        "realesrgan-x2plus"
+      ],
+      "exposedInputs": [
+        {
+          "node": "input_image",
+          "widget": "image"
+        }
+      ],
+      "outputKey": "save_image",
+      "defaults": {
+        "filenamePrefix": "upscale-photo-2x"
+      },
+      "variant": {
+        "upscaleModel": "RealESRGAN_x2plus.pth"
+      }
+    },
+    {
+      "id": "upscale-photo-4x",
+      "name": "Photo Upscale 4x",
+      "group": "Upscale",
+      "family": "upscale",
+      "kind": "upscale",
+      "template": "vendor/workflows/upscale.json",
+      "modelProfile": null,
+      "output": "Upscale/upscale-photo-4x.app.json",
+      "purpose": "Enlarge a photo four times",
+      "supportArtifacts": [
+        "realesrgan-x4plus"
+      ],
+      "exposedInputs": [
+        {
+          "node": "input_image",
+          "widget": "image"
+        }
+      ],
+      "outputKey": "save_image",
+      "defaults": {
+        "filenamePrefix": "upscale-photo-4x"
+      },
+      "variant": {
+        "upscaleModel": "RealESRGAN_x4plus.pth"
+      }
+    },
+    {
+      "id": "upscale-anime-4x",
+      "name": "Anime Upscale 4x",
+      "group": "Upscale",
+      "family": "upscale",
+      "kind": "upscale",
+      "template": "vendor/workflows/upscale.json",
+      "modelProfile": null,
+      "output": "Upscale/upscale-anime-4x.app.json",
+      "purpose": "Enlarge anime line art four times",
+      "supportArtifacts": [
+        "realesrgan-x4plus-anime"
+      ],
+      "exposedInputs": [
+        {
+          "node": "input_image",
+          "widget": "image"
+        }
+      ],
+      "outputKey": "save_image",
+      "defaults": {
+        "filenamePrefix": "upscale-anime-4x"
+      },
+      "variant": {
+        "upscaleModel": "RealESRGAN_x4plus_anime_6B.pth"
+      }
+    }
+  ]
+}

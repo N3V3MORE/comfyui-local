@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "requiredFreeBytes": 75161927680,
+  "artifacts": [
+    {
+      "id": "realvis-xl-v5",
+      "url": "https://huggingface.co/SG161222/RealVisXL_V5.0/resolve/ac93e0dda1f6d448cae19bbfab8c5e720a5e48bc/RealVisXL_V5.0_fp16.safetensors?download=true",
+      "target": "checkpoints/realistic/RealVisXL_V5.0_fp16.safetensors",
+      "bytes": 6938065488,
+      "sha256": "6a35a7855770ae9820a3c931d4964c3817b6d9e3c6f9c4dabb5b3a94e5643b80",
+      "role": "core"
+    },
+    {
+      "id": "juggernaut-xl-v9",
+      "url": "https://huggingface.co/RunDiffusion/Juggernaut-XL-v9/resolve/cf419233522daa0b9ea36c3aff98fa2cab1fb0fb/Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors?download=true",
+      "target": "checkpoints/realistic/Juggernaut-XL_v9_RunDiffusionPhoto_v2.safetensors",
+      "bytes": 7105348188,
+      "sha256": "c9e3e68f89b8e38689e1097d4be4573cf308de4e3fd044c64ca697bdb4aa8bca",
+      "role": "core"
+    },
+    {
+      "id": "animagine-xl-4-opt",
+      "url": "https://huggingface.co/cagliostrolab/animagine-xl-4.0/resolve/2b7c1b397761bf5bd3cc42e5b39ec99314a75a96/animagine-xl-4.0-opt.safetensors?download=true",
+      "target": "checkpoints/anime/animagine-xl-4.0-opt.safetensors",
+      "bytes": 6938350040,
+      "sha256": "6327eca98bfb6538dd7a4edce22484a1bbc57a8cff6b11d075d40da1afb847ac",
+      "role": "core"
+    },
+    {
+      "id": "illustrious-xl-v2",
+      "url": "https://huggingface.co/OnomaAIResearch/Illustrious-XL-v2.0/resolve/69459c1fe6f46db41ab31e6114f05acc0e06bcaa/Illustrious-XL-v2.0.safetensors?download=true",
+      "target": "checkpoints/anime/Illustrious-XL-v2.0.safetensors",
+      "bytes": 6938040674,
+      "sha256": "c2a1a3eaa13d4c107dc7e00c3fe830cab427aa026362740ea094745b3422a331",
+      "role": "core"
+    },
+    {
+      "id": "z-image-nvfp4",
+      "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/d24c4cf2a0cd98a42f23467e27e3d76ee9438b8e/split_files/diffusion_models/z_image_turbo_nvfp4.safetensors?download=true",
+      "target": "diffusion_models/z_image_turbo_nvfp4.safetensors",
+      "bytes": 4509509600,
+      "sha256": "a553c889dbcb910de4c98293237573219a37007c1074a3f04576646a088bd5c8",
+      "role": "core"
+    },
+    {
+      "id": "z-image-qwen-fp4",
+      "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/d24c4cf2a0cd98a42f23467e27e3d76ee9438b8e/split_files/text_encoders/qwen_3_4b_fp4_mixed.safetensors?download=true",
+      "target": "text_encoders/qwen_3_4b_fp4_mixed.safetensors",
+      "bytes": 3479416193,
+      "sha256": "7ca32dcf07dfe7692945d80fff86e3a74cb83c6206b9b223ac6836b939bb85d6",
+      "role": "core"
+    },
+    {
+      "id": "z-image-vae",
+      "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/d24c4cf2a0cd98a42f23467e27e3d76ee9438b8e/split_files/vae/ae.safetensors?download=true",
+      "target": "vae/ae.safetensors",
+      "bytes": 335304388,
+      "sha256": "afc8e28272cd15db3919bacdb6918ce9c1ed22e96cb12c4d5ed0fba823529e38",
+      "role": "core"
+    },
+    {
+      "id": "flux2-klein-fp8",
+      "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/resolve/5b4408e59397a4a37ccb46afe426d8ed86379441/flux-2-klein-4b-fp8.safetensors?download=true",
+      "target": "diffusion_models/flux-2-klein-4b-fp8.safetensors",
+      "bytes": 4070624520,
+      "sha256": "97ed34fe0567e436200f2faee3939b88f2b5d99f8af2a4dc16532c4245c0ccb6",
+      "role": "core"
+    },
+    {
+      "id": "flux2-qwen-fp4",
+      "url": "https://huggingface.co/Comfy-Org/flux2-klein-4B/resolve/a9e4ca87c16db4c4e1a16406a9ddb300ab0ae246/split_files/text_encoders/qwen_3_4b_fp4_flux2.safetensors?download=true",
+      "target": "text_encoders/qwen_3_4b_fp4_flux2.safetensors",
+      "bytes": 3848213998,
+      "sha256": "3eab03a77adb0ee5304a4e677d5c10ac22f9049c1d7c894adca4f8bb39206ca8",
+      "role": "core"
+    },
+    {
+      "id": "flux2-vae",
+      "url": "https://huggingface.co/Comfy-Org/flux2-klein-4B/resolve/a9e4ca87c16db4c4e1a16406a9ddb300ab0ae246/split_files/vae/flux2-vae.safetensors?download=true",
+      "target": "vae/flux2-vae.safetensors",
+      "bytes": 336211292,
+      "sha256": "868fe7b343cc8f3a19dbcfcafbc3d5f888802be3f89bd81b65b3621a066ce8f3",
+      "role": "core"
+    },
+    {
+      "id": "sdxl-controlnet-union-promax",
+      "name": "SDXL ControlNet Union ProMax",
+      "family": "SDXL",
+      "url": "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/801a4a3fa3d4c936f4feea95b98607bc6726f80c/diffusion_pytorch_model_promax.safetensors?download=true",
+      "target": "controlnet/sdxl-controlnet-union-promax.safetensors",
+      "bytes": 2513342408,
+      "sha256": "9fae2e50cb431bfcbe05822b59ec2228df545ef27f711dea8949e9f4ed9f7cdc",
+      "role": "support"
+    },
+    {
+      "id": "z-image-controlnet-union-lite",
+      "name": "Z-Image Turbo Fun ControlNet Union 2.1 Lite",
+      "family": "Z-Image",
+      "url": "https://huggingface.co/alibaba-pai/Z-Image-Turbo-Fun-Controlnet-Union-2.1/resolve/5155fc56d17821007d6f62ac192c09e0f0e72016/Z-Image-Turbo-Fun-Controlnet-Union-2.1-lite-2602-8steps.safetensors?download=true",
+      "target": "model_patches/Z-Image-Turbo-Fun-Controlnet-Union-2.1-lite-2602-8steps.safetensors",
+      "bytes": 2016627488,
+      "sha256": "3ea098db9bd145be525c7e2366920b6d76c5ffd46b3d7aa8169bbc943fdaee35",
+      "role": "support"
+    },
+    {
+      "id": "clip-vision-vit-h",
+      "name": "OpenCLIP ViT-H image encoder",
+      "family": "SDXL",
+      "url": "https://huggingface.co/h94/IP-Adapter/resolve/018e402774aeeddd60609b4ecdb7e298259dc729/models/image_encoder/model.safetensors?download=true",
+      "target": "clip_vision/CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+      "bytes": 2528373448,
+      "sha256": "6ca9667da1ca9e0b0f75e46bb030f7e011f44f86cbfb8d5a36590fcd7507b030",
+      "role": "support"
+    },
+    {
+      "id": "ipadapter-plus-sdxl-vit-h",
+      "name": "IPAdapter Plus SDXL ViT-H",
+      "family": "SDXL",
+      "url": "https://huggingface.co/h94/IP-Adapter/resolve/018e402774aeeddd60609b4ecdb7e298259dc729/sdxl_models/ip-adapter-plus_sdxl_vit-h.safetensors?download=true",
+      "target": "ipadapter/ip-adapter-plus_sdxl_vit-h.safetensors",
+      "bytes": 847517512,
+      "sha256": "3f5062b8400c94b7159665b21ba5c62acdcd7682262743d7f2aefedef00e6581",
+      "role": "support"
+    },
+    {
+      "id": "depth-anything-v2-small",
+      "name": "Depth Anything V2 Small",
+      "family": "Preprocessor",
+      "url": "https://huggingface.co/depth-anything/Depth-Anything-V2-Small/resolve/03876f8651c73a60fe4c2c48294e09fcb6838fcf/depth_anything_v2_vits.pth?download=true",
+      "target": "controlnet_aux/depth-anything/Depth-Anything-V2-Small/depth_anything_v2_vits.pth",
+      "bytes": 99218434,
+      "sha256": "715fade13be8f229f8a70cc02066f656f2423a59effd0579197bbf57860e1378",
+      "role": "support"
+    },
+    {
+      "id": "dwpose-torchscript",
+      "name": "DWPose TorchScript Batch Size 5",
+      "family": "Preprocessor",
+      "url": "https://huggingface.co/hr16/DWPose-TorchScript-BatchSize5/resolve/359d662a9b33b73f6d0f21732baf8845f17bb4be/dw-ll_ucoco_384_bs5.torchscript.pt?download=true",
+      "target": "controlnet_aux/hr16/DWPose-TorchScript-BatchSize5/dw-ll_ucoco_384_bs5.torchscript.pt",
+      "bytes": 135059124,
+      "sha256": "d86a0b2b59fddc0901a7076e9f59c9f8602602133ed72511c693fd11eea23d91",
+      "role": "support"
+    },
+    {
+      "id": "yolox-l-torchscript",
+      "name": "YOLOX-L TorchScript",
+      "family": "Preprocessor",
+      "url": "https://huggingface.co/hr16/yolox-onnx/resolve/a124b32c3b7c5cebda1c7cd96178f0f9d2050125/yolox_l.torchscript.pt?download=true",
+      "target": "controlnet_aux/hr16/yolox-onnx/yolox_l.torchscript.pt",
+      "bytes": 217697649,
+      "sha256": "80bc14b13c260c24b3014cd42c02994bf52296ab8fa2d80a60b6afe08c93ef42",
+      "role": "support"
+    },
+    {
+      "id": "realesrgan-x2plus",
+      "name": "RealESRGAN x2 Plus",
+      "family": "Upscaler",
+      "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth",
+      "target": "upscale_models/RealESRGAN_x2plus.pth",
+      "bytes": 67061725,
+      "sha256": "49fafd45f8fd7aa8d31ab2a22d14d91b536c34494a5cfe31eb5d89c2fa266abb",
+      "role": "support"
+    },
+    {
+      "id": "realesrgan-x4plus",
+      "name": "RealESRGAN x4 Plus",
+      "family": "Upscaler",
+      "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth",
+      "target": "upscale_models/RealESRGAN_x4plus.pth",
+      "bytes": 67040989,
+      "sha256": "4fa0d38905f75ac06eb49a7951b426670021be3018265fd191d2125df9d682f1",
+      "role": "support"
+    },
+    {
+      "id": "realesrgan-x4plus-anime",
+      "name": "RealESRGAN x4 Plus Anime 6B",
+      "family": "Upscaler",
+      "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.4/RealESRGAN_x4plus_anime_6B.pth",
+      "target": "upscale_models/RealESRGAN_x4plus_anime_6B.pth",
+      "bytes": 17938799,
+      "sha256": "f872d837d3c90ed2e05227bed711af5671a6fd1c9f7d7e91c911a61f155e99da",
+      "role": "support"
+    },
+    {
+      "id": "face-yolov8n",
+      "name": "YOLOv8n face detector",
+      "family": "Detector",
+      "url": "https://huggingface.co/Bingsu/adetailer/resolve/53cc19de382014514d9d4038601d261a7faa9b7b/face_yolov8n.pt?download=true",
+      "target": "ultralytics/bbox/face_yolov8n.pt",
+      "bytes": 6230011,
+      "sha256": "70b640f8f60b1cf0dcc72f30caf3da9495eb2fb6509da48c53374ad6806e6a9c",
+      "role": "support"
+    }
+  ]
+}

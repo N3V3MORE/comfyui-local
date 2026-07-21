@@ -1,7 +1,7 @@
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $benchmarkScript = Join-Path $projectRoot 'scripts\benchmark.ps1'
 $manifest = Get-Content -LiteralPath (Join-Path $projectRoot 'model-manifest.json') -Raw | ConvertFrom-Json
-$presets = (Get-Content -LiteralPath (Join-Path $projectRoot 'config\aspect-ratios.json') -Raw | ConvertFrom-Json).presets
+$presets = (Get-Content -LiteralPath (Join-Path $projectRoot 'config\resolutions.json') -Raw | ConvertFrom-Json).resolutions
 
 Test-Case 'API fixtures cover the three pinned workflow profiles' {
     $fixtureNames = @('sdxl.json', 'z_image.json', 'flux2.json')

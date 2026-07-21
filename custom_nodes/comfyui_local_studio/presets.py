@@ -1,15 +1,25 @@
-from pathlib import PurePosixPath
+import json
+import os
+from pathlib import Path, PurePosixPath
 
 
-RESOLUTION_PRESETS = {
-    "Square 1:1": (1024, 1024),
-    "Portrait 4:5": (896, 1152),
-    "Photo Portrait 2:3": (832, 1216),
-    "Tall 9:16": (768, 1344),
-    "Landscape 5:4": (1152, 896),
-    "Photo Landscape 3:2": (1216, 832),
-    "Wide 16:9": (1344, 768),
-}
+def load_resolution_presets(path: Path) -> dict[str, tuple[int, int]]:
+    config_path = path / "resolutions.json" if path.is_dir() else path
+    with config_path.open(encoding="utf-8") as file:
+        config = json.load(file)
+    return {
+        item["label"]: (int(item["width"]), int(item["height"]))
+        for item in config["resolutions"]
+    }
+
+
+CONFIG_PATH = Path(
+    os.environ.get(
+        "COMFYUI_LOCAL_CONFIG",
+        Path(__file__).resolve().parents[2] / "config" / "resolutions.json",
+    )
+)
+RESOLUTION_PRESETS = load_resolution_presets(CONFIG_PATH)
 
 STYLE_PRESETS = {
     "photo": {
