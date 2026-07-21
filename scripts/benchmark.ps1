@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [string[]]$ModelId = @(),
-    [string[]]$PresetId = @('1024x1024', '1216x832', '832x1216'),
+    [string[]]$PresetId = @(),
     [long]$Seed = 20260721,
     [string]$Server = 'http://127.0.0.1:8188',
     [int]$TimeoutMinutes = 20,
@@ -12,72 +12,15 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 . (Join-Path $PSScriptRoot 'lib\common.ps1')
 
-function Set-BenchmarkInputs {
-    param(
-        [Parameter(Mandatory)]$Workflow,
-        [Parameter(Mandatory)]$Model,
-        [Parameter(Mandatory)]$Canvas,
-        [Parameter(Mandatory)][long]$Seed,
-        [Parameter(Mandatory)][string]$FilenamePrefix
-    )
-
-    switch ($Model.workflowProfile) {
-        'sdxl' {
-            $Workflow.'1'.inputs.ckpt_name = $Model.checkpoint
-            $Workflow.'2'.inputs.text = $Model.positivePrompt
-            $Workflow.'3'.inputs.text = $Model.negativePrompt
-            $Workflow.'4'.inputs.width = $Canvas.width
-            $Workflow.'4'.inputs.height = $Canvas.height
-            $Workflow.'5'.inputs.seed = $Seed
-            $Workflow.'5'.inputs.steps = $Model.steps
-            $Workflow.'5'.inputs.cfg = $Model.cfg
-            $Workflow.'5'.inputs.sampler_name = $Model.sampler
-            $Workflow.'5'.inputs.scheduler = $Model.scheduler
-            $Workflow.'7'.inputs.filename_prefix = $FilenamePrefix
-        }
-        'z_image' {
-            $Workflow.'1'.inputs.unet_name = $Model.diffusionModel
-            $Workflow.'2'.inputs.clip_name = $Model.textEncoder
-            $Workflow.'3'.inputs.vae_name = $Model.vae
-            $Workflow.'4'.inputs.text = $Model.positivePrompt
-            $Workflow.'7'.inputs.width = $Canvas.width
-            $Workflow.'7'.inputs.height = $Canvas.height
-            $Workflow.'8'.inputs.seed = $Seed
-            $Workflow.'8'.inputs.steps = $Model.steps
-            $Workflow.'8'.inputs.cfg = $Model.cfg
-            $Workflow.'8'.inputs.sampler_name = $Model.sampler
-            $Workflow.'8'.inputs.scheduler = $Model.scheduler
-            $Workflow.'10'.inputs.filename_prefix = $FilenamePrefix
-        }
-        'flux2' {
-            $Workflow.'1'.inputs.unet_name = $Model.diffusionModel
-            $Workflow.'2'.inputs.clip_name = $Model.textEncoder
-            $Workflow.'3'.inputs.vae_name = $Model.vae
-            $Workflow.'4'.inputs.text = $Model.positivePrompt
-            $Workflow.'6'.inputs.cfg = $Model.cfg
-            $Workflow.'7'.inputs.noise_seed = $Seed
-            $Workflow.'8'.inputs.sampler_name = $Model.sampler
-            $Workflow.'9'.inputs.steps = $Model.steps
-            $Workflow.'9'.inputs.width = $Canvas.width
-            $Workflow.'9'.inputs.height = $Canvas.height
-            $Workflow.'10'.inputs.width = $Canvas.width
-            $Workflow.'10'.inputs.height = $Canvas.height
-            $Workflow.'13'.inputs.filename_prefix = $FilenamePrefix
-        }
-        default { throw "Unknown workflow profile: $($Model.workflowProfile)" }
-    }
-
-}
-
 function Get-ProofMatrix {
     param(
         [Parameter(Mandatory)]$Models,
-        [Parameter(Mandatory)]$Presets
+        [Parameter(Mandatory)]$Presets,
+        [Parameter(Mandatory)][string[]]$PresetIds
     )
 
-    $proofPresetIds = @('1024x1024', '1216x832', '832x1216')
     foreach ($model in $Models) {
-        foreach ($presetId in $proofPresetIds) {
+        foreach ($presetId in $PresetIds) {
             $preset = $Presets | Where-Object id -eq $presetId | Select-Object -First 1
             Assert-Condition ($null -ne $preset) "Missing proof preset: $presetId"
             [pscustomobject]@{
@@ -196,26 +139,33 @@ function Copy-ComfyImage {
 if ($LibraryOnly) { return }
 
 $root = Get-ProjectRoot
-$manifest = Read-Json (Join-Path $root 'model-manifest.json')
+$modelConfig = Read-Json (Join-Path $root 'config\models.json')
+$scenarios = Read-Json (Join-Path $root 'config\benchmark-scenarios.json')
 $presets = (Read-Json (Join-Path $root 'config\resolutions.json')).resolutions
-$models = @($manifest.models)
+$models = @($modelConfig.models)
 if ($ModelId.Count -gt 0) {
     $models = @($models | Where-Object { $ModelId -contains $_.id })
     Assert-Condition ($models.Count -eq $ModelId.Count) 'One or more requested model ids are unknown'
 }
-$selectedPresets = @($presets | Where-Object { $PresetId -contains $_.id })
-Assert-Condition ($selectedPresets.Count -eq $PresetId.Count) 'One or more requested preset ids are unknown'
+$selectedPresetIds = if ($PresetId.Count -gt 0) { $PresetId } else { @($scenarios.orientationProof.presetIds) }
+$selectedPresets = @($presets | Where-Object { $selectedPresetIds -contains $_.id })
+Assert-Condition ($selectedPresets.Count -eq $selectedPresetIds.Count) 'One or more requested preset ids are unknown'
 
 Invoke-RestMethod -Uri "$Server/system_stats" -TimeoutSec 10 | Out-Null
 $proofRoot = Join-Path $root 'results\proof'
+$promptRoot = Join-Path $root 'results\prompts'
+$python = Join-Path $root '.venv\Scripts\python.exe'
+Assert-Condition (Test-Path -LiteralPath $python) 'Python environment is missing'
+$env:PYTHONPATH = Join-Path $root 'src'
 $rows = [Collections.Generic.List[object]]::new()
 
 foreach ($model in $models) {
     foreach ($canvas in $selectedPresets) {
-        $fixturePath = Join-Path $root "workflows\api\$($model.workflowProfile).json"
-        $workflow = Read-Json $fixturePath
         $prefix = "proof/$($model.id)/$($model.id)-$($canvas.id)"
-        Set-BenchmarkInputs -Workflow $workflow -Model $model -Canvas $canvas -Seed $Seed -FilenamePrefix $prefix | Out-Null
+        $promptPath = Join-Path $promptRoot "$($model.id)-$($canvas.id).json"
+        & $python -m comfy_local prompt --root $root --model-id $model.id --width $canvas.width --height $canvas.height --seed $Seed --filename-prefix $prefix --output $promptPath
+        Assert-Condition ($LASTEXITCODE -eq 0) "Prompt materialization failed: $($model.id) at $($canvas.id)"
+        $workflow = Read-Json $promptPath
 
         Write-Output "Generating $($model.id) at $($canvas.id)..."
         $watch = [Diagnostics.Stopwatch]::StartNew()
@@ -242,7 +192,7 @@ foreach ($model in $models) {
             orientation = $canvas.orientation
             width = $canvas.width
             height = $canvas.height
-            steps = $model.steps
+            steps = $model.sampling.steps
             seconds = [math]::Round($watch.Elapsed.TotalSeconds, 2)
             peakVramMiB = $peakVramMiB
             output = ($copied -join ';')

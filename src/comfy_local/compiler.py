@@ -261,38 +261,59 @@ def _set_widget_if_present(graph: WorkflowGraph, key: str, widget: str, value: A
 def _compile_api_prompt(root: Path, spec: WorkflowSpec, model: ModelProfile | None) -> dict[str, Any] | None:
     if model is None:
         return None
+    return compile_api_prompt(
+        root,
+        model,
+        positive_prompt=spec.defaults["positivePrompt"],
+        negative_prompt=spec.defaults.get("negativePrompt", ""),
+        width=1024,
+        height=1024,
+        seed=int(spec.defaults.get("seed", 246813579)),
+        filename_prefix=spec.defaults.get("filenamePrefix", spec.id),
+    )
+
+
+def compile_api_prompt(
+    root: Path,
+    model: ModelProfile,
+    *,
+    positive_prompt: str,
+    negative_prompt: str,
+    width: int,
+    height: int,
+    seed: int,
+    filename_prefix: str,
+) -> dict[str, Any]:
     template_name = {"sdxl": "sdxl.json", "z-image": "z_image.json", "flux2": "flux2.json"}[model.family]
     prompt = ApiPromptGraph.load(root / "vendor" / "api" / template_name)
-    seed = int(spec.defaults.get("seed", 246813579))
-    prefix = spec.defaults.get("filenamePrefix", spec.id)
 
     if model.family == "sdxl":
         prompt.set_input("checkpoint", "ckpt_name", _loader_name(model.components["checkpoint"], "checkpoints/"))
-        prompt.set_input("positive_prompt", "text", spec.defaults["positivePrompt"])
-        prompt.set_input("negative_prompt", "text", spec.defaults["negativePrompt"])
-        prompt.set_input("latent", "width", 1024)
-        prompt.set_input("latent", "height", 1024)
+        prompt.set_input("positive_prompt", "text", positive_prompt)
+        prompt.set_input("negative_prompt", "text", negative_prompt)
+        prompt.set_input("latent", "width", width)
+        prompt.set_input("latent", "height", height)
         for name, value in _sampling_inputs(model, seed).items():
             prompt.set_input("sampler", name, value)
     elif model.family == "z-image":
         _set_api_components(prompt, model)
-        prompt.set_input("positive_prompt", "text", spec.defaults["positivePrompt"])
-        prompt.set_input("latent", "width", 1024)
-        prompt.set_input("latent", "height", 1024)
+        prompt.set_input("positive_prompt", "text", positive_prompt)
+        prompt.set_input("latent", "width", width)
+        prompt.set_input("latent", "height", height)
         for name, value in _sampling_inputs(model, seed).items():
             prompt.set_input("sampler", name, value)
     elif model.family == "flux2":
         _set_api_components(prompt, model)
-        prompt.set_input("positive_prompt", "text", spec.defaults["positivePrompt"])
+        prompt.set_input("positive_prompt", "text", positive_prompt)
         prompt.set_input("guider", "cfg", model.sampling.cfg)
         prompt.set_input("noise", "noise_seed", seed)
         prompt.set_input("sampler_select", "sampler_name", model.sampling.sampler)
         prompt.set_input("scheduler", "steps", model.sampling.steps)
-        prompt.set_input("scheduler", "width", 1024)
-        prompt.set_input("scheduler", "height", 1024)
-        prompt.set_input("latent", "width", 1024)
-        prompt.set_input("latent", "height", 1024)
-    prompt.set_input("save_image", "filename_prefix", prefix)
+        prompt.set_input("scheduler", "width", width)
+        prompt.set_input("scheduler", "height", height)
+        prompt.set_input("latent", "width", width)
+        prompt.set_input("latent", "height", height)
+    prompt.set_input("save_image", "filename_prefix", filename_prefix)
     prompt.validate()
     return prompt.data
 

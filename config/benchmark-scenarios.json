@@ -1,5 +1,12 @@
 {
   "version": 1,
+  "orientationProof": {
+    "presetIds": [
+      "1024x1024",
+      "1216x832",
+      "832x1216"
+    ]
+  },
   "performance": [
     {
       "id": "photo-performance",

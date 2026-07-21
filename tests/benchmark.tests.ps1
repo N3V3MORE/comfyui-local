@@ -1,7 +1,8 @@
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $benchmarkScript = Join-Path $projectRoot 'scripts\benchmark.ps1'
-$manifest = Get-Content -LiteralPath (Join-Path $projectRoot 'model-manifest.json') -Raw | ConvertFrom-Json
+$models = (Get-Content -LiteralPath (Join-Path $projectRoot 'config\models.json') -Raw | ConvertFrom-Json).models
 $presets = (Get-Content -LiteralPath (Join-Path $projectRoot 'config\resolutions.json') -Raw | ConvertFrom-Json).resolutions
+$scenarios = Get-Content -LiteralPath (Join-Path $projectRoot 'config\benchmark-scenarios.json') -Raw | ConvertFrom-Json
 
 Test-Case 'API fixtures cover the three pinned workflow profiles' {
     $fixtureNames = @('sdxl.json', 'z_image.json', 'flux2.json')
@@ -15,34 +16,23 @@ Test-Case 'API fixtures cover the three pinned workflow profiles' {
     }
 }
 
-Test-Case 'benchmark mutation maps every model to its profile and canvas' {
-    . $benchmarkScript -LibraryOnly
-    $canvas = $presets | Where-Object id -eq '1216x832'
+Test-Case 'benchmark delegates prompt materialization to semantic Python code' {
+    $source = Get-Content -LiteralPath $benchmarkScript -Raw
 
-    foreach ($model in $manifest.models) {
-        $fixturePath = Join-Path $projectRoot "workflows\api\$($model.workflowProfile).json"
-        $workflow = Get-Content -LiteralPath $fixturePath -Raw | ConvertFrom-Json
-        Set-BenchmarkInputs -Workflow $workflow -Model $model -Canvas $canvas -Seed 42 -FilenamePrefix "proof/$($model.id)"
-
-        $modelLoader = $workflow.PSObject.Properties.Value | Where-Object class_type -in @('CheckpointLoaderSimple', 'UNETLoader')
-        $latent = $workflow.PSObject.Properties.Value | Where-Object class_type -in @('EmptyLatentImage', 'EmptySD3LatentImage', 'EmptyFlux2LatentImage')
-        $save = $workflow.PSObject.Properties.Value | Where-Object class_type -eq 'SaveImage'
-
-        Assert-True ($null -ne $modelLoader) "$($model.id) selects a model loader"
-        Assert-Equal 1216 $latent.inputs.width "$($model.id) width"
-        Assert-Equal 832 $latent.inputs.height "$($model.id) height"
-        Assert-Equal "proof/$($model.id)" $save.inputs.filename_prefix "$($model.id) output prefix"
-    }
+    Assert-True ($source -match 'python.+-m comfy_local prompt') 'benchmark invokes the semantic prompt CLI'
+    Assert-True ($source -notmatch 'Set-BenchmarkInputs') 'benchmark does not mutate API graphs in PowerShell'
+    Assert-True ($source -notmatch 'workflowProfile') 'benchmark does not select numeric fixtures by legacy profile'
 }
 
-Test-Case 'proof matrix is six models by three orientations' {
+Test-Case 'proof matrix derives models and orientations from focused configuration' {
     . $benchmarkScript -LibraryOnly
-    $matrix = @(Get-ProofMatrix -Models $manifest.models -Presets $presets)
+    $matrix = @(Get-ProofMatrix -Models $models -Presets $presets -PresetIds $scenarios.orientationProof.presetIds)
+    $expectedCount = $models.Count * $scenarios.orientationProof.presetIds.Count
 
-    Assert-Equal 18 $matrix.Count 'proof job count'
-    Assert-Equal 6 @($matrix | Where-Object orientation -eq 'square').Count 'square job count'
-    Assert-Equal 6 @($matrix | Where-Object orientation -eq 'landscape').Count 'landscape job count'
-    Assert-Equal 6 @($matrix | Where-Object orientation -eq 'portrait').Count 'portrait job count'
+    Assert-Equal $expectedCount $matrix.Count 'proof job count'
+    foreach ($presetId in $scenarios.orientationProof.presetIds) {
+        Assert-Equal $models.Count @($matrix | Where-Object presetId -eq $presetId).Count "$presetId job count"
+    }
 }
 
 Test-Case 'queued prompts tolerate an empty history response' {
