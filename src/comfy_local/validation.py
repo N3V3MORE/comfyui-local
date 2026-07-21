@@ -47,13 +47,13 @@ def _validate_scope(scope: str | None, graph: dict[str, Any]) -> None:
 
     for link in links:
         link_id, source_id, source_slot, target_id, target_slot, link_type = _link_parts(link)
-        if source_id not in nodes:
+        if source_id not in nodes and source_id != -10:
             raise ValidationError(f"{label} link {link_id} has a missing source node {source_id}")
-        if target_id not in nodes:
+        if target_id not in nodes and target_id != -20:
             raise ValidationError(f"{label} link {link_id} has a missing destination node {target_id}")
 
-        source_outputs = nodes[source_id].get("outputs", [])
-        target_inputs = nodes[target_id].get("inputs", [])
+        source_outputs = graph.get("inputs", []) if source_id == -10 else nodes[source_id].get("outputs", [])
+        target_inputs = graph.get("outputs", []) if target_id == -20 else nodes[target_id].get("inputs", [])
         if source_slot >= len(source_outputs):
             raise ValidationError(f"{label} link {link_id} has an invalid source slot")
         if target_slot >= len(target_inputs):
@@ -61,9 +61,9 @@ def _validate_scope(scope: str | None, graph: dict[str, Any]) -> None:
 
         source_type = source_outputs[source_slot].get("type")
         target_type = target_inputs[target_slot].get("type")
-        if source_type not in (None, "*", link_type):
+        if link_type != "*" and source_type not in (None, "*", link_type):
             raise ValidationError(f"{label} link {link_id} type {link_type} does not match source type {source_type}")
-        if target_type not in (None, "*", link_type):
+        if link_type != "*" and target_type not in (None, "*", link_type):
             raise ValidationError(f"{label} link {link_id} type {link_type} does not match destination type {target_type}")
 
 

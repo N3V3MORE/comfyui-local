@@ -182,12 +182,12 @@
           "widget": "text"
         },
         {
-          "node": "width",
-          "widget": "value"
+          "node": "latent",
+          "widget": "width"
         },
         {
-          "node": "height",
-          "widget": "value"
+          "node": "latent",
+          "widget": "height"
         },
         {
           "node": "sampler",
