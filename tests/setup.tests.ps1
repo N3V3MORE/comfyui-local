@@ -10,15 +10,16 @@ Test-Case 'setup validation checks the required local prerequisites' {
 }
 
 Test-Case 'setup renders the external model path configuration' {
-    $yaml = ((& $setupScript -PrintExtraModelPaths) -join "`n").Trim()
+    $yaml = (((& $setupScript -PrintExtraModelPaths) -join "`n").Trim()) -replace "`r`n", "`n"
+    $normalizedRoot = $projectRoot.Replace('\', '/')
     $expected = @'
 comfyui_local:
-  base_path: C:/Users/Sushmit/Desktop/Code/comfyui-local/models
+  base_path: __PROJECT_ROOT__/models
   checkpoints: checkpoints
   diffusion_models: diffusion_models
   text_encoders: text_encoders
   vae: vae
-'@.Trim()
+'@.Replace('__PROJECT_ROOT__', $normalizedRoot).Trim()
 
     Assert-Equal $expected $yaml 'external model paths YAML'
 }

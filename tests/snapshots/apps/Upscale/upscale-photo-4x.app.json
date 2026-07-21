@@ -1,0 +1,152 @@
+{
+  "last_node_id": 4,
+  "last_link_id": 3,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "outputs": [
+        {
+          "links": [
+            1
+          ],
+          "slot_index": 0,
+          "name": "IMAGE",
+          "type": "IMAGE"
+        },
+        {
+          "links": null,
+          "slot_index": 1,
+          "name": "MASK",
+          "type": "MASK"
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "studio-reference.webp",
+        "image"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "UpscaleModelLoader",
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "links": [
+            2
+          ],
+          "slot_index": 0,
+          "name": "UPSCALE_MODEL",
+          "type": "UPSCALE_MODEL"
+        }
+      ],
+      "properties": {},
+      "widgets_values": [
+        "RealESRGAN_x4plus.pth"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "ImageUpscaleWithModel",
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "link": 2,
+          "name": "upscale_model",
+          "type": "UPSCALE_MODEL"
+        },
+        {
+          "link": 1,
+          "name": "image",
+          "type": "IMAGE"
+        }
+      ],
+      "outputs": [
+        {
+          "links": [
+            3
+          ],
+          "slot_index": 0,
+          "name": "IMAGE",
+          "type": "IMAGE"
+        }
+      ],
+      "properties": {}
+    },
+    {
+      "id": 4,
+      "type": "SaveImage",
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "link": 3,
+          "name": "images",
+          "type": "IMAGE"
+        }
+      ],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "upscale-photo-4x"
+      ]
+    }
+  ],
+  "links": [
+    [
+      [
+        1,
+        1,
+        0,
+        3,
+        1,
+        "IMAGE"
+      ]
+    ],
+    [
+      [
+        2,
+        2,
+        0,
+        3,
+        0,
+        "UPSCALE_MODEL"
+      ]
+    ],
+    [
+      [
+        3,
+        3,
+        0,
+        4,
+        0,
+        "IMAGE"
+      ]
+    ]
+  ],
+  "config": {},
+  "extra": {
+    "linearMode": true,
+    "linearData": {
+      "inputs": [
+        [
+          1,
+          "image"
+        ]
+      ],
+      "outputs": [
+        4
+      ]
+    }
+  },
+  "version": 0.4
+}
