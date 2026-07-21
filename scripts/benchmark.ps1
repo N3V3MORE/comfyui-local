@@ -91,10 +91,30 @@ function Get-ProofMatrix {
     }
 }
 
-function Get-GpuMemoryUsedMiB {
-    $value = & nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits 2>$null | Select-Object -First 1
-    if ($LASTEXITCODE -ne 0 -or $null -eq $value) { return 0 }
-    return [int]$value.Trim()
+function Get-PeakVramMiB {
+    param([object[]]$Samples = @())
+
+    $values = @($Samples | Where-Object { "$_" -match '^\d+$' } | ForEach-Object { [int]$_ })
+    if ($values.Count -eq 0) { return 0 }
+    return [int]($values | Measure-Object -Maximum).Maximum
+}
+
+function Start-GpuMemoryMonitor {
+    return Start-Job -ScriptBlock {
+        while ($true) {
+            & nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits 2>$null | Select-Object -First 1
+            Start-Sleep -Milliseconds 200
+        }
+    }
+}
+
+function Stop-GpuMemoryMonitor {
+    param([Parameter(Mandatory)]$Job)
+
+    Stop-Job -Job $Job
+    $samples = @(Receive-Job -Job $Job)
+    Remove-Job -Job $Job
+    return Get-PeakVramMiB -Samples $samples
 }
 
 function Submit-ComfyPrompt {
@@ -126,9 +146,7 @@ function Wait-ComfyPrompt {
     )
 
     $deadline = (Get-Date).AddMinutes($TimeoutMinutes)
-    $peakVramMiB = 0
     while ((Get-Date) -lt $deadline) {
-        $peakVramMiB = [math]::Max($peakVramMiB, (Get-GpuMemoryUsedMiB))
         $history = Invoke-RestMethod -Uri "$Server/history/$PromptId" -TimeoutSec 30
         $entry = Get-ComfyHistoryEntry -History $history -PromptId $PromptId
         if ($null -ne $entry) {
@@ -142,7 +160,7 @@ function Wait-ComfyPrompt {
                         Where-Object { $null -ne $_ }
                 )
                 Assert-Condition ($images.Count -gt 0) "Prompt completed without an image: $PromptId"
-                return [pscustomobject]@{ images = $images; peakVramMiB = $peakVramMiB }
+                return [pscustomobject]@{ images = $images }
             }
         }
         Start-Sleep -Milliseconds 500
@@ -193,9 +211,15 @@ foreach ($model in $models) {
 
         Write-Output "Generating $($model.id) at $($canvas.id)..."
         $watch = [Diagnostics.Stopwatch]::StartNew()
-        $promptId = Submit-ComfyPrompt -Workflow $workflow -Server $Server
-        $completed = Wait-ComfyPrompt -PromptId $promptId -Server $Server -TimeoutMinutes $TimeoutMinutes
-        $watch.Stop()
+        $vramMonitor = Start-GpuMemoryMonitor
+        try {
+            $promptId = Submit-ComfyPrompt -Workflow $workflow -Server $Server
+            $completed = Wait-ComfyPrompt -PromptId $promptId -Server $Server -TimeoutMinutes $TimeoutMinutes
+        }
+        finally {
+            $watch.Stop()
+            $peakVramMiB = Stop-GpuMemoryMonitor -Job $vramMonitor
+        }
         $copied = @(foreach ($image in $completed.images) {
             Copy-ComfyImage -Image $image -ComfyOutputRoot (Join-Path $root 'ComfyUI\output') -DestinationRoot $proofRoot -ModelId $model.id
         })
@@ -212,7 +236,7 @@ foreach ($model in $models) {
             height = $canvas.height
             steps = $model.steps
             seconds = [math]::Round($watch.Elapsed.TotalSeconds, 2)
-            peakVramMiB = $completed.peakVramMiB
+            peakVramMiB = $peakVramMiB
             output = ($copied -join ';')
         })
     }

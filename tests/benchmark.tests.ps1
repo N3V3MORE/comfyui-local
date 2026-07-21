@@ -53,3 +53,11 @@ Test-Case 'queued prompts tolerate an empty history response' {
     Assert-True ($null -eq (Get-ComfyHistoryEntry -History $emptyHistory -PromptId 'prompt-1')) 'queued prompt has no history entry yet'
     Assert-True ((Get-ComfyHistoryEntry -History $completedHistory -PromptId 'prompt-1').status.completed) 'completed prompt entry is returned'
 }
+
+Test-Case 'VRAM monitoring keeps the highest valid sample' {
+    . $benchmarkScript -LibraryOnly
+    $samples = @('1008', '4921', 'not-a-number', '4380')
+
+    Assert-Equal 4921 (Get-PeakVramMiB -Samples $samples) 'peak GPU memory sample'
+    Assert-Equal 0 (Get-PeakVramMiB -Samples @()) 'empty GPU memory samples'
+}
