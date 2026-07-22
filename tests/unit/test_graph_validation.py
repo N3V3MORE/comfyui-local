@@ -121,6 +121,13 @@ class GraphValidationTests(unittest.TestCase):
         workflow["links"][0][5] = "MASK"
         self.assert_invalid(workflow, "source type IMAGE")
 
+    def test_negative_link_socket_indexes_are_rejected(self) -> None:
+        for index in (2, 4):
+            with self.subTest(index=index):
+                workflow = valid_workflow()
+                workflow["links"][0][index] = -1
+                self.assert_invalid(workflow, "invalid .* slot")
+
     def test_unknown_app_widget_is_rejected(self) -> None:
         workflow = valid_workflow()
         workflow["extra"]["linearData"]["inputs"][0][1] = "not_a_widget"

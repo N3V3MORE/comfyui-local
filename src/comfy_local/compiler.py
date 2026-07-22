@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import shutil
+import tempfile
 from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
@@ -16,6 +18,13 @@ from .validation import validate_ui_graph
 
 class CompilerError(ValueError):
     pass
+
+
+GENERATED_CATALOG_ROOTS = (
+    Path("workflows") / "apps",
+    Path("workflows") / "ui",
+    Path("workflows") / "api",
+)
 
 
 @dataclass(frozen=True)
@@ -62,9 +71,12 @@ def compile_catalog(root: Path, output_root: Path) -> CompileResult:
             outputs.append((api_relative, compiled.api_prompt))
             api_prompts.append(api_relative)
 
-    for relative, value in outputs:
-        _write_json(output_root / relative, value)
-    _remove_stale_generated_outputs(output_root, {relative for relative, _ in outputs})
+    output_root.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix=".comfy-local-catalog-", dir=output_root) as temporary:
+        staged_root = Path(temporary)
+        for relative, value in outputs:
+            _write_json(staged_root / relative, value)
+        _publish_catalog(output_root, staged_root)
 
     return CompileResult(tuple(apps), tuple(ui_workflows), tuple(api_prompts))
 
@@ -343,16 +355,36 @@ def _write_json(path: Path, value: Any) -> None:
     temporary.replace(path)
 
 
-def _remove_stale_generated_outputs(output_root: Path, expected: set[str]) -> None:
-    generated_roots = (
-        (output_root / "workflows" / "apps", "*.app.json"),
-        (output_root / "workflows" / "ui", "*.json"),
-        (output_root / "workflows" / "api", "*.json"),
-    )
-    for directory, pattern in generated_roots:
-        if not directory.is_dir():
-            continue
-        for path in directory.rglob(pattern):
-            relative = path.relative_to(output_root).as_posix()
-            if relative not in expected:
-                path.unlink()
+def _publish_catalog(output_root: Path, staged_root: Path) -> None:
+    backups: list[tuple[Path, Path]] = []
+    published: list[Path] = []
+    try:
+        for relative in GENERATED_CATALOG_ROOTS:
+            target = output_root / relative
+            staged = staged_root / relative
+            backup = staged_root / ".previous" / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if target.exists():
+                backup.parent.mkdir(parents=True, exist_ok=True)
+                target.replace(backup)
+                backups.append((target, backup))
+            staged.replace(target)
+            published.append(target)
+    except OSError:
+        for target in reversed(published):
+            _remove_path(target)
+        for target, backup in reversed(backups):
+            if backup.exists():
+                target.parent.mkdir(parents=True, exist_ok=True)
+                backup.replace(target)
+        raise
+    else:
+        for _, backup in backups:
+            _remove_path(backup)
+
+
+def _remove_path(path: Path) -> None:
+    if path.is_dir():
+        shutil.rmtree(path)
+    elif path.exists():
+        path.unlink()

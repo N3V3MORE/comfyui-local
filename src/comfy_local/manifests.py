@@ -12,6 +12,18 @@ class ConfigurationError(ValueError):
     pass
 
 
+WORKFLOW_KIND_FAMILIES = {
+    "sdxl-create": "sdxl",
+    "z-create": "z-image",
+    "flux-create": "flux2",
+    "sdxl-control": "sdxl",
+    "z-control": "z-image",
+    "ipadapter": "sdxl",
+    "face-detail": "sdxl",
+    "upscale": "upscale",
+}
+
+
 @dataclass(frozen=True)
 class SamplingProfile:
     steps: int
@@ -187,16 +199,6 @@ def validate_configuration(root: Path) -> None:
                     f"Model {model.id} component {component} does not belong to its declared artifacts"
                 )
 
-    kind_families = {
-        "sdxl-create": "sdxl",
-        "z-create": "z-image",
-        "flux-create": "flux2",
-        "sdxl-control": "sdxl",
-        "z-control": "z-image",
-        "ipadapter": "sdxl",
-        "face-detail": "sdxl",
-        "upscale": "upscale",
-    }
     seen_outputs: set[str] = set()
     seen_ui_outputs: set[str] = set()
     seen_api_outputs: set[str] = set()
@@ -205,26 +207,28 @@ def validate_configuration(root: Path) -> None:
             raise ConfigurationError(f"Workflow {spec.id} has unknown family {spec.family!r}")
         _require_relative(spec.template, f"workflow {spec.id} template")
         _require_relative(spec.output, f"workflow {spec.id} output")
-        if spec.output in seen_outputs:
+        if spec.output.casefold() in seen_outputs:
             raise ConfigurationError(f"Duplicate workflow output: {spec.output}")
-        seen_outputs.add(spec.output)
+        seen_outputs.add(spec.output.casefold())
         if spec.ui_output is not None:
             _require_relative(spec.ui_output, f"workflow {spec.id} UI output")
-            if spec.ui_output in seen_ui_outputs:
+            if spec.ui_output.casefold() in seen_ui_outputs:
                 raise ConfigurationError(f"Duplicate UI output: {spec.ui_output}")
-            seen_ui_outputs.add(spec.ui_output)
+            seen_ui_outputs.add(spec.ui_output.casefold())
         if spec.api_output is not None:
             _require_relative(spec.api_output, f"workflow {spec.id} API output")
-            if spec.api_output in seen_api_outputs:
+            if spec.api_output.casefold() in seen_api_outputs:
                 raise ConfigurationError(f"Duplicate API output: {spec.api_output}")
-            seen_api_outputs.add(spec.api_output)
-        expected_family = kind_families.get(spec.kind)
+            seen_api_outputs.add(spec.api_output.casefold())
+        expected_family = WORKFLOW_KIND_FAMILIES.get(spec.kind)
         if expected_family != spec.family:
             raise ConfigurationError(
                 f"Workflow {spec.id} kind {spec.kind!r} is incompatible with family {spec.family!r}"
             )
         if spec.kind == "upscale" and spec.model_profile is not None:
             raise ConfigurationError(f"Upscale workflow {spec.id} must not select a model profile")
+        if spec.kind != "upscale" and spec.model_profile is None:
+            raise ConfigurationError(f"Workflow {spec.id} must select a model profile")
         if not (root / spec.template).is_file():
             raise ConfigurationError(f"Workflow {spec.id} template is missing: {spec.template}")
         if spec.model_profile:

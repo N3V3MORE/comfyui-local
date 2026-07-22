@@ -23,6 +23,13 @@ Test-Case 'README explains the isolated Opera App Mode workflow' {
     Assert-True ($readme -match 'select or upload') 'README explains image input in App Mode'
 }
 
+Test-Case 'README does not overstate advanced-app smoke evidence as full generation proof' {
+    $readme = Get-Content -LiteralPath (Join-Path $projectRoot 'README.md') -Raw
+
+    Assert-True ($readme -notmatch 'have completed real prompts through the live local server') 'README does not claim smoke evidence proves every advanced workflow'
+    Assert-True ($readme -match 'not a substitute for an end-to-end generation record') 'README distinguishes smoke checks from full generation proof'
+}
+
 Test-Case 'README documents the semantic compiler and focused configuration' {
     $readme = Get-Content -LiteralPath (Join-Path $projectRoot 'README.md') -Raw
 

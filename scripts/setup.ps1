@@ -17,11 +17,11 @@ $root = Get-ProjectRoot
 $version = Read-Json (Join-Path $root 'comfyui-version.json')
 $manifest = Read-Json (Join-Path $root 'config\artifacts.json')
 $extensionsManifest = Read-Json (Join-Path $root 'extensions-manifest.json')
-$comfyPath = Join-Path $root 'ComfyUI'
-$venvPath = Join-Path $root '.venv'
-$pythonPath = Join-Path $venvPath 'Scripts\python.exe'
+$comfyPath = Resolve-ManagedPath -Root $root -RelativePath 'ComfyUI' -Label 'ComfyUI checkout'
+$venvPath = Resolve-ManagedPath -Root $root -RelativePath '.venv' -Label 'Python environment'
+$pythonPath = Resolve-ManagedPath -Root $venvPath -RelativePath 'Scripts\python.exe' -Label 'Python interpreter'
 $lockPath = Join-Path $root 'requirements.lock.txt'
-$extensionDownloadMarker = Join-Path $comfyPath 'custom_nodes\skip_download_model'
+$extensionDownloadMarker = Resolve-ManagedPath -Root $comfyPath -RelativePath 'custom_nodes\skip_download_model' -Label 'Extension download marker'
 $syncArguments = @(
     'pip', 'sync',
     '--python', $pythonPath,
@@ -53,8 +53,12 @@ comfyui_local:
 function Test-UsableVirtualEnvironment {
     param([Parameter(Mandatory)][string]$Path)
 
-    return (Test-Path -LiteralPath (Join-Path $Path 'Scripts\python.exe')) -and
-        (Test-Path -LiteralPath (Join-Path $Path 'pyvenv.cfg'))
+    $python = Join-Path $Path 'Scripts\python.exe'
+    if (-not (Test-Path -LiteralPath $python) -or -not (Test-Path -LiteralPath (Join-Path $Path 'pyvenv.cfg'))) {
+        return $false
+    }
+    & $python -c 'import sys' 1>$null 2>$null
+    return $LASTEXITCODE -eq 0
 }
 
 function Test-Prerequisites {
@@ -85,8 +89,8 @@ function Test-Prerequisites {
 function Invoke-ExtensionInstall {
     param([Parameter(Mandatory)]$Extension)
 
-    $customNodesPath = Join-Path $comfyPath 'custom_nodes'
-    $extensionPath = Join-Path $customNodesPath $Extension.name
+    $customNodesPath = Resolve-ManagedPath -Root $comfyPath -RelativePath 'custom_nodes' -Label 'Custom nodes directory'
+    $extensionPath = Resolve-ManagedPath -Root $customNodesPath -RelativePath $Extension.name -Label "$($Extension.id) checkout"
     $wasInstalled = $false
     New-Item -ItemType Directory -Force -Path $customNodesPath | Out-Null
 
@@ -132,8 +136,8 @@ function Invoke-ExtensionInstall {
 }
 
 function Install-LocalStudioNode {
-    $source = Join-Path $root 'custom_nodes\comfyui_local_studio'
-    $destination = Join-Path $comfyPath 'custom_nodes\comfyui_local_studio'
+    $source = Resolve-ManagedPath -Root $root -RelativePath 'custom_nodes\comfyui_local_studio' -Label 'Tracked Studio node'
+    $destination = Resolve-ManagedPath -Root $comfyPath -RelativePath 'custom_nodes\comfyui_local_studio' -Label 'Studio node destination'
     Assert-Condition (Test-Path -LiteralPath (Join-Path $source '__init__.py')) 'Tracked studio node is missing'
 
     if (Test-Path -LiteralPath $destination) {
@@ -213,11 +217,12 @@ if ($PSCmdlet.ShouldProcess($venvPath, 'Create and synchronize Python environmen
 
 # Impact Pack and its subpack honor this marker. All model downloads belong in
 # the reviewed manifests instead of being hidden side effects of install hooks.
-$customNodesPath = Split-Path -Parent $extensionDownloadMarker
+$customNodesPath = Resolve-ManagedPath -Root $comfyPath -RelativePath 'custom_nodes' -Label 'Custom nodes directory'
 New-Item -ItemType Directory -Force -Path $customNodesPath | Out-Null
 New-Item -ItemType File -Force -Path $extensionDownloadMarker | Out-Null
 $env:COMFYUI_PATH = $comfyPath
-$env:COMFYUI_MODEL_PATH = Join-Path $root 'models'
+$modelsPath = Resolve-ManagedPath -Root $root -RelativePath 'models' -Label 'Models directory'
+$env:COMFYUI_MODEL_PATH = $modelsPath
 
 foreach ($extension in $extensionsManifest.extensions) {
     Invoke-ExtensionInstall -Extension $extension
@@ -246,14 +251,14 @@ foreach ($relativePath in @(
     'loras\z-image',
     'loras\flux2'
 )) {
-    New-Item -ItemType Directory -Force -Path (Join-Path $root "models\$relativePath") | Out-Null
+    New-Item -ItemType Directory -Force -Path (Resolve-ManagedPath -Root $modelsPath -RelativePath $relativePath -Label 'Model directory') | Out-Null
 }
 
 foreach ($relativePath in @('data\user', 'data\input', 'data\temp', 'results\images')) {
-    New-Item -ItemType Directory -Force -Path (Join-Path $root $relativePath) | Out-Null
+    New-Item -ItemType Directory -Force -Path (Resolve-ManagedPath -Root $root -RelativePath $relativePath -Label 'Runtime directory') | Out-Null
 }
 
-$extraPathsFile = Join-Path $comfyPath 'extra_model_paths.yaml'
+$extraPathsFile = Resolve-ManagedPath -Root $comfyPath -RelativePath 'extra_model_paths.yaml' -Label 'ComfyUI model path configuration'
 Set-Content -LiteralPath $extraPathsFile -Value (Get-ExtraModelPathsYaml) -Encoding utf8
 & (Join-Path $PSScriptRoot 'compile.ps1')
 & (Join-Path $PSScriptRoot 'copy-bundled-inputs.ps1')

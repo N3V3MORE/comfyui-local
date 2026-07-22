@@ -12,6 +12,8 @@ from .benchmark import (
     materialize_scenario_prompt,
 )
 from .compiler import compile_catalog
+from .graph import WorkflowGraph
+from .validation import validate_ui_graph
 
 
 def main() -> int:
@@ -20,6 +22,8 @@ def main() -> int:
     compile_parser = commands.add_parser("compile", help="compile all declared workflows")
     compile_parser.add_argument("--root", type=Path, required=True, help="project root")
     compile_parser.add_argument("--output-root", type=Path, required=True, help="output root")
+    validate_parser = commands.add_parser("validate-ui", help="validate serialized UI workflows")
+    validate_parser.add_argument("--path", type=Path, action="append", required=True)
     prompt_parser = commands.add_parser("prompt", help="materialize one benchmark API prompt")
     prompt_parser.add_argument("--root", type=Path, required=True)
     prompt_parser.add_argument("--model-id", required=True)
@@ -47,6 +51,11 @@ def main() -> int:
             f"Compiled {len(result.apps)} apps, "
             f"{len(result.ui_workflows)} UI workflows, and {len(result.api_prompts)} API prompts"
         )
+        return 0
+    if args.command == "validate-ui":
+        for path in args.path:
+            value = json.loads(path.read_text(encoding="utf-8"))
+            validate_ui_graph(WorkflowGraph.from_ui_json(value))
         return 0
     if args.command == "prompt":
         value = materialize_prompt(

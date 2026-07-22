@@ -8,7 +8,7 @@ Set-StrictMode -Version Latest
 $root = Get-ProjectRoot
 if ([string]::IsNullOrWhiteSpace($DestinationRoot)) { $DestinationRoot = Join-Path $root 'data\input' }
 $source = Join-Path $root '.venv\Lib\site-packages\comfyui_workflow_templates_media_image\templates\image_z_image_turbo_fun_union_controlnet-1.webp'
-$destination = Join-Path $DestinationRoot 'studio-reference.webp'
+$destination = Resolve-ManagedPath -Root $DestinationRoot -RelativePath 'studio-reference.webp' -Label 'Bundled input destination'
 
 Assert-Condition (Test-Path -LiteralPath $source) 'Pinned studio reference image is missing'
 New-Item -ItemType Directory -Force -Path $DestinationRoot | Out-Null

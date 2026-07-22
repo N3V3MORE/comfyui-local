@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from dataclasses import replace
 from pathlib import Path
+from unittest import mock
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -95,6 +96,37 @@ class WorkflowCompilerTests(unittest.TestCase):
             with self.assertRaisesRegex(Exception, "save_image"):
                 compile_catalog(root, output)
             self.assertFalse(any(output.rglob("*.json")))
+
+    def test_catalog_write_failure_leaves_the_previous_catalog_unchanged(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary)
+            compile_catalog(PROJECT_ROOT, output)
+            before = {
+                path.relative_to(output): path.read_bytes()
+                for path in output.rglob("*.json")
+            }
+
+            from comfy_local import compiler
+
+            original_write = compiler._write_json
+            write_count = 0
+
+            def fail_on_third_write(path: Path, value: object) -> None:
+                nonlocal write_count
+                write_count += 1
+                if write_count == 3:
+                    raise OSError("simulated write failure")
+                original_write(path, value)
+
+            with mock.patch.object(compiler, "_write_json", side_effect=fail_on_third_write):
+                with self.assertRaisesRegex(OSError, "simulated write failure"):
+                    compile_catalog(PROJECT_ROOT, output)
+
+            after = {
+                path.relative_to(output): path.read_bytes()
+                for path in output.rglob("*.json")
+            }
+            self.assertEqual(before, after)
 
     def test_successful_catalog_compilation_removes_stale_generated_outputs(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

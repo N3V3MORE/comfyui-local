@@ -32,6 +32,13 @@ Test-Case 'start exposes the shared resolution configuration to custom nodes' {
     Assert-True ($output -contains "COMFYUI_LOCAL_CONFIG=$projectRoot\config\resolutions.json") 'start points custom nodes at the shared resolution JSON'
 }
 
+Test-Case 'start validates the identity of an already-running Studio server' {
+    $source = Get-Content -LiteralPath $startScript -Raw
+
+    Assert-True ($source -match 'Get-CimInstance.+Win32_Process') 'start resolves the listening process command line'
+    Assert-True ($source -match 'does not belong to this checkout') 'start rejects a different Studio checkout on the same port'
+}
+
 Test-Case 'static verification proves runtime and distinguishes missing models' {
     $output = ((& $verifyScript -StaticOnly -SkipArtifactHashes -RequireExtensions) -join "`n")
 
@@ -59,4 +66,11 @@ Test-Case 'live verification flattens the Invoke-RestMethod array response' {
     Assert-True ($source -match '\$workflowResponse\s*=\s*Invoke-RestMethod') 'workflow response is captured before array normalization'
     Assert-True ($source -match '\$served\s*=\s*@\(\$workflowResponse\)') 'workflow response is flattened from a variable expression'
     Assert-True ($source -notmatch '\$served\s*=\s*@\(Invoke-RestMethod') 'Invoke-RestMethod is not directly wrapped as a nested array'
+}
+
+Test-Case 'static verification validates generated and installed Studio app content' {
+    $source = Get-Content -LiteralPath $verifyScript -Raw
+
+    Assert-True ($source -match 'validate-ui') 'verification invokes structural App Mode graph validation'
+    Assert-True ($source -match 'Get-FileSha256') 'verification compares installed app content to the generated catalog'
 }

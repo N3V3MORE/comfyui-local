@@ -48,6 +48,7 @@ Test-Case 'setup validates virtual-environment metadata before reuse' {
     $source = Get-Content -LiteralPath $setupScript -Raw
 
     Assert-True ($source -match 'pyvenv\.cfg') 'setup checks for pyvenv.cfg before reusing a virtual environment'
+    Assert-True ($source -match "-c\s*'import sys'") 'setup runs the virtual-environment interpreter before reuse'
 }
 
 Test-Case 'setup prints the exact extension and local-node installation plan' {

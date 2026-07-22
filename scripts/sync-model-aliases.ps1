@@ -5,24 +5,14 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 . (Join-Path $PSScriptRoot 'lib\common.ps1')
 
-function Get-FileId {
-    param([Parameter(Mandatory)][string]$Path)
-
-    $output = & fsutil.exe file queryfileid $Path
-    Assert-Condition ($LASTEXITCODE -eq 0) "Could not inspect hardlink identity: $Path"
-    return ($output -join ' ').Trim()
-}
-
 function New-ModelAlias {
     param(
         [Parameter(Mandatory)]$Alias,
         [Parameter(Mandatory)][string]$ModelsRoot
     )
 
-    $sourceRelative = Assert-SafeRelativePath -Path $Alias.source -Label 'Alias source'
-    $targetRelative = Assert-SafeRelativePath -Path $Alias.target -Label 'Alias target'
-    $source = Join-Path $ModelsRoot $sourceRelative
-    $target = Join-Path $ModelsRoot $targetRelative
+    $source = Resolve-ManagedPath -Root $ModelsRoot -RelativePath $Alias.source -Label 'Alias source'
+    $target = Resolve-ManagedPath -Root $ModelsRoot -RelativePath $Alias.target -Label 'Alias target'
     Assert-Condition (Test-Path -LiteralPath $source -PathType Leaf) "Alias source is missing: $source"
 
     if (Test-Path -LiteralPath $target) {

@@ -59,9 +59,9 @@ def _validate_scope(scope: str | None, graph: dict[str, Any]) -> None:
 
         source_outputs = graph.get("inputs", []) if source_id == -10 else nodes[source_id].get("outputs", [])
         target_inputs = graph.get("outputs", []) if target_id == -20 else nodes[target_id].get("inputs", [])
-        if source_slot >= len(source_outputs):
+        if source_slot < 0 or source_slot >= len(source_outputs):
             raise ValidationError(f"{label} link {link_id} has an invalid source slot")
-        if target_slot >= len(target_inputs):
+        if target_slot < 0 or target_slot >= len(target_inputs):
             raise ValidationError(f"{label} link {link_id} has an invalid destination slot")
 
         source_type = source_outputs[source_slot].get("type")

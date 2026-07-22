@@ -76,6 +76,20 @@ Test-Case 'benchmark retries a transient history request' {
     Assert-True ($null -ne (Get-ComfyHistoryEntry -History $history -PromptId 'prompt-1')) 'retry returns history response'
 }
 
+Test-Case 'benchmark continues polling after one exhausted history retry group' {
+    . $benchmarkScript -LibraryOnly
+    $script:benchmarkPollAttempts = 0
+    $completed = Wait-ComfyPrompt -PromptId 'prompt-1' -Server 'http://127.0.0.1:8188' -TimeoutMinutes 1 -HistoryRequest {
+        param($uri)
+        $script:benchmarkPollAttempts++
+        if ($script:benchmarkPollAttempts -le 3) { throw 'temporary server failure' }
+        return '{"prompt-1":{"status":{"completed":true},"outputs":{"save":{"images":[{"filename":"result.png","subfolder":"","type":"output"}]}}}}' | ConvertFrom-Json
+    }
+
+    Assert-Equal 4 $script:benchmarkPollAttempts 'polling continues after the bounded inner retry group'
+    Assert-Equal 'result.png' $completed.images[0].filename 'completed prompt returns its image'
+}
+
 Test-Case 'benchmark validates Comfy output paths before copying them locally' {
     $source = Get-Content -LiteralPath $benchmarkScript -Raw
 

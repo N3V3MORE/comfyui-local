@@ -24,6 +24,7 @@ $comfyPath = Join-Path $root 'ComfyUI'
 $modelsRoot = Join-Path $root 'models'
 $workflowRoot = Join-Path $root 'workflows\ui'
 $appsRoot = Join-Path $root 'workflows\apps'
+$installedAppsRoot = Join-Path $root 'data\user\default\workflows\ComfyUI Local Studio'
 $catalog = Read-Json (Join-Path $root 'config\workflow-specs.json')
 
 Assert-Condition (-not $SkipArtifactHashes -or $StaticOnly) '-SkipArtifactHashes requires -StaticOnly'
@@ -59,7 +60,7 @@ Assert-Condition ([long]$probe.vramBytes -gt 7.5GB) 'Less than 7.5 GiB VRAM is v
 $validArtifacts = $missingArtifacts = $invalidArtifacts = 0
 if (-not $SkipArtifactHashes) {
     foreach ($artifact in $coreArtifacts) {
-        $path = Join-Path $modelsRoot $artifact.target.Replace('/', [IO.Path]::DirectorySeparatorChar)
+        $path = Resolve-ManagedPath -Root $modelsRoot -RelativePath $artifact.target -Label "Artifact $($artifact.id) target"
         if (-not (Test-Path -LiteralPath $path)) {
             $missingArtifacts++
         }
@@ -75,7 +76,7 @@ if (-not $SkipArtifactHashes) {
 $validSupportArtifacts = $missingSupportArtifacts = $invalidSupportArtifacts = 0
 if (-not $SkipArtifactHashes) {
     foreach ($artifact in $supportArtifacts) {
-        $path = Join-Path $modelsRoot $artifact.target.Replace('/', [IO.Path]::DirectorySeparatorChar)
+        $path = Resolve-ManagedPath -Root $modelsRoot -RelativePath $artifact.target -Label "Support artifact $($artifact.id) target"
         if (-not (Test-Path -LiteralPath $path)) {
             $missingSupportArtifacts++
         }
@@ -89,14 +90,10 @@ if (-not $SkipArtifactHashes) {
 }
 
 foreach ($alias in $aliasesManifest.aliases) {
-    $sourceRelative = Assert-SafeRelativePath -Path $alias.source -Label 'Alias source'
-    $targetRelative = Assert-SafeRelativePath -Path $alias.target -Label 'Alias target'
-    $source = Join-Path $modelsRoot $sourceRelative
-    $target = Join-Path $modelsRoot $targetRelative
+    $source = Resolve-ManagedPath -Root $modelsRoot -RelativePath $alias.source -Label 'Alias source'
+    $target = Resolve-ManagedPath -Root $modelsRoot -RelativePath $alias.target -Label 'Alias target'
     if ((Test-Path -LiteralPath $source) -and (Test-Path -LiteralPath $target)) {
-        $sourceId = ((& fsutil.exe file queryfileid $source) -join '').Trim()
-        $targetId = ((& fsutil.exe file queryfileid $target) -join '').Trim()
-        Assert-Condition ($sourceId -eq $targetId) "Alias target is not linked to its source: $target"
+        Assert-Condition ((Get-FileId $source) -eq (Get-FileId $target)) "Alias target is not linked to its source: $target"
     }
     elseif ($RequireModels) {
         throw "Model alias is missing: $target"
@@ -117,9 +114,11 @@ foreach ($workflowFile in $workflowFiles) {
 Assert-Condition ($validWorkflows -eq 4) "Expected four valid UI workflows; found $validWorkflows"
 
 $validApps = 0
+$appPaths = @()
 foreach ($app in $catalog.apps) {
-    $path = Join-Path $appsRoot $app.output.Replace('/', [IO.Path]::DirectorySeparatorChar)
+    $path = Resolve-ManagedPath -Root $appsRoot -RelativePath $app.output -Label "Studio app $($app.id)"
     Assert-Condition (Test-Path -LiteralPath $path) "Missing Studio app: $($app.id)"
+    $appPaths += $path
     try {
         $workflow = Get-Content -LiteralPath $path -Raw | ConvertFrom-Json
         if ($workflow.version -eq 0.4 -and $workflow.extra.linearMode -eq $true) {
@@ -131,6 +130,20 @@ foreach ($app in $catalog.apps) {
     }
 }
 Assert-Condition ($validApps -eq $catalog.apps.Count) "Expected $($catalog.apps.Count) valid Studio apps; found $validApps"
+
+$validationArguments = @('-m', 'comfy_local', 'validate-ui')
+foreach ($path in @($workflowFiles.FullName) + $appPaths) {
+    $validationArguments += @('--path', $path)
+}
+$previousPythonPath = $env:PYTHONPATH
+$env:PYTHONPATH = Join-Path $root 'src'
+try {
+    & $python @validationArguments
+    Assert-Condition ($LASTEXITCODE -eq 0) 'Workflow graph validation failed'
+}
+finally {
+    $env:PYTHONPATH = $previousPythonPath
+}
 
 $verifiedExtensions = 0
 if ($RequireExtensions) {
@@ -153,6 +166,15 @@ if ($RequireExtensions) {
     $studioSource = Join-Path $root 'custom_nodes\comfyui_local_studio'
     $studioTarget = [IO.Path]::GetFullPath([string](@($studioItem.Target) | Select-Object -First 1))
     Assert-Condition ($studioTarget -eq [IO.Path]::GetFullPath($studioSource)) 'Local Studio node links to the wrong checkout'
+
+    foreach ($app in $catalog.apps) {
+        $source = Resolve-ManagedPath -Root $appsRoot -RelativePath $app.output -Label "Studio app $($app.id)"
+        $installed = Resolve-ManagedPath -Root $installedAppsRoot -RelativePath $app.output -Label "Installed Studio app $($app.id)"
+        Assert-Condition (Test-Path -LiteralPath $installed) "Installed Studio app is missing: $($app.id)"
+        Assert-Condition (
+            (Get-FileSha256 -Path $source) -eq (Get-FileSha256 -Path $installed)
+        ) "Installed Studio app differs from the generated catalog: $($app.id)"
+    }
 }
 
 $httpHealthy = $false

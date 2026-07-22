@@ -36,6 +36,25 @@ Test-Case 'operational paths reject traversal outside their managed root' {
     Assert-True $failed 'traversal path must be rejected'
 }
 
+Test-Case 'managed paths refuse a reparse-point child' {
+    . (Join-Path $projectRoot 'scripts\lib\common.ps1')
+    $testRoot = Join-Path ([IO.Path]::GetTempPath()) ("comfyui-local-reparse-test-" + [guid]::NewGuid())
+    try {
+        $modelsRoot = Join-Path $testRoot 'models'
+        $outsideRoot = Join-Path $testRoot 'outside'
+        New-Item -ItemType Directory -Force -Path $modelsRoot, $outsideRoot | Out-Null
+        New-Item -ItemType Junction -Path (Join-Path $modelsRoot 'checkpoints') -Target $outsideRoot | Out-Null
+
+        $failed = $false
+        try { Resolve-ManagedPath -Root $modelsRoot -RelativePath 'checkpoints\model.safetensors' -Label 'test path' | Out-Null }
+        catch { $failed = $_.Exception.Message -match 'reparse point' }
+        Assert-True $failed 'a managed path must not traverse a junction'
+    }
+    finally {
+        if (Test-Path -LiteralPath $testRoot) { Remove-Item -LiteralPath $testRoot -Recurse -Force }
+    }
+}
+
 Test-Case 'artifact installation finalizes only a verified partial file' {
     $testRoot = Join-Path ([IO.Path]::GetTempPath()) ("comfyui-local-install-test-" + [guid]::NewGuid())
     $modelsRoot = Join-Path $testRoot 'models'

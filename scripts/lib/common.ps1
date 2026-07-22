@@ -27,9 +27,41 @@ function Assert-SafeRelativePath {
     return $normalized
 }
 
+function Resolve-ManagedPath {
+    param(
+        [Parameter(Mandatory)][string]$Root,
+        [Parameter(Mandatory)][string]$RelativePath,
+        [Parameter(Mandatory)][string]$Label
+    )
+
+    $relative = Assert-SafeRelativePath -Path $RelativePath -Label $Label
+    $rootPath = [IO.Path]::GetFullPath($Root).TrimEnd('\', '/')
+    $candidate = [IO.Path]::GetFullPath((Join-Path $rootPath $relative))
+    $prefix = "$rootPath$([IO.Path]::DirectorySeparatorChar)"
+    Assert-Condition ($candidate.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase)) "$Label must be contained by its managed root"
+
+    $current = $rootPath
+    foreach ($part in ($relative -split '[\\/]+' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })) {
+        $current = Join-Path $current $part
+        if (Test-Path -LiteralPath $current) {
+            $item = Get-Item -LiteralPath $current -Force
+            Assert-Condition (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -eq 0) "$Label must not traverse a reparse point: $current"
+        }
+    }
+    return $candidate
+}
+
 function Get-FileSha256 {
     param([Parameter(Mandatory)][string]$Path)
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+}
+
+function Get-FileId {
+    param([Parameter(Mandatory)][string]$Path)
+
+    $output = & fsutil.exe file queryfileid $Path
+    Assert-Condition ($LASTEXITCODE -eq 0) "Could not inspect hardlink identity: $Path"
+    return ($output -join ' ').Trim()
 }
 
 function Test-Command {

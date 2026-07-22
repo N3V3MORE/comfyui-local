@@ -10,6 +10,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 from comfy_local.manifests import (
+    ConfigurationError,
     load_artifacts,
     load_models,
     load_resolutions,
@@ -119,6 +120,35 @@ class FocusedManifestTests(unittest.TestCase):
 
             with self.assertRaisesRegex(Exception, "kind .* is incompatible"):
                 validate_configuration(root)
+
+    def test_non_upscale_workflow_requires_a_model_profile(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            shutil.copytree(PROJECT_ROOT / "config", root / "config")
+            path = root / "config" / "workflow-specs.json"
+            value = json.loads(path.read_text(encoding="utf-8"))
+            value["apps"][0]["modelProfile"] = None
+            path.write_text(json.dumps(value), encoding="utf-8")
+
+            with self.assertRaisesRegex(ConfigurationError, "must select a model profile"):
+                validate_configuration(root)
+
+    def test_workflow_outputs_are_unique_on_case_insensitive_filesystems(self) -> None:
+        for output_key in ("output", "uiOutput", "apiOutput"):
+            with self.subTest(output_key=output_key), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                shutil.copytree(PROJECT_ROOT / "config", root / "config")
+                shutil.copytree(PROJECT_ROOT / "vendor", root / "vendor")
+                path = root / "config" / "workflow-specs.json"
+                value = json.loads(path.read_text(encoding="utf-8"))
+                apps = value["apps"]
+                source = next(item for item in apps if output_key in item)
+                target = next(item for item in apps if item is not source and output_key in item)
+                target[output_key] = source[output_key][0].swapcase() + source[output_key][1:]
+                path.write_text(json.dumps(value), encoding="utf-8")
+
+                with self.assertRaisesRegex(ConfigurationError, r"Duplicate .*output"):
+                    validate_configuration(root)
 
 
 if __name__ == "__main__":

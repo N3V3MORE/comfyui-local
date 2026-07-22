@@ -49,7 +49,7 @@ Times are averages across square, landscape, and portrait runs on this PC. See [
 | Upscale | Photo Upscale 4x | Enlarges photos four times | Image |
 | Upscale | Anime Upscale 4x | Enlarges anime line art four times | Image |
 
-The advanced stack is pinned to five reviewed extensions and 11 support assets. Canny, depth, pose, Z-Image ControlNet, IPAdapter, FaceDetailer, and all three upscalers have completed real prompts through the live local server.
+The advanced stack is pinned to five reviewed extensions and 11 support assets. The checked-in smoke evidence confirms the relevant custom-node and preprocessor paths load, but it is not a substitute for an end-to-end generation record for every advanced app. Collect a fresh full-app prompt and output before relying on a control, detail, reference, or upscale workflow operationally.
 
 ## Aspect ratios and orientations
 
@@ -88,6 +88,9 @@ Do not swap loaders, text encoders, LoRAs, or conditioning links between these r
 ```powershell
 # Fast check: runtime, GPU, app JSON, and exact extension pins
 .\scripts\verify.ps1 -StaticOnly -SkipArtifactHashes -RequireExtensions
+
+# Live server, installed-app, node-registration, and artifact check (no generation)
+.\tests\run-live-tests.ps1
 
 # Full check: all core models, support assets, apps, nodes, and live HTTP server
 .\scripts\verify.ps1 -RequireModels -RequireExtensions -RequireSupportAssets

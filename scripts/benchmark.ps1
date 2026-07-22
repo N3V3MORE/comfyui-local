@@ -130,19 +130,29 @@ function Wait-ComfyPrompt {
     param(
         [Parameter(Mandatory)][string]$PromptId,
         [Parameter(Mandatory)][string]$Server,
-        [Parameter(Mandatory)][int]$TimeoutMinutes
+        [Parameter(Mandatory)][int]$TimeoutMinutes,
+        [scriptblock]$HistoryRequest = { param($Uri) Invoke-RestMethod -Uri $Uri -TimeoutSec 30 }
     )
 
     $deadline = (Get-Date).AddMinutes($TimeoutMinutes)
+    $lastHistoryError = $null
     while ((Get-Date) -lt $deadline) {
-        $history = Get-ComfyHistory -PromptId $PromptId -Server $Server
+        try {
+            $history = Get-ComfyHistory -PromptId $PromptId -Server $Server -Request $HistoryRequest
+        }
+        catch {
+            $lastHistoryError = $_.Exception.Message
+            Start-Sleep -Milliseconds 500
+            continue
+        }
         $entry = Get-ComfyHistoryEntry -History $history -PromptId $PromptId
         if ($null -ne $entry) {
-            if ($entry.status.status_str -eq 'error') {
-                $messages = $entry.status.messages | ConvertTo-Json -Depth 10 -Compress
+            $status = $entry.status
+            if ($null -ne $status.PSObject.Properties['status_str'] -and $status.status_str -eq 'error') {
+                $messages = $status.messages | ConvertTo-Json -Depth 10 -Compress
                 throw "ComfyUI prompt failed: $PromptId; details: $messages"
             }
-            if ([bool]$entry.status.completed) {
+            if ($null -ne $status.PSObject.Properties['completed'] -and [bool]$status.completed) {
                 $images = @(Get-ComfyImages -Outputs $entry.outputs)
                 Assert-Condition ($images.Count -gt 0) "Prompt completed without an image: $PromptId"
                 return [pscustomobject]@{ images = $images }
@@ -150,7 +160,8 @@ function Wait-ComfyPrompt {
         }
         Start-Sleep -Milliseconds 500
     }
-    throw "ComfyUI prompt timed out after $TimeoutMinutes minutes: $PromptId"
+    $detail = if ($null -eq $lastHistoryError) { '' } else { "; last history error: $lastHistoryError" }
+    throw "ComfyUI prompt timed out after $TimeoutMinutes minutes: $PromptId$detail"
 }
 
 function Copy-ComfyImage {
@@ -167,11 +178,11 @@ function Copy-ComfyImage {
     }
     $filename = [string]$Image.filename
     Assert-Condition (-not [string]::IsNullOrWhiteSpace($filename) -and [IO.Path]::GetFileName($filename) -eq $filename) 'Comfy image filename must be a file name'
-    $source = Join-Path (Join-Path $ComfyOutputRoot $subfolder) $filename
+    $source = Resolve-ManagedPath -Root $ComfyOutputRoot -RelativePath (Join-Path $subfolder $filename) -Label 'Comfy image path'
     Assert-Condition (Test-Path -LiteralPath $source) "ComfyUI output is missing: $source"
-    $destinationDirectory = Join-Path $DestinationRoot $ModelId
+    $destination = Resolve-ManagedPath -Root $DestinationRoot -RelativePath (Join-Path $ModelId $filename) -Label 'Benchmark destination path'
+    $destinationDirectory = Split-Path -Parent $destination
     New-Item -ItemType Directory -Force -Path $destinationDirectory | Out-Null
-    $destination = Join-Path $destinationDirectory $filename
     Copy-Item -LiteralPath $source -Destination $destination -Force
     return $destination
 }

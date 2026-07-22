@@ -27,8 +27,7 @@ function Install-Artifact {
         [Parameter(Mandatory)][string]$ModelsRoot
     )
 
-    $relativeTarget = Assert-SafeRelativePath -Path $Artifact.target -Label "Artifact $($Artifact.id) target"
-    $destination = Join-Path $ModelsRoot $relativeTarget
+    $destination = Resolve-ManagedPath -Root $ModelsRoot -RelativePath $Artifact.target -Label "Artifact $($Artifact.id) target"
     $partial = "$destination.partial"
     New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination) | Out-Null
 
@@ -63,8 +62,7 @@ if ($Id.Count -gt 0) {
 $invalidCount = 0
 if ($VerifyOnly) {
     foreach ($artifact in $artifacts) {
-        $relativeTarget = Assert-SafeRelativePath -Path $artifact.target -Label "Artifact $($artifact.id) target"
-        $path = Join-Path $modelsRoot $relativeTarget
+        $path = Resolve-ManagedPath -Root $modelsRoot -RelativePath $artifact.target -Label "Artifact $($artifact.id) target"
         if (Test-Artifact -Path $path -Bytes $artifact.bytes -Sha256 $artifact.sha256) {
             Write-Output "VALID $($artifact.id)"
         }
@@ -80,8 +78,7 @@ if ($VerifyOnly) {
 
 $requiresDownload = $false
 foreach ($artifact in $artifacts) {
-    $relativeTarget = Assert-SafeRelativePath -Path $artifact.target -Label "Artifact $($artifact.id) target"
-    $path = Join-Path $modelsRoot $relativeTarget
+    $path = Resolve-ManagedPath -Root $modelsRoot -RelativePath $artifact.target -Label "Artifact $($artifact.id) target"
     if (-not (Test-Artifact -Path $path -Bytes $artifact.bytes -Sha256 $artifact.sha256)) {
         $requiresDownload = $true
         break

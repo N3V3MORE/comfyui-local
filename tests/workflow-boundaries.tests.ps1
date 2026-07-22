@@ -56,3 +56,20 @@ Test-Case 'workflow installer reconciles obsolete Studio app files' {
 
     Assert-True ($source -match 'Remove-Item') 'installer removes stale Studio workflow files'
 }
+
+Test-Case 'workflow installer works on Windows PowerShell and preserves custom destinations' {
+    $testRoot = Join-Path ([IO.Path]::GetTempPath()) ("comfyui-local-workflow-install-" + [guid]::NewGuid())
+    $destination = Join-Path $testRoot 'shared-workflows'
+    try {
+        $customApp = Join-Path $destination 'Custom\my-app.app.json'
+        New-Item -ItemType Directory -Force -Path (Split-Path -Parent $customApp) | Out-Null
+        [IO.File]::WriteAllText($customApp, '{}')
+
+        & $installScript -SourceRoot (Join-Path $projectRoot 'workflows\apps') -DestinationRoot $destination | Out-Null
+
+        Assert-True (Test-Path -LiteralPath $customApp) 'custom destination keeps an unowned app file'
+    }
+    finally {
+        if (Test-Path -LiteralPath $testRoot) { Remove-Item -LiteralPath $testRoot -Recurse -Force }
+    }
+}
