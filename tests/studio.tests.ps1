@@ -51,7 +51,7 @@ Test-Case 'defines eleven immutable support assets' {
     }
 }
 
-Test-Case 'start uses explicit studio paths and enables Manager' {
+Test-Case 'start uses explicit Studio paths' {
     $command = ((& $startScript -PrintCommand) -join ' ').Trim()
 
     Assert-True ($command -match '--models-directory .+models') 'launch sets models directory'
@@ -59,7 +59,7 @@ Test-Case 'start uses explicit studio paths and enables Manager' {
     Assert-True ($command -match '--input-directory .+data\\input') 'launch sets input directory'
     Assert-True ($command -match '--temp-directory .+data\\temp') 'launch sets temp directory'
     Assert-True ($command -match '--output-directory .+results\\images') 'launch sets output directory'
-    Assert-True ($command -match '--enable-manager') 'launch enables Manager'
+    Assert-True ($command -notmatch '--enable-manager') 'launch does not enable Manager by default'
 }
 
 Test-Case 'core-only launch disables third-party nodes once' {
@@ -78,6 +78,8 @@ Test-Case 'download and verification scripts use the unified artifact manifest' 
     Assert-True ($downloadSource -notmatch 'support-model-manifest') 'downloader has no legacy support manifest'
     Assert-True ($verifySource -notmatch 'support-model-manifest') 'verification has no legacy support manifest'
     Assert-True ($verifySource -match 'extensions-manifest\.json') 'verification reads extension pins'
+    Assert-True ($verifySource -match 'model-aliases\.json') 'verification reads model aliases'
+    Assert-True ($verifySource -match 'status --porcelain') 'verification rejects a dirty ComfyUI checkout'
 }
 
 Test-Case 'studio helper API guards model families and exposes exact presets' {

@@ -21,6 +21,8 @@
           "template": { "type": "string", "pattern": "^vendor/workflows/.+\\.json$" },
           "modelProfile": { "type": ["string", "null"] },
           "output": { "type": "string", "pattern": "^[^/]+/.+\\.app\\.json$" },
+          "uiOutput": { "type": "string", "pattern": "^[^/]+\\.json$" },
+          "apiOutput": { "type": "string", "pattern": "^[^/]+\\.json$" },
           "purpose": { "type": "string", "minLength": 1 },
           "supportArtifacts": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
           "exposedInputs": {

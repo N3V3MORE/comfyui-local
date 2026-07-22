@@ -18,6 +18,7 @@ $manifest = Read-Json (Join-Path $root 'config\artifacts.json')
 $coreArtifacts = @($manifest.artifacts | Where-Object role -eq 'core')
 $supportArtifacts = @($manifest.artifacts | Where-Object role -eq 'support')
 $extensionsManifest = Read-Json (Join-Path $root 'extensions-manifest.json')
+$aliasesManifest = Read-Json (Join-Path $root 'config\model-aliases.json')
 $python = Join-Path $root '.venv\Scripts\python.exe'
 $comfyPath = Join-Path $root 'ComfyUI'
 $modelsRoot = Join-Path $root 'models'
@@ -34,6 +35,8 @@ Assert-Condition (Test-Path -LiteralPath (Join-Path $comfyPath '.git')) 'ComfyUI
 $commit = (& git -C $comfyPath rev-parse HEAD).Trim()
 Assert-Condition ($LASTEXITCODE -eq 0) 'Could not inspect the ComfyUI commit'
 Assert-Condition ($commit -eq $version.commit) "Unexpected ComfyUI commit: $commit"
+$comfyDirty = ((& git -C $comfyPath status --porcelain) -join '')
+Assert-Condition ([string]::IsNullOrWhiteSpace($comfyDirty)) 'Pinned ComfyUI checkout has local changes'
 
 $probeCode = @'
 import json
@@ -85,6 +88,21 @@ if (-not $SkipArtifactHashes) {
     }
 }
 
+foreach ($alias in $aliasesManifest.aliases) {
+    $sourceRelative = Assert-SafeRelativePath -Path $alias.source -Label 'Alias source'
+    $targetRelative = Assert-SafeRelativePath -Path $alias.target -Label 'Alias target'
+    $source = Join-Path $modelsRoot $sourceRelative
+    $target = Join-Path $modelsRoot $targetRelative
+    if ((Test-Path -LiteralPath $source) -and (Test-Path -LiteralPath $target)) {
+        $sourceId = ((& fsutil.exe file queryfileid $source) -join '').Trim()
+        $targetId = ((& fsutil.exe file queryfileid $target) -join '').Trim()
+        Assert-Condition ($sourceId -eq $targetId) "Alias target is not linked to its source: $target"
+    }
+    elseif ($RequireModels) {
+        throw "Model alias is missing: $target"
+    }
+}
+
 $workflowFiles = @(Get-ChildItem -LiteralPath $workflowRoot -Filter '*.json')
 $validWorkflows = 0
 foreach ($workflowFile in $workflowFiles) {
@@ -132,6 +150,9 @@ if ($RequireExtensions) {
     Assert-Condition (Test-Path -LiteralPath $studioLink) 'Local Studio node link is missing'
     $studioItem = Get-Item -LiteralPath $studioLink -Force
     Assert-Condition (($studioItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) 'Local Studio node is not linked into ComfyUI'
+    $studioSource = Join-Path $root 'custom_nodes\comfyui_local_studio'
+    $studioTarget = [IO.Path]::GetFullPath([string](@($studioItem.Target) | Select-Object -First 1))
+    Assert-Condition ($studioTarget -eq [IO.Path]::GetFullPath($studioSource)) 'Local Studio node links to the wrong checkout'
 }
 
 $httpHealthy = $false

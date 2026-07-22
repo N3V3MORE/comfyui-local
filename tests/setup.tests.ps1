@@ -44,6 +44,12 @@ Test-Case 'setup reuses an existing virtual environment' {
     }
 }
 
+Test-Case 'setup validates virtual-environment metadata before reuse' {
+    $source = Get-Content -LiteralPath $setupScript -Raw
+
+    Assert-True ($source -match 'pyvenv\.cfg') 'setup checks for pyvenv.cfg before reusing a virtual environment'
+}
+
 Test-Case 'setup prints the exact extension and local-node installation plan' {
     $output = @(& $setupScript -PrintExtensionPlan)
 
@@ -66,6 +72,12 @@ Test-Case 'setup blocks extension hooks from downloading unmanifested models' {
     Assert-True ($output -contains "COMFYUI_PATH=$projectRoot\ComfyUI") 'hook policy exposes the pinned ComfyUI path'
     Assert-True ($output -contains "COMFYUI_MODEL_PATH=$projectRoot\models") 'hook policy redirects models to the project model store'
     Assert-True ($output -contains "SKIP_DOWNLOAD_MARKER=$projectRoot\ComfyUI\custom_nodes\skip_download_model") 'hook policy creates the supported download opt-out marker'
+}
+
+Test-Case 'setup verifies that the Studio junction targets this checkout' {
+    $source = Get-Content -LiteralPath $setupScript -Raw
+
+    Assert-True ($source -match 'LinkTarget') 'setup resolves the Studio junction target'
 }
 
 Test-Case 'setup compiles, copies inputs, and installs the Studio app catalog explicitly' {

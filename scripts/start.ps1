@@ -2,6 +2,7 @@
 param(
     [switch]$LowVram,
     [switch]$CoreOnly,
+    [switch]$EnableManager,
     [switch]$PrintCommand,
     [switch]$PrintEnvironment
 )
@@ -28,11 +29,11 @@ $arguments = @(
     '--user-directory', $user,
     '--input-directory', $inputDirectory,
     '--temp-directory', $tempDirectory,
-    '--output-directory', $outputDirectory,
-    '--enable-manager'
+    '--output-directory', $outputDirectory
 )
 if ($LowVram) { $arguments += '--lowvram' }
 if ($CoreOnly) { $arguments += '--disable-all-custom-nodes' }
+if ($EnableManager) { $arguments += '--enable-manager' }
 
 if ($PrintCommand) {
     Write-Output ((@($python) + $arguments) -join ' ')
@@ -55,8 +56,12 @@ $env:COMFYUI_LOCAL_CONFIG = $resolutionConfig
 try {
     $existing = Invoke-RestMethod -Uri 'http://127.0.0.1:8188/system_stats' -TimeoutSec 2
     if ($null -ne $existing) {
-        Write-Output 'ComfyUI is already healthy at http://127.0.0.1:8188'
-        exit 0
+        $studioNode = Invoke-RestMethod -Uri 'http://127.0.0.1:8188/object_info/StudioResolutionPreset' -TimeoutSec 2
+        if ($null -ne $studioNode) {
+            Write-Output 'ComfyUI Local Studio is already healthy at http://127.0.0.1:8188'
+            exit 0
+        }
+        throw 'Port 8188 is occupied by a ComfyUI server that does not expose ComfyUI Local Studio'
     }
 }
 catch {

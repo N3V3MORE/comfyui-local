@@ -37,20 +37,6 @@ class CompileResult:
         return tuple(sorted(self.apps + self.ui_workflows + self.api_prompts))
 
 
-UI_OUTPUTS = {
-    "realvis-xl": "realistic-sdxl.json",
-    "animagine-xl": "anime-sdxl.json",
-    "z-image-turbo": "z-image-turbo.json",
-    "flux2-klein": "flux2-klein.json",
-}
-
-API_OUTPUTS = {
-    "realvis-xl": "sdxl.json",
-    "z-image-turbo": "z_image.json",
-    "flux2-klein": "flux2.json",
-}
-
-
 def compile_catalog(root: Path, output_root: Path) -> CompileResult:
     validate_configuration(root)
     models = load_models(root)
@@ -58,22 +44,27 @@ def compile_catalog(root: Path, output_root: Path) -> CompileResult:
     apps: list[str] = []
     ui_workflows: list[str] = []
     api_prompts: list[str] = []
+    outputs: list[tuple[str, dict[str, Any]]] = []
 
     for spec in specs:
         compiled = compile_spec(root, spec, models)
         app_relative = (Path("workflows") / "apps" / Path(spec.output)).as_posix()
-        _write_json(output_root / app_relative, compiled.app)
+        outputs.append((app_relative, compiled.app))
         apps.append(app_relative)
 
-        if compiled.ui is not None and spec.id in UI_OUTPUTS:
-            ui_relative = (Path("workflows") / "ui" / UI_OUTPUTS[spec.id]).as_posix()
-            _write_json(output_root / ui_relative, compiled.ui)
+        if compiled.ui is not None and spec.ui_output is not None:
+            ui_relative = (Path("workflows") / "ui" / spec.ui_output).as_posix()
+            outputs.append((ui_relative, compiled.ui))
             ui_workflows.append(ui_relative)
 
-        if compiled.api_prompt is not None and spec.id in API_OUTPUTS:
-            api_relative = (Path("workflows") / "api" / API_OUTPUTS[spec.id]).as_posix()
-            _write_json(output_root / api_relative, compiled.api_prompt)
+        if compiled.api_prompt is not None and spec.api_output is not None:
+            api_relative = (Path("workflows") / "api" / spec.api_output).as_posix()
+            outputs.append((api_relative, compiled.api_prompt))
             api_prompts.append(api_relative)
+
+    for relative, value in outputs:
+        _write_json(output_root / relative, value)
+    _remove_stale_generated_outputs(output_root, {relative for relative, _ in outputs})
 
     return CompileResult(tuple(apps), tuple(ui_workflows), tuple(api_prompts))
 
@@ -96,8 +87,8 @@ def compile_spec(root: Path, spec: WorkflowSpec, models: dict[str, ModelProfile]
     _set_app_mode(graph, spec)
     validate_ui_graph(graph)
     app = graph.data
-    ui = _without_app_mode(app) if spec.id in UI_OUTPUTS else None
-    api_prompt = _compile_api_prompt(root, spec, model) if spec.id in API_OUTPUTS else None
+    ui = _without_app_mode(app) if spec.ui_output is not None else None
+    api_prompt = _compile_api_prompt(root, spec, model) if spec.api_output is not None else None
     return CompiledWorkflow(spec, app, ui, api_prompt)
 
 
@@ -114,7 +105,9 @@ def _apply_spec(graph: WorkflowGraph, spec: WorkflowSpec, model: ModelProfile | 
 
     if spec.kind == "sdxl-control":
         _apply_control_variant(graph, spec)
-    _set_widget_if_present(graph, "save_image", "filename_prefix", spec.defaults.get("filenamePrefix"))
+    filename_prefix = spec.defaults.get("filenamePrefix")
+    if filename_prefix is not None:
+        _set_widget(graph, "save_image", "filename_prefix", filename_prefix)
 
 
 def _apply_sdxl(graph: WorkflowGraph, spec: WorkflowSpec, model: ModelProfile) -> None:
@@ -124,8 +117,10 @@ def _apply_sdxl(graph: WorkflowGraph, spec: WorkflowSpec, model: ModelProfile) -
     _set_widget_if_present(graph, "latent", "width", 1024)
     _set_widget_if_present(graph, "latent", "height", 1024)
     _set_sampling(graph, model, int(spec.defaults.get("seed", 246813579)))
-    _set_widget_if_present(graph, "resolution", "preset", spec.defaults.get("resolution"))
-    _set_widget_if_present(graph, "control_apply", "strength", spec.defaults.get("strength"))
+    if spec.defaults.get("resolution") is not None:
+        _set_widget(graph, "resolution", "preset", spec.defaults["resolution"])
+    if spec.defaults.get("strength") is not None:
+        _set_widget(graph, "control_apply", "strength", spec.defaults["strength"])
 
 
 def _apply_z_image(graph: WorkflowGraph, spec: WorkflowSpec, model: ModelProfile) -> None:
@@ -346,3 +341,18 @@ def _write_json(path: Path, value: Any) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     temporary.replace(path)
+
+
+def _remove_stale_generated_outputs(output_root: Path, expected: set[str]) -> None:
+    generated_roots = (
+        (output_root / "workflows" / "apps", "*.app.json"),
+        (output_root / "workflows" / "ui", "*.json"),
+        (output_root / "workflows" / "api", "*.json"),
+    )
+    for directory, pattern in generated_roots:
+        if not directory.is_dir():
+            continue
+        for path in directory.rglob(pattern):
+            relative = path.relative_to(output_root).as_posix()
+            if relative not in expected:
+                path.unlink()

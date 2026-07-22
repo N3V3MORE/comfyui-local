@@ -19,7 +19,10 @@ CONFIG_PATH = Path(
         Path(__file__).resolve().parents[2] / "config" / "resolutions.json",
     )
 )
-RESOLUTION_PRESETS = load_resolution_presets(CONFIG_PATH)
+try:
+    RESOLUTION_PRESETS = load_resolution_presets(CONFIG_PATH)
+except (OSError, ValueError, KeyError, json.JSONDecodeError) as error:
+    raise RuntimeError(f"ComfyUI Local Studio could not load resolution presets from {CONFIG_PATH}: {error}") from error
 
 STYLE_PRESETS = {
     "photo": {

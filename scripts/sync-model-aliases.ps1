@@ -19,8 +19,10 @@ function New-ModelAlias {
         [Parameter(Mandatory)][string]$ModelsRoot
     )
 
-    $source = Join-Path $ModelsRoot $Alias.source.Replace('/', [IO.Path]::DirectorySeparatorChar)
-    $target = Join-Path $ModelsRoot $Alias.target.Replace('/', [IO.Path]::DirectorySeparatorChar)
+    $sourceRelative = Assert-SafeRelativePath -Path $Alias.source -Label 'Alias source'
+    $targetRelative = Assert-SafeRelativePath -Path $Alias.target -Label 'Alias target'
+    $source = Join-Path $ModelsRoot $sourceRelative
+    $target = Join-Path $ModelsRoot $targetRelative
     Assert-Condition (Test-Path -LiteralPath $source -PathType Leaf) "Alias source is missing: $source"
 
     if (Test-Path -LiteralPath $target) {

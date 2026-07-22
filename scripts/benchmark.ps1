@@ -93,6 +93,27 @@ function Get-ComfyHistoryEntry {
     return $property.Value
 }
 
+function Get-ComfyHistory {
+    param(
+        [Parameter(Mandatory)][string]$PromptId,
+        [Parameter(Mandatory)][string]$Server,
+        [int]$Attempts = 3,
+        [scriptblock]$Request = { param($Uri) Invoke-RestMethod -Uri $Uri -TimeoutSec 30 }
+    )
+
+    for ($attempt = 1; $attempt -le $Attempts; $attempt++) {
+        try {
+            return & $Request "$Server/history/$PromptId"
+        }
+        catch {
+            if ($attempt -eq $Attempts) {
+                throw "ComfyUI history request failed after $Attempts attempts for ${PromptId}: $($_.Exception.Message)"
+            }
+            Start-Sleep -Milliseconds (250 * $attempt)
+        }
+    }
+}
+
 function Get-ComfyImages {
     param([Parameter(Mandatory)]$Outputs)
 
@@ -114,10 +135,13 @@ function Wait-ComfyPrompt {
 
     $deadline = (Get-Date).AddMinutes($TimeoutMinutes)
     while ((Get-Date) -lt $deadline) {
-        $history = Invoke-RestMethod -Uri "$Server/history/$PromptId" -TimeoutSec 30
+        $history = Get-ComfyHistory -PromptId $PromptId -Server $Server
         $entry = Get-ComfyHistoryEntry -History $history -PromptId $PromptId
         if ($null -ne $entry) {
-            if ($entry.status.status_str -eq 'error') { throw "ComfyUI prompt failed: $PromptId" }
+            if ($entry.status.status_str -eq 'error') {
+                $messages = $entry.status.messages | ConvertTo-Json -Depth 10 -Compress
+                throw "ComfyUI prompt failed: $PromptId; details: $messages"
+            }
             if ([bool]$entry.status.completed) {
                 $images = @(Get-ComfyImages -Outputs $entry.outputs)
                 Assert-Condition ($images.Count -gt 0) "Prompt completed without an image: $PromptId"
@@ -137,11 +161,17 @@ function Copy-ComfyImage {
         [Parameter(Mandatory)][string]$ModelId
     )
 
-    $source = Join-Path (Join-Path $ComfyOutputRoot $Image.subfolder) $Image.filename
+    $rawSubfolder = [string]$Image.subfolder
+    $subfolder = if ([string]::IsNullOrWhiteSpace($rawSubfolder)) { '.' } else {
+        Assert-SafeRelativePath -Path $rawSubfolder -Label 'Comfy image subfolder'
+    }
+    $filename = [string]$Image.filename
+    Assert-Condition (-not [string]::IsNullOrWhiteSpace($filename) -and [IO.Path]::GetFileName($filename) -eq $filename) 'Comfy image filename must be a file name'
+    $source = Join-Path (Join-Path $ComfyOutputRoot $subfolder) $filename
     Assert-Condition (Test-Path -LiteralPath $source) "ComfyUI output is missing: $source"
     $destinationDirectory = Join-Path $DestinationRoot $ModelId
     New-Item -ItemType Directory -Force -Path $destinationDirectory | Out-Null
-    $destination = Join-Path $destinationDirectory $Image.filename
+    $destination = Join-Path $destinationDirectory $filename
     Copy-Item -LiteralPath $source -Destination $destination -Force
     return $destination
 }

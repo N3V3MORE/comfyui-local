@@ -83,6 +83,43 @@ class FocusedManifestTests(unittest.TestCase):
             with self.assertRaisesRegex(Exception, "schema validation"):
                 validate_configuration(root)
 
+    def test_duplicate_artifact_targets_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            shutil.copytree(PROJECT_ROOT / "config", root / "config")
+            path = root / "config" / "artifacts.json"
+            value = json.loads(path.read_text(encoding="utf-8"))
+            support_artifacts = [item for item in value["artifacts"] if item["role"] == "support"]
+            support_artifacts[1]["target"] = support_artifacts[0]["target"]
+            path.write_text(json.dumps(value), encoding="utf-8")
+
+            with self.assertRaisesRegex(Exception, "Duplicate artifact target"):
+                validate_configuration(root)
+
+    def test_model_component_must_belong_to_its_declared_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            shutil.copytree(PROJECT_ROOT / "config", root / "config")
+            path = root / "config" / "models.json"
+            value = json.loads(path.read_text(encoding="utf-8"))
+            value["models"][0]["components"]["checkpoint"] = value["models"][1]["components"]["checkpoint"]
+            path.write_text(json.dumps(value), encoding="utf-8")
+
+            with self.assertRaisesRegex(Exception, "does not belong to its declared artifacts"):
+                validate_configuration(root)
+
+    def test_workflow_kind_must_match_its_family(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            shutil.copytree(PROJECT_ROOT / "config", root / "config")
+            path = root / "config" / "workflow-specs.json"
+            value = json.loads(path.read_text(encoding="utf-8"))
+            value["apps"][0]["kind"] = "upscale"
+            path.write_text(json.dumps(value), encoding="utf-8")
+
+            with self.assertRaisesRegex(Exception, "kind .* is incompatible"):
+                validate_configuration(root)
+
 
 if __name__ == "__main__":
     unittest.main()

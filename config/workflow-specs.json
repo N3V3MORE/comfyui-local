@@ -10,6 +10,8 @@
       "template": "vendor/workflows/sdxl-base.json",
       "modelProfile": "realvis-xl-v5",
       "output": "Create/realvis-xl.app.json",
+      "uiOutput": "realistic-sdxl.json",
+      "apiOutput": "sdxl.json",
       "purpose": "Natural realistic photography",
       "supportArtifacts": [],
       "exposedInputs": [
@@ -92,6 +94,7 @@
       "template": "vendor/workflows/sdxl-base.json",
       "modelProfile": "animagine-xl-4-opt",
       "output": "Create/animagine-xl.app.json",
+      "uiOutput": "anime-sdxl.json",
       "purpose": "Clean modern anime",
       "supportArtifacts": [],
       "exposedInputs": [
@@ -174,6 +177,8 @@
       "template": "vendor/workflows/z-image-turbo.json",
       "modelProfile": "z-image-turbo",
       "output": "Create/z-image-turbo.app.json",
+      "uiOutput": "z-image-turbo.json",
+      "apiOutput": "z_image.json",
       "purpose": "Fast modern photorealism",
       "supportArtifacts": [],
       "exposedInputs": [
@@ -211,6 +216,8 @@
       "template": "vendor/workflows/flux2-klein.json",
       "modelProfile": "flux2-klein-4b",
       "output": "Create/flux2-klein.app.json",
+      "uiOutput": "flux2-klein.json",
+      "apiOutput": "flux2.json",
       "purpose": "Fast prompt-following photorealism",
       "supportArtifacts": [],
       "exposedInputs": [
@@ -529,7 +536,6 @@
       ],
       "outputKey": "save_image",
       "defaults": {
-        "filenamePrefix": "sdxl-face-detail",
         "positivePrompt": "A natural documentary photograph of a person walking through a lively London street after rain, realistic skin texture, soft overcast daylight, candid composition, 50mm lens",
         "negativePrompt": "bad hands, bad anatomy, deformed eyes, plastic skin, text, watermark, oversaturated",
         "seed": 246813579

@@ -62,6 +62,43 @@ Test-Case 'completed prompts ignore node outputs that do not contain images' {
     Assert-Equal 'pose.png' $images[0].filename 'collected image filename'
 }
 
+Test-Case 'benchmark retries a transient history request' {
+    . $benchmarkScript -LibraryOnly
+    $script:benchmarkAttempts = 0
+    $history = Get-ComfyHistory -PromptId 'prompt-1' -Server 'http://127.0.0.1:8188' -Request {
+        param($uri)
+        $script:benchmarkAttempts++
+        if ($script:benchmarkAttempts -eq 1) { throw 'transient connection failure' }
+        return '{"prompt-1":{"status":{"completed":true}}}' | ConvertFrom-Json
+    }
+
+    Assert-Equal 2 $script:benchmarkAttempts 'history request retries once'
+    Assert-True ($null -ne (Get-ComfyHistoryEntry -History $history -PromptId 'prompt-1')) 'retry returns history response'
+}
+
+Test-Case 'benchmark validates Comfy output paths before copying them locally' {
+    $source = Get-Content -LiteralPath $benchmarkScript -Raw
+
+    Assert-True ($source -match 'Assert-SafeRelativePath') 'benchmark validates returned image paths'
+}
+
+Test-Case 'benchmark accepts Comfy images in the output root' {
+    . $benchmarkScript -LibraryOnly
+    $testRoot = Join-Path ([IO.Path]::GetTempPath()) ("comfyui-local-image-test-" + [guid]::NewGuid())
+    try {
+        New-Item -ItemType Directory -Force -Path $testRoot | Out-Null
+        $source = Join-Path $testRoot 'pose.png'
+        [IO.File]::WriteAllText($source, 'image')
+        $image = [pscustomobject]@{ subfolder = ''; filename = 'pose.png' }
+
+        $copied = Copy-ComfyImage -Image $image -ComfyOutputRoot $testRoot -DestinationRoot (Join-Path $testRoot 'proof') -ModelId 'model'
+        Assert-True (Test-Path -LiteralPath $copied) 'root output image is copied'
+    }
+    finally {
+        if (Test-Path -LiteralPath $testRoot) { Remove-Item -LiteralPath $testRoot -Recurse -Force }
+    }
+}
+
 Test-Case 'VRAM monitoring keeps the highest valid sample' {
     . $benchmarkScript -LibraryOnly
     $samples = @('1008', '4921', 'not-a-number', '4380')

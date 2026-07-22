@@ -50,6 +50,13 @@ comfyui_local:
 "@.Trim()
 }
 
+function Test-UsableVirtualEnvironment {
+    param([Parameter(Mandatory)][string]$Path)
+
+    return (Test-Path -LiteralPath (Join-Path $Path 'Scripts\python.exe')) -and
+        (Test-Path -LiteralPath (Join-Path $Path 'pyvenv.cfg'))
+}
+
 function Test-Prerequisites {
     foreach ($commandName in @('git', 'uv', 'curl.exe', 'nvidia-smi')) {
         Assert-Condition (Test-Command $commandName) "$commandName is required"
@@ -132,6 +139,8 @@ function Install-LocalStudioNode {
     if (Test-Path -LiteralPath $destination) {
         $item = Get-Item -LiteralPath $destination -Force
         Assert-Condition (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) 'Studio node destination exists but is not a link'
+        $linkTarget = [IO.Path]::GetFullPath([string](@($item.Target) | Select-Object -First 1))
+        Assert-Condition ($linkTarget -eq [IO.Path]::GetFullPath($source)) 'Studio node destination links to the wrong checkout'
         return
     }
 
@@ -151,7 +160,7 @@ if ($PrintSyncCommand) {
 }
 
 if ($PrintVenvAction) {
-    if (Test-Path -LiteralPath $pythonPath) { Write-Output 'reuse' } else { Write-Output 'create' }
+    if (Test-UsableVirtualEnvironment $venvPath) { Write-Output 'reuse' } else { Write-Output 'create' }
     exit 0
 }
 
@@ -190,7 +199,10 @@ if ($PSCmdlet.ShouldProcess($comfyPath, "Checkout $($version.commit)")) {
 
 Assert-Condition (Test-Path -LiteralPath $lockPath) 'requirements.lock.txt has not been generated'
 if ($PSCmdlet.ShouldProcess($venvPath, 'Create and synchronize Python environment')) {
-    if (-not (Test-Path -LiteralPath $pythonPath)) {
+    if (-not (Test-UsableVirtualEnvironment $venvPath)) {
+        if (Test-Path -LiteralPath $venvPath) {
+            Remove-Item -LiteralPath $venvPath -Recurse -Force
+        }
         Invoke-Native uv @('venv', '--python', $version.python, $venvPath)
     }
     else {

@@ -15,6 +15,7 @@ if ([string]::IsNullOrWhiteSpace($DestinationRoot)) {
     $DestinationRoot = Join-Path $root 'data\user\default\workflows\ComfyUI Local Studio'
 }
 $specs = (Read-Json (Join-Path $root 'config\workflow-specs.json')).apps
+$expectedRelativePaths = @()
 
 if ($PrintPlan) {
     foreach ($spec in $specs) { Write-Output "$($spec.id)`t$($spec.output.Replace('/', '\'))" }
@@ -22,12 +23,22 @@ if ($PrintPlan) {
 }
 
 foreach ($spec in $specs) {
-    $relativePath = $spec.output.Replace('/', [IO.Path]::DirectorySeparatorChar)
+    $relativePath = Assert-SafeRelativePath -Path $spec.output -Label "Workflow $($spec.id) output"
+    $expectedRelativePaths += $relativePath
     $source = Join-Path $SourceRoot $relativePath
     $destination = Join-Path $DestinationRoot $relativePath
     Assert-Condition (Test-Path -LiteralPath $source) "$($spec.id) compiled workflow is missing"
     New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination) | Out-Null
     Copy-Item -LiteralPath $source -Destination $destination -Force
+}
+
+if (Test-Path -LiteralPath $DestinationRoot) {
+    foreach ($installed in Get-ChildItem -LiteralPath $DestinationRoot -Recurse -Filter '*.app.json') {
+        $relativePath = [IO.Path]::GetRelativePath($DestinationRoot, $installed.FullName)
+        if ($relativePath -notin $expectedRelativePaths) {
+            Remove-Item -LiteralPath $installed.FullName -Force
+        }
+    }
 }
 
 Write-Output "Installed $($specs.Count) App Mode workflows"

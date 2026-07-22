@@ -103,9 +103,12 @@ Do not swap loaders, text encoders, LoRAs, or conditioning links between these r
 
 # Optional troubleshooting mode; use only if the normal launch runs out of memory
 .\scripts\start.ps1 -LowVram
+
+# Optional: enable ComfyUI Manager for an explicitly reviewed maintenance session
+.\scripts\start.ps1 -EnableManager
 ```
 
-Press `Ctrl+C` in the launch terminal to stop ComfyUI. If the verified server is already running, `start.ps1` reports the existing URL instead of creating a duplicate.
+Press `Ctrl+C` in the launch terminal to stop ComfyUI. Manager is disabled by default so the pinned runtime cannot be changed accidentally; use `-EnableManager` only when you intend to review and re-verify a maintenance change. If the verified Studio server is already running, `start.ps1` reports the existing URL instead of creating a duplicate.
 
 ## What is pinned
 

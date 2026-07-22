@@ -27,6 +27,15 @@ Test-Case 'artifact verification checks size and SHA-256' {
     }
 }
 
+Test-Case 'operational paths reject traversal outside their managed root' {
+    . (Join-Path $projectRoot 'scripts\lib\common.ps1')
+
+    $failed = $false
+    try { Assert-SafeRelativePath -Path '../outside.bin' -Label 'test path' | Out-Null }
+    catch { $failed = $_.Exception.Message -match 'safe relative path' }
+    Assert-True $failed 'traversal path must be rejected'
+}
+
 Test-Case 'artifact installation finalizes only a verified partial file' {
     $testRoot = Join-Path ([IO.Path]::GetTempPath()) ("comfyui-local-install-test-" + [guid]::NewGuid())
     $modelsRoot = Join-Path $testRoot 'models'

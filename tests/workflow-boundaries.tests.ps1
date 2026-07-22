@@ -50,3 +50,9 @@ Test-Case 'workflow installation and bundled input copy are separate scripts' {
     Assert-True ($assetSource -match 'studio-reference\.webp') 'asset copier owns the bundled reference image'
     Assert-True ($assetSource -notmatch 'workflow-specs\.json') 'asset copier does not install workflows'
 }
+
+Test-Case 'workflow installer reconciles obsolete Studio app files' {
+    $source = Get-Content -LiteralPath (Join-Path $projectRoot 'scripts\install-workflows.ps1') -Raw
+
+    Assert-True ($source -match 'Remove-Item') 'installer removes stale Studio workflow files'
+}

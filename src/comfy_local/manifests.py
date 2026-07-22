@@ -60,6 +60,8 @@ class WorkflowSpec:
     template: str
     model_profile: str | None
     output: str
+    ui_output: str | None
+    api_output: str | None
     purpose: str
     support_artifacts: tuple[str, ...]
     exposed_inputs: tuple[AppInput, ...]
@@ -128,6 +130,8 @@ def load_workflow_specs(root: Path) -> tuple[WorkflowSpec, ...]:
                 template=_posix(value["template"]),
                 model_profile=value.get("modelProfile"),
                 output=_posix(value["output"]),
+                ui_output=_posix(value["uiOutput"]) if value.get("uiOutput") else None,
+                api_output=_posix(value["apiOutput"]) if value.get("apiOutput") else None,
                 purpose=value["purpose"],
                 support_artifacts=tuple(value.get("supportArtifacts", [])),
                 exposed_inputs=tuple(AppInput(**item) for item in value["exposedInputs"]),
@@ -164,6 +168,8 @@ def validate_configuration(root: Path) -> None:
             raise ConfigurationError(f"Artifact {artifact.id} has invalid role {artifact.role!r}")
         if artifact.bytes <= 0 or len(artifact.sha256) != 64:
             raise ConfigurationError(f"Artifact {artifact.id} has invalid integrity metadata")
+    if len(artifact_targets) != len(artifacts):
+        raise ConfigurationError("Duplicate artifact target")
 
     for model in models.values():
         if model.family not in allowed_families - {"upscale"}:
@@ -171,15 +177,56 @@ def validate_configuration(root: Path) -> None:
         for artifact_id in model.artifact_ids:
             if artifact_id not in artifacts or artifacts[artifact_id].role != "core":
                 raise ConfigurationError(f"Model {model.id} references undeclared core artifact {artifact_id}")
+        model_targets = {artifacts[artifact_id].target for artifact_id in model.artifact_ids if artifact_id in artifacts}
         for component in model.components.values():
-            if _posix(component) not in artifact_targets:
+            normalized = _posix(component)
+            if normalized not in artifact_targets:
                 raise ConfigurationError(f"Model {model.id} component is not declared: {component}")
+            if normalized not in model_targets:
+                raise ConfigurationError(
+                    f"Model {model.id} component {component} does not belong to its declared artifacts"
+                )
 
+    kind_families = {
+        "sdxl-create": "sdxl",
+        "z-create": "z-image",
+        "flux-create": "flux2",
+        "sdxl-control": "sdxl",
+        "z-control": "z-image",
+        "ipadapter": "sdxl",
+        "face-detail": "sdxl",
+        "upscale": "upscale",
+    }
+    seen_outputs: set[str] = set()
+    seen_ui_outputs: set[str] = set()
+    seen_api_outputs: set[str] = set()
     for spec in specs:
         if spec.family not in allowed_families:
             raise ConfigurationError(f"Workflow {spec.id} has unknown family {spec.family!r}")
         _require_relative(spec.template, f"workflow {spec.id} template")
         _require_relative(spec.output, f"workflow {spec.id} output")
+        if spec.output in seen_outputs:
+            raise ConfigurationError(f"Duplicate workflow output: {spec.output}")
+        seen_outputs.add(spec.output)
+        if spec.ui_output is not None:
+            _require_relative(spec.ui_output, f"workflow {spec.id} UI output")
+            if spec.ui_output in seen_ui_outputs:
+                raise ConfigurationError(f"Duplicate UI output: {spec.ui_output}")
+            seen_ui_outputs.add(spec.ui_output)
+        if spec.api_output is not None:
+            _require_relative(spec.api_output, f"workflow {spec.id} API output")
+            if spec.api_output in seen_api_outputs:
+                raise ConfigurationError(f"Duplicate API output: {spec.api_output}")
+            seen_api_outputs.add(spec.api_output)
+        expected_family = kind_families.get(spec.kind)
+        if expected_family != spec.family:
+            raise ConfigurationError(
+                f"Workflow {spec.id} kind {spec.kind!r} is incompatible with family {spec.family!r}"
+            )
+        if spec.kind == "upscale" and spec.model_profile is not None:
+            raise ConfigurationError(f"Upscale workflow {spec.id} must not select a model profile")
+        if not (root / spec.template).is_file():
+            raise ConfigurationError(f"Workflow {spec.id} template is missing: {spec.template}")
         if spec.model_profile:
             model = models.get(spec.model_profile)
             if model is None:

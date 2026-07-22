@@ -99,6 +99,18 @@ class GraphValidationTests(unittest.TestCase):
         workflow["nodes"][0]["properties"]["studio_key"] = "save_image"
         self.assert_invalid(workflow, "Duplicate studio_key")
 
+    def test_duplicate_node_ids_are_rejected(self) -> None:
+        workflow = valid_workflow()
+        duplicate = deepcopy(workflow["nodes"][0])
+        duplicate["properties"]["studio_key"] = "second_source"
+        workflow["nodes"].append(duplicate)
+        self.assert_invalid(workflow, "Duplicate node id")
+
+    def test_duplicate_link_ids_are_rejected(self) -> None:
+        workflow = valid_workflow()
+        workflow["links"].append(deepcopy(workflow["links"][0]))
+        self.assert_invalid(workflow, "Duplicate link id")
+
     def test_missing_link_source_is_rejected(self) -> None:
         workflow = valid_workflow()
         workflow["links"][0][1] = 99
@@ -113,6 +125,11 @@ class GraphValidationTests(unittest.TestCase):
         workflow = valid_workflow()
         workflow["extra"]["linearData"]["inputs"][0][1] = "not_a_widget"
         self.assert_invalid(workflow, "unknown widget")
+
+    def test_linear_data_requires_enabled_linear_mode(self) -> None:
+        workflow = valid_workflow()
+        workflow["extra"]["linearMode"] = False
+        self.assert_invalid(workflow, "linearMode")
 
     def test_missing_app_output_is_rejected(self) -> None:
         workflow = valid_workflow()

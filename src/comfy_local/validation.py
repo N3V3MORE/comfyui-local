@@ -31,7 +31,10 @@ def _validate_unique_keys(workflow: WorkflowGraph) -> None:
 
 def _validate_scope(scope: str | None, graph: dict[str, Any]) -> None:
     label = f"subgraph {scope}" if scope else "root graph"
-    nodes = {node["id"]: node for node in graph.get("nodes", [])}
+    serialized_nodes = graph.get("nodes", [])
+    nodes = {node["id"]: node for node in serialized_nodes}
+    if len(nodes) != len(serialized_nodes):
+        raise ValidationError(f"{label} has a Duplicate node id")
     links = graph.get("links", [])
 
     numeric_node_ids = [value for value in nodes if isinstance(value, int)]
@@ -40,6 +43,8 @@ def _validate_scope(scope: str | None, graph: dict[str, Any]) -> None:
         raise ValidationError(f"{label} last_node_id does not match generated nodes")
 
     link_ids = [_link_parts(link)[0] for link in links]
+    if len(link_ids) != len(set(link_ids)):
+        raise ValidationError(f"{label} has a Duplicate link id")
     numeric_link_ids = [value for value in link_ids if isinstance(value, int)]
     expected_last_link = max(numeric_link_ids, default=0)
     if graph.get("last_link_id", expected_last_link) != expected_last_link:
@@ -84,9 +89,14 @@ def _link_parts(link: Any) -> tuple[Any, Any, int, Any, int, Any]:
 
 def _validate_app_mode(workflow: WorkflowGraph) -> None:
     extra = workflow.data.get("extra", {})
-    linear = extra.get("linearData") if isinstance(extra, dict) else None
-    if not linear:
+    if not isinstance(extra, dict):
         return
+    linear = extra.get("linearData")
+    linear_mode = extra.get("linearMode")
+    if linear is None and linear_mode is None:
+        return
+    if linear_mode is not True or not isinstance(linear, dict):
+        raise ValidationError("App Mode linearData requires linearMode=true")
 
     for value in linear.get("inputs", []):
         if not isinstance(value, list) or len(value) != 2:

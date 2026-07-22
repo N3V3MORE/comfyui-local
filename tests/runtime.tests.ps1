@@ -10,6 +10,13 @@ Test-Case 'start command is loopback-only and uses the isolated environment' {
     Assert-True ($command -match '--listen 127\.0\.0\.1') 'launch listens only on loopback'
     Assert-True ($command -match '--port 8188') 'launch uses port 8188'
     Assert-True ($command -notmatch '--lowvram') 'default launch does not force low VRAM'
+    Assert-True ($command -notmatch '--enable-manager') 'default launch does not enable mutable Manager actions'
+}
+
+Test-Case 'Manager is an explicit opt-in launch feature' {
+    $command = ((& $startScript -PrintCommand -EnableManager) -join ' ').Trim()
+
+    Assert-True ($command -match '--enable-manager') 'explicit Manager launch adds the Manager flag'
 }
 
 Test-Case 'low-VRAM launch adds one explicit flag' {
