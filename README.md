@@ -176,8 +176,9 @@ Desktop Code backups intentionally omit model payloads. For this project that me
 
 - all files under `models\`;
 - weight files under `ComfyUI\models\` (including the bundled detection/support weights); and
-- temporary support-weight copies under `work\support-hashes\`.
+- temporary support-weight copies under `work\support-hashes\`; and
+- the embedded LPIPS support weight at `ComfyUI\custom_nodes\comfyui_controlnet_aux\src\custom_controlnet_aux\diffusion_edge\taming\modules\autoencoder\lpips\vgg.pth`.
 
 The backup retains the source, workflows, configuration, extension manifest, local data, and runtime setup. The exact model URLs, sizes, SHA-256 digests, and licenses remain in `config\artifacts.json`, `config\models.json`, and `config\licenses.json`.
 
-To recover a model-free restore, clone the repository and run the rebuild sequence above. `scripts\download-models.ps1` re-downloads and verifies the configured artifacts before `scripts\compile.ps1` and `scripts\install-workflows.ps1` restore the Studio apps. Keep any separately stored model backup subject to its original license.
+To recover a model-free restore, clone the repository and run the rebuild sequence above. `scripts\download-models.ps1` re-downloads and verifies the configured artifacts before `scripts\compile.ps1` and `scripts\install-workflows.ps1` restore the Studio apps. The embedded LPIPS weight is fetched on demand by the bundled `comfyui_controlnet_aux` component; its source URL and checksum are recorded in `...\diffusion_edge\taming\util.py`. Keep any separately stored model backup subject to its original license.
