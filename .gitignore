@@ -8,3 +8,4 @@ data/
 *.partial
 __pycache__/
 .worktrees/
+.serena/
