@@ -169,3 +169,15 @@ Compilation produces 15 App Mode workflows, four editable UI workflows, and thre
 ```
 
 Model and extension licenses differ. Review each linked source card before redistribution, paid API use, or commercial deployment.
+
+## Backup and model recovery
+
+Desktop Code backups intentionally omit model payloads. For this project that means:
+
+- all files under `models\`;
+- weight files under `ComfyUI\models\` (including the bundled detection/support weights); and
+- temporary support-weight copies under `work\support-hashes\`.
+
+The backup retains the source, workflows, configuration, extension manifest, local data, and runtime setup. The exact model URLs, sizes, SHA-256 digests, and licenses remain in `config\artifacts.json`, `config\models.json`, and `config\licenses.json`.
+
+To recover a model-free restore, clone the repository and run the rebuild sequence above. `scripts\download-models.ps1` re-downloads and verifies the configured artifacts before `scripts\compile.ps1` and `scripts\install-workflows.ps1` restore the Studio apps. Keep any separately stored model backup subject to its original license.
